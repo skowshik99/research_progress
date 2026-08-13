@@ -25,6 +25,44 @@
 
     <section class="entry">
       <header>
+        <h2>Counterexample: a <em>successful</em> trajectory that still loops (xarray-4094 seed_13)</h2>
+        <span class="badge done">done</span>
+        <span class="date">2026-08-13</span>
+      </header>
+
+      <p>A raw solver trajectory from the xarray minimal-prompt 9B bank that is marked
+         <code>success=true</code> nonetheless contains an <strong>exact repeated-command
+         loop</strong>. This nuances the 4695 finding below (where looping was exclusive to
+         failures with <code>maxIdRun&nbsp;&le;&nbsp;2</code> for every success): across issues,
+         a <em>bounded</em> loop is not automatically fatal &mdash; what kills a run is failing to
+         <strong>break out</strong> of it. Here the model loops, escapes, and still completes
+         READ&rarr;EDIT&rarr;TEST&rarr;SUBMIT.</p>
+
+      <table class="metrics">
+        <thead>
+          <tr><th>Field</th><th>Value</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Issue / seed</td><td><code>pydata__xarray-4094</code> · <code>seed_13</code></td></tr>
+          <tr><td><code>result.json</code> success</td><td>true</td></tr>
+          <tr><td>Total trace entries</td><td class="num">93</td></tr>
+          <tr><td>Looped command</td><td><code>awk '/^class /{class=$0; start=NR} /^def test_to_unstacked_dataset/{print "Line", NR, "is in class:", class}' /testbed/xarray/tests/test_units.py</code></td></tr>
+          <tr><td>Loop window 1 (trace 54&ndash;77)</td><td class="num">24&times;</td></tr>
+          <tr><td>Loop window 2 (trace 80&ndash;81)</td><td class="num">2&times;</td></tr>
+          <tr><td>Repeated-turn output</td><td><code>returncode=0</code>, empty output</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Representative turns &mdash; the 24&times; exact loop inside a passing run</h3>
+      <iframe class="example" sandbox src="assets/ground_truth_pydata_xarray_4094_seed13.html"
+              title="ground-truth successful loop (xarray-4094 seed_13)" loading="lazy"></iframe>
+      <div class="example-link">
+        <a href="assets/ground_truth_pydata_xarray_4094_seed13.html" target="_blank" rel="noopener">open in new tab &rarr;</a>
+      </div>
+    </section>
+
+    <section class="entry">
+      <header>
         <h2>Old vs new looping behavior &mdash; summary &amp; representative turns</h2>
         <span class="badge blocked">blocked</span>
         <span class="date">2026-08-13</span>
@@ -45,7 +83,7 @@
         </thead>
         <tbody>
           <tr><td>ch300 (nothink, t0.7)</td><td class="num">200</td><td class="num">27</td><td class="num">27</td><td>shifting line ranges; most distributed</td></tr>
-          <tr><td>ch600 (nothink, t0.7)</td><td class="num">126+</td><td class="num">32</td><td class="num">32</td><td>reaches correct fix site, then loops</td></tr>
+          <tr><td>ch600 (nothink, t0.7)</td><td class="num">~174</td><td class="num">32</td><td class="num">32</td><td>reaches correct fix site, then 48&times; byte-identical loop</td></tr>
           <tr><td>ch1.6k nothink (t0.6)</td><td class="num">200</td><td class="num"><strong>123</strong></td><td class="num"><strong>123</strong></td><td>most byte-exact frozen fixed point</td></tr>
           <tr><td>ch1.6k thinking (t0.6)</td><td class="num">200</td><td class="num">87</td><td class="num">114</td><td>same idiom, varying args (thinking effect)</td></tr>
         </tbody>
@@ -130,7 +168,7 @@
         </thead>
         <tbody>
           <tr><td>ckpt-300</td><td class="num">200 (cap)</td><td class="num">77</td><td>False</td><td>loops almost immediately (wide <code>nl-ba</code>+<code>grep</code>)</td></tr>
-          <tr><td>ckpt-600</td><td class="num">64+</td><td class="num">47</td><td>False</td><td>~36 genuine forward steps, correctly reaches <code>convert_label_indexer</code></td></tr>
+          <tr><td>ckpt-600</td><td class="num">~174</td><td class="num">47</td><td>False</td><td>~36 genuine forward steps, correctly reaches <code>convert_label_indexer</code>, then collapses</td></tr>
         </tbody>
       </table>
 
@@ -141,6 +179,20 @@
          anti-repetition safeguards used during data generation (thinking +
          <code>presence_penalty</code>). More training (300&rarr;600) buys ~36 steps of correct
          exploration but does not fix the collapse.</p>
+
+      <h3>Why ch600's loop is a literal deterministic fixed point</h3>
+      <p>In the ch600 rollout the grep
+         <code>cat .../indexing.py | grep -n "def convert_label_indexer" -A 450 | head -250</code>
+         runs <strong>48 times byte-identical</strong> (~step 45&rarr;98). Every execution returns
+         <code>real_returncode=0</code> and an observation of length <strong>2108 chars that all
+         hash to a single value</strong> &mdash; the 2000-char cap clips the read <em>before</em>
+         the fix-relevant code, so the read is both truncated and information-empty. With
+         thinking OFF (no scratchpad to vary the prefix) and <code>presence_penalty=0</code> (no
+         push off already-emitted tokens), the map <em>(identical context) &rarr; (next command)</em>
+         is effectively deterministic: identical state &rarr; identical action &rarr; identical
+         truncated state. The command is also <strong>novel</strong> &mdash; it never appears in
+         the 4695 training bank, so the model has no learned recovery move conditioned on that
+         observation.</p>
 
       <h3>Training-data corroboration (raw 4695 bank, 20 seeds)</h3>
       <p>The bank was generated with thinking ON + presence_penalty 1.5 + temp 0.6. There,
