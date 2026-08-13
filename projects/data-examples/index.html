@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data Generated Examples — Research Progress</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="crumb"><a href="../../index.html">&larr; all projects</a></div>
+
+    <div class="hero">
+      <h1>Data Generated Examples</h1>
+      <p>Rendered example rows from the POPE <code>tasks_v1</code> training data &mdash; 8
+         supervised SFT variants mined from the xarray minimal-prompt Qwen3.5-9B solver
+         trajectories, built on the 14 easiest xarray issues with the ground-truth commit
+         injected. Each render shows one representative row: the system prompt, every
+         observation/action turn, the appended per-step instruction, and the final
+         <code>&lt;prediction&gt;</code> target.</p>
+    </div>
+
+    <h2>Entries</h2>
+    <!-- ENTRIES:START -->
+
+    <section class="entry">
+      <header>
+        <h2>tasks_v1 examples (first-14-easiest, with commit)</h2>
+        <span class="badge done">done</span>
+        <span class="date">2026-08-12</span>
+      </header>
+
+      <p>Each task appends a per-step instruction and supervises specific
+         <code>&lt;prediction&gt;</code> field(s). Tasks 1/4/5 are <em>given</em> the
+         candidate action and predict the resulting observation (NL or raw) or its
+         consequences; tasks 3/6/7 predict a single decision field; task 2 is the
+         counterfactual self-correction variant (container-replay based); <strong>task 8</strong>
+         is the full compositional target (all 7 fields) used in the ckpt-300/600 rollout
+         evals. The example per task is a single fixed row (637) &mdash; representative, not
+         exhaustive; the full data lives in the corresponding <code>.jsonl</code>.</p>
+
+      <h3>Task inventory &mdash; 8 tasks · 66,807 rows</h3>
+      <table class="metrics">
+        <thead>
+          <tr><th>Task</th><th class="num">Rows</th><th>Predicts</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1 · NL next-observation</td><td class="num">9,170</td>
+            <td><code>next_observation_natural_language</code></td>
+            <td><a href="assets/task1_next_observation_natural_language.html" target="_blank" rel="noopener">view &rarr;</a></td>
+          </tr>
+          <tr>
+            <td>2 · Counterfactual self-correction</td><td class="num">3,344</td>
+            <td>candidate_action + 4 downstream fields</td>
+            <td><a href="assets/task2_counterfactual_self_correction.html" target="_blank" rel="noopener">view &rarr;</a></td>
+          </tr>
+          <tr>
+            <td>3 · Recommended action</td><td class="num">8,319</td>
+            <td><code>recommended_action</code></td>
+            <td><a href="assets/task3_recommended_action.html" target="_blank" rel="noopener">view &rarr;</a></td>
+          </tr>
+          <tr>
+            <td>4 · Future consequences</td><td class="num">9,753</td>
+            <td><code>future_consequences</code></td>
+            <td><a href="assets/task4_future_consequences.html" target="_blank" rel="noopener">view &rarr;</a></td>
+          </tr>
+          <tr>
+            <td>5 · Raw terminal output</td><td class="num">9,170</td>
+            <td><code>next_observation_raw</code></td>
+            <td><a href="assets/task5_next_observation_raw.html" target="_blank" rel="noopener">view &rarr;</a></td>
+          </tr>
+          <tr>
+            <td>6 · Information delta</td><td class="num">9,542</td>
+            <td><code>information_delta</code></td>
+            <td><a href="assets/task6_information_delta.html" target="_blank" rel="noopener">view &rarr;</a></td>
+          </tr>
+          <tr>
+            <td>7 · Subgoal state</td><td class="num">9,752</td>
+            <td><code>subgoals</code></td>
+            <td><a href="assets/task7_subgoals.html" target="_blank" rel="noopener">view &rarr;</a></td>
+          </tr>
+          <tr>
+            <td>8 · Full compositional</td><td class="num">7,757</td>
+            <td>all 7 fields</td>
+            <td><a href="assets/task8_full_compositional.html" target="_blank" rel="noopener">view &rarr;</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Showcase &mdash; task 8 (full compositional, all 7 fields)</h3>
+      <iframe class="example" sandbox src="assets/task8_full_compositional.html"
+              title="task8 full-compositional example" loading="lazy"></iframe>
+      <div class="example-link">
+        <a href="assets/task8_full_compositional.html" target="_blank" rel="noopener">open task 8 example in new tab &rarr;</a>
+      </div>
+
+      <h3>Showcase &mdash; task 2 (counterfactual self-correction)</h3>
+      <iframe class="example" sandbox src="assets/task2_counterfactual_self_correction.html"
+              title="task2 counterfactual example" loading="lazy"></iframe>
+      <div class="example-link">
+        <a href="assets/task2_counterfactual_self_correction.html" target="_blank" rel="noopener">open task 2 example in new tab &rarr;</a>
+      </div>
+
+      <p>Source: <code>pope_datagen/per_issue_collated_with_commit/collated_first_14_easiest/</code>
+         (SWE-bench-derived xarray content). The big <code>.jsonl</code> files (hundreds of
+         MB each) are the full datasets; the renders here are small standalone single-row views.</p>
+    </section>
+
+    <!-- ENTRIES:END -->
+
+  </div>
+</body>
+</html>
