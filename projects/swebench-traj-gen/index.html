@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SWE-bench Trajectory Generation — Research Progress</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="crumb"><a href="../../index.html">&larr; all projects</a></div>
+
+    <div class="hero">
+      <h1>SWE-bench Trajectory Generation</h1>
+      <p>Generating minimal-prompt Qwen3.5-9B solver trajectories on the xarray
+         subset of SWE-bench Verified, and mining them into pope_datagen training
+         data. Current focus: the hard issues the base model never solves.</p>
+    </div>
+
+    <h2>Entries</h2>
+    <!-- ENTRIES:START -->
+    <section class="entry">
+      <header>
+        <h2>Hard-issue traj-gen (xarray-6992) + pope_datagen case mining</h2>
+        <span class="badge running">running</span>
+        <span class="date">2026-08-13</span>
+      </header>
+
+      <p>The minimal-prompt 9B trajectory bank (380 trajectories = 19 xarray
+         issues &times; 20 seeds) deliberately excludes the three hard,
+         0/134-solved issues (7229, 6992, 6938). We are now generating
+         trajectories for <code>xarray-6992</code> specifically to probe whether
+         extra sampling or a Mocha-4B eval yields any solve, and mining every
+         trajectory into the five pope_datagen training-data variants.</p>
+
+      <h3>Currently running</h3>
+      <table class="runstatus">
+        <thead>
+          <tr><th>Job</th><th class="num">Seed(s)</th><th>Status</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>traj_gen · xarray-6992</code></td>
+            <td class="num">0&ndash;19</td>
+            <td><span class="badge running">running</span></td>
+            <td>Qwen3.5-9B, thinking on, temp 0.6, 200 steps</td>
+          </tr>
+          <tr>
+            <td><code>mocha-4b eval · xarray-6992</code></td>
+            <td class="num">&mdash;</td>
+            <td><span class="badge running">running</span></td>
+            <td>new SLURM launcher (commit 1a09196)</td>
+          </tr>
+          <tr>
+            <td><code>pope_datagen · cases 2&ndash;5 (LLM-only)</code></td>
+            <td class="num">19&times;20</td>
+            <td><span class="badge running">running</span></td>
+            <td>subgoals, obs_nl, learning_delta, consequence</td>
+          </tr>
+          <tr>
+            <td><code>pope_datagen · case 1 (counterfactual)</code></td>
+            <td class="num">19&times;20</td>
+            <td><span class="badge planned">planned</span></td>
+            <td>container replay; queued after cases 2&ndash;5</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Trajectory bank snapshot</h3>
+      <table class="metrics">
+        <thead>
+          <tr><th>Metric</th><th class="num">Value</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>trajectories in bank</td><td class="num">380</td><td>19 issues &times; 20 seeds (0&ndash;19)</td></tr>
+          <tr><td>single-context "workable" subset</td><td class="num">332</td><td>48 resumed seeds carry &ne;1 model_context</td></tr>
+          <tr><td>xarray-6992 solved</td><td class="num">0 / 134</td><td>hard issue; excluded from the 380 bank</td></tr>
+          <tr><td>pope_datagen variants mined</td><td class="num">5</td><td>cases 1&ndash;5</td></tr>
+        </tbody>
+      </table>
+
+      <p>Grading uses <code>SWEBENCH_CORRECT_GRADING=1</code>, so
+         <code>result.json.success</code> is authoritative. Both passing and
+         failing trajectories are kept &mdash; no solved early-exit.</p>
+    </section>
+    <!-- ENTRIES:END -->
+
+  </div>
+</body>
+</html>

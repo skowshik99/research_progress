@@ -1,0 +1,100 @@
+/* research_progress site — shared stylesheet (adapted from
+   scripts/agents/pope_datagen/render_tasks_v1_html.py CSS). Dark theme.
+   This is the ONLY stylesheet in the repo. Landing links it as `style.css`;
+   project pages link it as `../../style.css`. Script-free, no CDN. */
+
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+
+body {
+  font: 14px/1.5 -apple-system, Segoe UI, Roboto, sans-serif;
+  margin: 0; background: #0f1115; color: #e6e6e6;
+}
+.wrap { max-width: 1180px; margin: 0 auto; padding: 24px; }
+a { color: #8fd0ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---- headings / hero ---- */
+h1 { font-size: 24px; margin: 0 0 6px; }
+h2 { font-size: 16px; margin: 24px 0 8px; color: #c7d0dd; }
+h3 { font-size: 14px; margin: 14px 0 4px; color: #c7d0dd; }
+.sub { color: #9aa4b2; font-size: 13px; margin-bottom: 16px; }
+.hero {
+  background: #171a21; border: 1px solid #262b36; border-radius: 12px;
+  padding: 20px 22px; margin-bottom: 24px;
+}
+.hero p { margin: 6px 0 0; color: #b7c0cd; }
+.crumb { color: #9aa4b2; font-size: 13px; margin-bottom: 12px; }
+
+/* ---- project cards (landing) ---- */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.card {
+  display: block; background: #141821; border: 1px solid #262b36;
+  border-radius: 12px; padding: 16px 18px; text-decoration: none; color: inherit;
+}
+.card:hover { border-color: #33506a; text-decoration: none; }
+.card h2 { margin: 0 0 6px; font-size: 16px; color: #e6e6e6; }
+.card p { margin: 6px 0 0; color: #9aa4b2; font-size: 13px; }
+.card .meta { margin-top: 10px; color: #6f7a89; font-size: 12px; }
+
+/* ---- status badges ---- */
+.badge {
+  display: inline-block; font-size: 11px; font-weight: 600; border-radius: 20px;
+  padding: 2px 10px; text-transform: uppercase; letter-spacing: .04em;
+  border: 1px solid transparent; vertical-align: middle;
+}
+.badge.running { background: #12351f; color: #6ee7a0; border-color: #1f6b40; }
+.badge.done    { background: #173040; color: #8fd0ff; border-color: #22384a; }
+.badge.blocked { background: #3a1616; color: #ff9a9a; border-color: #5a2222; }
+.badge.planned { background: #3a3216; color: #f2d479; border-color: #5a4a16; }
+
+/* ---- entries (per project, reverse-chron) ---- */
+.entry {
+  border: 1px solid #262b36; border-radius: 12px; background: #141821;
+  padding: 16px 18px; margin: 16px 0;
+}
+.entry > header { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px; }
+.entry > header h2 { margin: 0; font-size: 16px; color: #e6e6e6; }
+.entry .date { color: #6f7a89; font-size: 12px; }
+.entry p { margin: 8px 0; color: #cdd4de; }
+
+/* ---- metrics / run-status tables ---- */
+table.metrics, table.runstatus {
+  border-collapse: collapse; width: 100%; background: #141821;
+  border: 1px solid #262b36; border-radius: 10px; overflow: hidden; margin: 10px 0;
+}
+table.metrics th, table.metrics td,
+table.runstatus th, table.runstatus td {
+  text-align: left; padding: 8px 12px; border-bottom: 1px solid #20242e;
+  font-size: 13px; vertical-align: top;
+}
+table.metrics th, table.runstatus th { background: #171a21; color: #9aa4b2; font-size: 12px; }
+table.metrics tr:last-child td, table.runstatus tr:last-child td { border-bottom: none; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+code {
+  background: #0c0e13; border: 1px solid #20242e; border-radius: 4px;
+  padding: 1px 5px; color: #9fd0c0; font: 12px ui-monospace, Menlo, Consolas, monospace;
+}
+
+/* ---- figures (pre-rendered PNG plots) ---- */
+figure { margin: 12px 0; }
+figure img {
+  display: block; max-width: 100%; height: auto;
+  border: 1px solid #262b36; border-radius: 10px; background: #fff;
+}
+figcaption { color: #9aa4b2; font-size: 12px; margin-top: 6px; }
+
+/* ---- embedded self-contained example HTML ---- */
+iframe.example {
+  width: 100%; height: 480px; border: 1px solid #262b36; border-radius: 10px;
+  background: #0f1115;
+}
+.example-link { font-size: 12px; margin-top: 6px; }
+
+/* ---- misc ---- */
+.tag {
+  display: inline-block; font-size: 11px; background: #232937; color: #c7d0dd;
+  border-radius: 20px; padding: 2px 10px; margin-right: 4px;
+}
+hr { border: none; border-top: 1px solid #20242e; margin: 20px 0; }
+footer { color: #6f7a89; font-size: 12px; margin-top: 32px; }
