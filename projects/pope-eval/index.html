@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>POPE Datagen — task8 Rollout Eval &amp; Command Looping — Research Progress</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="crumb"><a href="../../index.html">&larr; all projects</a></div>
+
+    <div class="hero">
+      <h1>POPE Datagen — task8 Rollout Eval &amp; Command Looping</h1>
+      <p>Evaluating the pope_datagen-trained Qwen3.5-9B LoRA checkpoints with free
+         container rollouts on xarray SWE-bench issues, and characterizing the dominant
+         failure mode: <em>repetition-collapse</em> (re-issuing the same command to the
+         step cap without submitting). Tracks which checkpoints / decoding configs escape
+         the loop and actually submit, plus the tasks_v1 training-data examples behind it.</p>
+    </div>
+
+    <h2>Entries</h2>
+    <!-- ENTRIES:START -->
+
+    <section class="entry">
+      <header>
+        <h2>Stable rollouts &amp; the decoding recipe that submits</h2>
+        <span class="badge done">done</span>
+        <span class="date">2026-08-13</span>
+      </header>
+
+      <p>Surveying all 19 <code>ch1.6k</code> rollout dirs, <strong>only 3 ever emit the
+         submit sentinel and only 2 are genuinely stable</strong> (submit early with no long
+         loop). The lever is decoding config, not the weights: <strong>thinking ON is
+         mandatory</strong> (no <code>no-thinking</code> run ever submitted),
+         <strong>temperature 0.6 (sampling, not greedy 0.0)</strong>, <code>presence_penalty=0</code>
+         throughout, and <strong>guided decoding required for 4695's full 7-field task8</strong>
+         (optional for the simpler 6992 target). Under this recipe the longest exact-repeat
+         streak drops from <strong>87&ndash;170</strong> (collapse) to <strong>2&ndash;3</strong>
+         (stable), and the model reaches an actual edit &rarr; verify &rarr; submit.</p>
+
+      <h3>ch1.6k stability &mdash; who submits, and how</h3>
+      <table class="runstatus">
+        <thead>
+          <tr><th>Run (<code>…lora-ch1.6k-…</code>)</th><th>Config</th><th>Status</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>4695-guided-thinking-t0.6</code></td>
+            <td>thinking + guided + t0.6, pp0</td>
+            <td><span class="badge done">done</span></td>
+            <td>82 steps, submitted@81, longest EXACT streak <strong>2</strong></td>
+          </tr>
+          <tr>
+            <td><code>6992-thinking-t0.6</code></td>
+            <td>thinking (no-guided) + t0.6, pp0</td>
+            <td><span class="badge done">done</span></td>
+            <td>60 steps, submitted@59, longest EXACT streak <strong>3</strong></td>
+          </tr>
+          <tr>
+            <td><code>4695-recact-t0.6</code></td>
+            <td>thinking + t0.6, pp0</td>
+            <td><span class="badge blocked">blocked</span></td>
+            <td>submitted only at the 199 cap (looped first, streak 49)</td>
+          </tr>
+          <tr>
+            <td><code>4695-guided-no-thinking-t0.6</code></td>
+            <td>guided, <em>no</em> thinking, t0.6</td>
+            <td><span class="badge blocked">blocked</span></td>
+            <td>collapse, streak 100 &mdash; guided alone is not sufficient</td>
+          </tr>
+          <tr>
+            <td><code>t0.0</code> greedy variants</td>
+            <td>temperature 0.0</td>
+            <td><span class="badge blocked">blocked</span></td>
+            <td>die early (6&ndash;69 steps) / stall &mdash; some temperature needed</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Decoding configuration required for stability</h3>
+      <table class="metrics">
+        <thead>
+          <tr><th>Knob</th><th>Setting</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>thinking</td><td><code>True</code> (mandatory)</td><td>every submitter had it; no nothink run submitted</td></tr>
+          <tr><td>temperature</td><td><code>0.6</code></td><td>not greedy 0.0; a little temperature escapes the read-attractor</td></tr>
+          <tr><td>presence_penalty</td><td><code>0</code></td><td>held at 0 across all runs; not the lever</td></tr>
+          <tr><td>guided_decoding</td><td><code>True</code> for 4695 · optional for 6992</td><td>keeps the full task8 format on-rails long enough to reach the fix</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Representative pivot &mdash; 4695 (guided + thinking, t0.6)</h3>
+      <p>Curated key turns: the amber turn reads the <em>exact</em> region the vanilla
+         loopers froze on, but issued <strong>once</strong>; the green turn is the pivot
+         <code>sed -i</code> edit that broke out; blue = verify; pink = submit@81.</p>
+      <iframe class="example" sandbox src="assets/stable_ch1600_4695_guided_thinking.html"
+              title="stable 4695 guided+thinking pivot" loading="lazy"></iframe>
+      <div class="example-link">
+        <a href="assets/stable_ch1600_4695_guided_thinking.html" target="_blank" rel="noopener">open pivot render in new tab &rarr;</a>
+      </div>
+
+      <h3>Representative pivot &mdash; 6992 (thinking, no-guided, t0.6)</h3>
+      <p>Same idea on the 6992 <code>__len__</code> loop region: read once (amber) at step
+         15, then the <code>max(0, …)</code> edit (green) at step 16, verify, submit@59.</p>
+      <iframe class="example" sandbox src="assets/stable_ch1600_6992_thinking.html"
+              title="stable 6992 thinking pivot" loading="lazy"></iframe>
+      <div class="example-link">
+        <a href="assets/stable_ch1600_6992_thinking.html" target="_blank" rel="noopener">open pivot render in new tab &rarr;</a>
+      </div>
+
+      <p><strong>One-line contrast:</strong> the loopers reach the correct region and
+         re-read it to the cap; the stable runs reach the <em>same</em> region, read it
+         <em>once</em>, and spend the next turn editing &mdash; the whole difference between
+         a 123&times; frozen loop and an 82-step submit.</p>
+    </section>
+
+    <section class="entry">
+      <header>
+        <h2>Old (ch1.6k) vs new (ch300/ch600) checkpoints &mdash; looping texture</h2>
+        <span class="badge done">done</span>
+        <span class="date">2026-08-13</span>
+      </header>
+
+      <p>Comparing four <strong>vanilla-decoding</strong> task8 rollouts on
+         <code>pydata__xarray-4695</code> (temp&gt;0, pp0, no guided, no thinking except one).
+         All four emit valid 7-field task8 predictions, 0 parse failures, and
+         <strong>none ever submit</strong> &mdash; they run toward the 200-step cap in
+         repetition-collapse. Only the <em>texture</em> of the collapse differs. Using
+         <code>template</code> = command with digits normalized to <code>#</code> (so "same
+         idiom, different line range" collapses to one form):</p>
+
+      <h3>Exact vs. template repetition</h3>
+      <table class="metrics">
+        <thead>
+          <tr><th>Run</th><th class="num">Steps</th><th class="num">Longest EXACT streak</th><th class="num">Longest TEMPLATE streak</th><th>Texture</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ch300 (nothink, t0.7)</td><td class="num">200</td><td class="num">27</td><td class="num">27</td><td>shifting line ranges; most distributed</td></tr>
+          <tr><td>ch600 (nothink, t0.7)</td><td class="num">126+</td><td class="num">32</td><td class="num">32</td><td>reaches correct fix site, then loops</td></tr>
+          <tr><td>ch1.6k nothink (t0.6)</td><td class="num">200</td><td class="num"><strong>123</strong></td><td class="num"><strong>123</strong></td><td>most byte-exact frozen fixed point</td></tr>
+          <tr><td>ch1.6k thinking (t0.6)</td><td class="num">200</td><td class="num">87</td><td class="num">114</td><td>same idiom, varying args (thinking effect)</td></tr>
+        </tbody>
+      </table>
+
+      <p>Net: the older 1.6k checkpoint does <em>not</em> loop less &mdash; in nothink it
+         loops <strong>harder and more exactly</strong> (123&times; identical). The only lever
+         that changed repetition from byte-exact to same-idiom-different-args was turning
+         <strong>thinking on</strong>, and even that did not restore submission.</p>
+
+      <h3>Loop-region renders (20 consecutive turns at peak loop)</h3>
+      <p>Pink = byte-identical to previous turn · green = same idiom / different numeric
+         args · grey = genuinely new command.</p>
+
+      <h3>ch1.6k · nothink · t0.6 &mdash; peak EXACT streak 123</h3>
+      <iframe class="example" sandbox src="assets/loop_ch1600_nothink.html"
+              title="ch1.6k nothink loop" loading="lazy"></iframe>
+      <div class="example-link">
+        <a href="assets/loop_ch1600_nothink.html" target="_blank" rel="noopener">open in new tab &rarr;</a>
+      </div>
+
+      <h3>ch1.6k · thinking · t0.6 &mdash; peak EXACT streak 87 (template 114)</h3>
+      <iframe class="example" sandbox src="assets/loop_ch1600_thinking.html"
+              title="ch1.6k thinking loop" loading="lazy"></iframe>
+      <div class="example-link">
+        <a href="assets/loop_ch1600_thinking.html" target="_blank" rel="noopener">open in new tab &rarr;</a>
+      </div>
+
+      <h3>ch300 · nothink · t0.7 &mdash; peak EXACT streak 27</h3>
+      <iframe class="example" sandbox src="assets/loop_ch300.html"
+              title="ch300 loop" loading="lazy"></iframe>
+      <div class="example-link">
+        <a href="assets/loop_ch300.html" target="_blank" rel="noopener">open in new tab &rarr;</a>
+      </div>
+
+      <h3>ch600 · nothink · t0.7 &mdash; peak EXACT streak 32</h3>
+      <iframe class="example" sandbox src="assets/loop_ch600.html"
+              title="ch600 loop" loading="lazy"></iframe>
+      <div class="example-link">
+        <a href="assets/loop_ch600.html" target="_blank" rel="noopener">open in new tab &rarr;</a>
+      </div>
+    </section>
+
+    <section class="entry">
+      <header>
+        <h2>Command looping in task8 rollouts (ckpt-300 vs ckpt-600)</h2>
+        <span class="badge blocked">blocked</span>
+        <span class="date">2026-08-13</span>
+      </header>
+
+      <p>Two LoRA checkpoints of <code>qwen35_9b_pope_first14easiest_no_task5_lora</code>
+         were merged and evaluated with a free container rollout on
+         <code>pydata__xarray-4695</code> / <code>task8_full_compositional</code>, identical
+         sampling each time (temp 0.7, pp0, thinking OFF, guided OFF, 200 steps, seed 0).
+         <strong>Both fail to submit</strong> and both end in the same terminal
+         repetition-collapse &mdash; but the later checkpoint reaches it much later.</p>
+
+      <h3>Checkpoint comparison</h3>
+      <table class="metrics">
+        <thead>
+          <tr><th>Checkpoint</th><th class="num">Steps</th><th class="num">Unique cmds</th><th>Submitted</th><th>Early exploration</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ckpt-300</td><td class="num">200 (cap)</td><td class="num">77</td><td>False</td><td>loops almost immediately (wide <code>nl-ba</code>+<code>grep</code>)</td></tr>
+          <tr><td>ckpt-600</td><td class="num">64+</td><td class="num">47</td><td>False</td><td>~36 genuine forward steps, correctly reaches <code>convert_label_indexer</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>ckpt-600 is a clear improvement in early-trajectory navigation (it homes in on the
+         correct 4695 <code>.sel</code>/<code>.loc</code> fix region before collapsing), but
+         succumbs to the <strong>same fixed-point attractor</strong> once a wide read/grep
+         overflows the 2000-char observation cap &mdash; because the eval disables both
+         anti-repetition safeguards used during data generation (thinking +
+         <code>presence_penalty</code>).</p>
+
+      <h3>Training-data corroboration (raw 4695 bank, 20 seeds)</h3>
+      <p>The bank was generated with thinking ON + presence_penalty 1.5 + temp 0.6. In it,
+         command-looping is <strong>exclusively a failed-trajectory phenomenon</strong>:</p>
+      <table class="metrics">
+        <thead>
+          <tr><th>Outcome</th><th class="num">Seeds</th><th class="num">Avg steps</th><th class="num">Submit rate</th><th class="num">Avg maxIdRun</th><th class="num">Max maxIdRun</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>SUCCESS</td><td class="num">11</td><td class="num">60</td><td class="num">1.00</td><td class="num">1.3</td><td class="num">2</td></tr>
+          <tr><td>FAIL</td><td class="num">9</td><td class="num">92</td><td class="num">0.44</td><td class="num">21.2</td><td class="num">166</td></tr>
+        </tbody>
+      </table>
+
+      <p>Every success pivots <strong>READ &rarr; RUN &rarr; EDIT (<code>sed -i</code>) &rarr;
+         TEST (<code>pytest</code>) &rarr; SUBMIT</strong> with <code>maxIdRun&nbsp;&le;&nbsp;2</code>;
+         all heavy looping is in failures. seed_0 collapses onto one read
+         <strong>166&times;</strong> straight to the cap even though that read was <em>not</em>
+         truncated &mdash; i.e. repetition-collapse, not truncation-blindness. This isolates
+         the fix to the decoding/harness (restore presence_penalty and/or thinking; add a
+         loop-guard; narrow reads), not checkpoint maturity.</p>
+    </section>
+
+    <section class="entry">
+      <header>
+        <h2>tasks_v1 training-data examples (first-14-easiest, with commit)</h2>
+        <span class="badge done">done</span>
+        <span class="date">2026-08-12</span>
+      </header>
+
+      <p>The POPE <code>tasks_v1</code> training data is 8 supervised SFT variants mined from
+         the xarray minimal-prompt 9B solver trajectories, built on the 14 easiest xarray
+         issues with the ground-truth commit injected. Each task appends a per-step
+         instruction and supervises specific <code>&lt;prediction&gt;</code> fields; task 8
+         is the full compositional target (all 7 fields) used in the ckpt-300/600 evals above.</p>
+
+      <h3>Task inventory</h3>
+      <table class="metrics">
+        <thead>
+          <tr><th>Task</th><th class="num">Rows</th><th>Predicts</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1 · NL next-observation</td><td class="num">9,170</td><td><code>next_observation_natural_language</code></td></tr>
+          <tr><td>2 · Counterfactual self-correction</td><td class="num">3,344</td><td>candidate_action + 4 downstream fields</td></tr>
+          <tr><td>3 · Recommended action</td><td class="num">8,319</td><td><code>recommended_action</code></td></tr>
+          <tr><td>4 · Future consequences</td><td class="num">9,753</td><td><code>future_consequences</code></td></tr>
+          <tr><td>5 · Raw terminal output</td><td class="num">9,170</td><td><code>next_observation_raw</code></td></tr>
+          <tr><td>6 · Information delta</td><td class="num">9,542</td><td><code>information_delta</code></td></tr>
+          <tr><td>7 · Subgoal state</td><td class="num">9,752</td><td><code>subgoals</code></td></tr>
+          <tr><td>8 · Full compositional</td><td class="num">7,757</td><td>all 7 fields</td></tr>
+          <tr><td><strong>Total</strong></td><td class="num"><strong>66,807</strong></td><td>across 14 issues</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Example render &mdash; task 8 (full compositional)</h3>
+      <p>One representative row (fixed row 637): system prompt, every observation/action
+         turn, the appended per-step instruction, and the final 7-field
+         <code>&lt;prediction&gt;</code> target.</p>
+      <iframe class="example" sandbox src="assets/task8_example.html"
+              title="task8 full-compositional example" loading="lazy"></iframe>
+      <div class="example-link">
+        <a href="assets/task8_example.html" target="_blank" rel="noopener">open example in new tab &rarr;</a>
+      </div>
+    </section>
+
+    <!-- ENTRIES:END -->
+
+  </div>
+</body>
+</html>
