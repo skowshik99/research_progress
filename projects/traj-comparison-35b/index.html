@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>35B new traj comparison task — Research Progress</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="crumb"><a href="../../index.html">&larr; all projects</a></div>
+
+    <div class="hero">
+      <h1>35B new traj comparison task</h1>
+      <p>A new hindsight action-critique data task: compare a FAILED solver
+         attempt against a SUCCESSFUL one for the SAME SWE-bench-Verified issue,
+         and mine per-step <em>corrections</em> (wrong action &rarr; better bash
+         command + reasoning) with a Qwen3.5-35B-A3B judge.</p>
+    </div>
+
+    <h2>Entries</h2>
+    <!-- ENTRIES:START -->
+    <section class="entry">
+      <header>
+        <h2>First corrections run: xarray-4695, failed seed 0 vs successful seed 6</h2>
+        <span class="badge running">running</span>
+        <span class="date">2026-08-14</span>
+      </header>
+
+      <p>New generator
+         <code>scripts/agents/pope_datagen_clean/datagen/gen_traj_comparison.py</code>
+         reviews the FAILED trajectory one step at a time, showing the judge the
+         full SUCCESSFUL reference and the full FAILED trajectory plus a callout
+         of the step under review. For every step judged <strong>wrong</strong>
+         it emits a correction record: the failed agent's own decision context,
+         the wrong action it took, a better bash command, and the reasoning.
+         This is LLM-only (no container replay), so the proposed better command
+         is not executed/verified.</p>
+
+      <h3>This run</h3>
+      <table class="metrics">
+        <thead>
+          <tr><th>Metric</th><th class="num">Value</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>issue</td><td class="num">xarray-4695</td><td>pydata/xarray</td></tr>
+          <tr><td>pairing</td><td class="num">fail 0 vs succ 6</td><td>same issue, opposite outcomes</td></tr>
+          <tr><td>correction records</td><td class="num">77</td><td>failed steps judged wrong</td></tr>
+          <tr><td>rendered step range</td><td class="num">5&ndash;100</td><td>anchors within ctx-100</td></tr>
+          <tr><td>judge model</td><td class="num">Qwen3.5-35B-A3B</td><td>thinking off, temp 0.0, pp 1.5</td></tr>
+          <tr><td>max context steps</td><td class="num">100</td><td>served max_model_len 150k</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Corrections viewer (xarray-4695, fail 0 vs succ 6)</h3>
+      <iframe class="example" sandbox src="assets/index.html"
+              title="traj-comparison corrections index" loading="lazy"></iframe>
+      <div class="example-link">
+        <a href="assets/index.html" target="_blank" rel="noopener">open corrections index in new tab &rarr;</a>
+        &middot;
+        <a href="assets/subset_first_20.html" target="_blank" rel="noopener">first-20 subset &rarr;</a>
+      </div>
+
+      <p>The index lists every wrong step with its taken command, the judge's
+         better command, and a reasoning preview; each <code>step_NNN.html</code>
+         shows the full decision context and critique for that step. (Link
+         navigation inside the sandboxed embed is limited &mdash; use
+         &ldquo;open in new tab&rdquo; for the clickable index.)</p>
+    </section>
+    <!-- ENTRIES:END -->
+
+  </div>
+</body>
+</html>
