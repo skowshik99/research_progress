@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport"
+content="width=device-width,initial-scale=1"><title>Model trajectory · pydata__xarray-6992 · call 1</title>
+<style>
+:root{color-scheme:light;--bg:#f6f8fa;--panel:#fff;--line:#d0d7de;
+--text:#1f2328;--muted:#59636e;--system:#9a6700;--developer:#953800;--user:#0969da;
+--assistant:#1a7f37;--tool:#bc4c00;--reason:#8250df;--raw:#57606a;
+--bad:#cf222e}*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5
+-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:1600px;
+margin:auto;padding:24px 20px 80px}.header{position:sticky;top:0;z-index:10;
+margin:-24px -20px 18px;padding:15px 20px 12px;background:rgba(246,248,250,.97);
+border-bottom:1px solid var(--line)}h1{font-size:23px;margin:0 0 4px}.meta{
+color:var(--muted);overflow-wrap:anywhere}.legend,.toc{display:flex;flex-wrap:wrap;
+gap:8px;margin-top:9px}.legend span{font-weight:650}.toc a,.button{padding:3px 8px;
+border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--user);
+text-decoration:none;font-size:12px}.system-key{color:var(--system)}.developer-key{
+color:var(--developer)}.user-key{
+color:var(--user)}.assistant-key{color:var(--assistant)}.tool-key{color:var(--tool)}
+.reason-key{color:var(--reason)}.section{margin:20px 0}.call{background:var(--panel);
+border:1px solid var(--line);border-radius:11px;margin:18px 0;overflow:hidden;
+scroll-margin-top:180px}.call.invalid{border-color:var(--bad);border-width:2px}
+.call-head{display:flex;justify-content:space-between;gap:12px;padding:9px 13px;
+background:#f0f3f6;border-bottom:1px solid var(--line)}.call-title{font-weight:750}
+.call-meta{font-size:11px;color:var(--muted);text-align:right}.message{margin:11px 13px;
+border:1px solid var(--line);border-left-width:5px;border-radius:8px;overflow:hidden}
+.message-head{padding:6px 10px;font-size:11px;text-transform:uppercase;
+letter-spacing:.06em;font-weight:750;background:#f6f8fa;border-bottom:1px solid var(--line)}
+.message.system{border-left-color:var(--system)}.message.system .message-head{color:var(--system)}
+.message.developer{border-left-color:var(--developer)}.message.developer .message-head{color:var(--developer)}
+.message.user{border-left-color:var(--user)}.message.user .message-head{color:var(--user)}
+.message.assistant{border-left-color:var(--assistant)}.message.assistant .message-head{color:var(--assistant)}
+.message.tool{border-left-color:var(--tool);background:#fff8f2}.message.tool .message-head{color:var(--tool)}
+.message.reasoning{border-left-color:var(--reason);background:#fbf7ff}.message.reasoning .message-head{color:var(--reason)}
+.message.raw{border-left-color:var(--raw)}.message.raw .message-head{color:var(--raw)}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;margin:0;
+padding:10px 12px;background:#fff;font:12px/1.48 ui-monospace,SFMono-Regular,
+Menlo,Consolas,monospace}.reasoning pre{background:#fdfaff}.tool pre{background:#fffaf5}
+.empty{padding:10px 12px;color:var(--muted);font-style:italic}details{margin:10px 13px;
+border:1px solid var(--line);border-radius:8px;background:#fff}summary{cursor:pointer;
+padding:8px 11px;font-weight:700;background:#f6f8fa}details>.inside{padding:1px 0 10px}
+.result{padding:13px;border:2px solid var(--bad);border-radius:10px;background:#fff}
+.turn-list{padding:0;list-style:none}.turn-list li{display:flex;gap:12px;align-items:
+baseline;padding:8px 10px;border-bottom:1px solid var(--line)}.turn-list a{min-width:
+72px;font-weight:700}.turn-summary{color:var(--muted);font-family:ui-monospace,
+SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}.page-nav{display:flex;
+justify-content:space-between;align-items:center;gap:10px;margin:14px 0}.page-nav .group{
+display:flex;gap:8px}.disabled{color:var(--muted);padding:3px 8px}
+.choice{margin:12px 13px;border:1px solid var(--line);border-radius:9px;
+overflow:hidden}.choice.selected{border:3px solid var(--assistant)}.choice-head{
+padding:7px 10px;background:#f0f3f6;font-weight:750}.choice.selected .choice-head{
+background:#dafbe1;color:var(--assistant)}
+@media(max-width:700px){.header{position:static}.call{scroll-margin-top:10px}
+.call-head{display:block}.call-meta{text-align:left}}
+</style></head><body><main class="wrap">
+<header><h1>Model trajectory · pydata__xarray-6992 · model call 1 of 171</h1>
+<div class="meta">snapshot: public trajectory archive · pydata__xarray-6992/seed_4<br>context: model_context_2026-09-27T23-57-02.265545Z.json ·
+finish=tool_calls · input=2619 ·
+output=303<br>trajectory step=
+1 · call kind=ordinary selected · selected choice=
+0</div></header>
+<nav class="page-nav"><div class="group"><span class="disabled">← Previous</span><a class="button" href="index.html">Call index</a></div><div class="group"><a class="button" rel="next" href="turn-002.html">Next →</a></div></nav>
+<article class="call"><div class="call-head"><span class="call-title">Model call 1</span>
+<span class="call-meta">Only this model call is embedded in this page</span></div>
+<section class="section"><h2>New model input</h2><section class="message system"><div class="message-head">New model input · system</div><pre>You are a coding agent working inside a software repository at `/testbed`.
+
+Solve the user&#x27;s coding task completely and correctly. Use the `shell` tool to inspect the repository, edit production code, and run tests.
+
+## Required first action
+
+Your first shell command must be exactly this command. Do not shorten it. Do not replace it with a Git-history command.
+
+`cd /testbed &amp;&amp; { git diff -- xarray/tests/test_dataarray.py xarray/tests/test_dataset.py xarray/tests/test_groupby.py; python -m pytest --collect-only -q xarray/tests/test_dataarray.py::TestDataArray::test_reset_index xarray/tests/test_dataset.py::TestDataset::test_reset_index xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_dims xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert xarray/tests/test_groupby.py::test_groupby_drops_nans &gt; /tmp/issue6992_gold_tests.txt; python -m pytest -q --tb=no xarray/tests/test_dataarray.py::TestDataArray::test_reset_index xarray/tests/test_dataset.py::TestDataset::test_reset_index xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_dims xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert xarray/tests/test_groupby.py::test_groupby_drops_nans; status=$?; echo &#x27;AUTHORITATIVE ISSUE 6992 TESTS (12 COLLECTED CASES):&#x27;; cat /tmp/issue6992_gold_tests.txt; exit $status; }`
+
+This command shows the authoritative test changes and runs all 12 test cases that the fix must pass. The parameterized `test_reset_index_drop_convert` selector expands to eight cases. Together with the other four selectors, this is exactly 12 cases. Treat the final collected node list as the required target set.
+
+## Work rules
+
+- For each action, make exactly one `shell` tool call. Wait for its result before choosing the next action.
+- Each shell call runs in a new subshell. Use `cd /testbed &amp;&amp; ...` for repository commands.
+- The test changes are evaluator-owned. Do not edit, delete, revert, or replace any test file.
+- Do not use `git reset`, `git clean`, `git checkout`, `git restore`, or `git stash` in a way that removes the test changes or changes the base commit.
+- Use the first test result to identify every failing behavior. Read the relevant production code before editing it.
+- Make the smallest robust production-code fix. Do not hard-code expected test values.
+- Re-run the complete authoritative 12-case test set after edits. A subset, a custom script, or nearby tests are not a substitute.
+- Run relevant regression tests before submission.
+- Treat command output as evidence. If it contradicts your current idea, revise the idea.
+- Do not repeat an unchanged command unless relevant code or inputs changed.
+- Do not claim that all tests pass unless the complete authoritative 12-case command passed after the final edit.
+
+When the task is complete and verified, summarize the changes and validation. In the same response, make exactly one `shell` tool call whose command is exactly `echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT`. Do not combine that command with another command. The harness stops after this submission call.
+</pre></section><section class="message user"><div class="message-head">New model input · user</div><pre>Please solve this issue: index refactor: more `_coord_names` than `_variables` on Dataset
+### What happened?
+
+`xr.core.dataset.DataVariables` assumes that everything that is in `ds._dataset._variables` and not in `self._dataset._coord_names` is a &quot;data variable&quot;. However, since the index refactor we can end up with more `_coord_names` than `_variables` which breaks a number of stuff (e.g. the repr).
+
+### What did you expect to happen?
+
+Well it seems this assumption is now wrong.
+
+### Minimal Complete Verifiable Example
+
+```Python
+ds = xr.Dataset(coords={&quot;a&quot;: (&quot;x&quot;, [1, 2, 3]), &quot;b&quot;: (&quot;x&quot;, [&#x27;a&#x27;, &#x27;b&#x27;, &#x27;c&#x27;])})
+ds.set_index(z=[&#x27;a&#x27;, &#x27;b&#x27;]).reset_index(&quot;z&quot;, drop=True)
+```
+
+
+### MVCE confirmation
+
+- [ ] Minimal example — the example is as focused as reasonably possible to demonstrate the underlying issue in xarray.
+- [ ] Complete example — the example is self-contained, including all data and the text of any traceback.
+- [ ] Verifiable example — the example copy &amp; pastes into an IPython prompt or [Binder notebook](https://mybinder.org/v2/gh/pydata/xarray/main?urlpath=lab/tree/doc/examples/blank_template.ipynb), returning the result.
+- [ ] New issue — a search of GitHub Issues suggests this is not a duplicate.
+
+### Relevant log output
+
+```Python
+ValueError: __len__() should return &gt;= 0
+```
+
+
+### Anything else we need to know?
+
+The error comes from here
+
+https://github.com/pydata/xarray/blob/63ba862d03c8d0cd8b44d2071bc360e9fed4519d/xarray/core/dataset.py#L368
+
+Bisected to #5692 - which probably does not help too much.
+
+
+### Environment
+
+&lt;details&gt;
+
+
+
+&lt;/details&gt;
+
+
+
+Repository: pydata/xarray
+
+You can use the `shell` tool to inspect the repository and edit files to implement the necessary changes.
+
+## Initial Repository State
+
+The harness has already applied the authoritative test patch for this issue to the working tree. These pre-existing test changes describe behavior that the solution must satisfy.
+
+- Inspect the initial working-tree diff and identify the tests added or modified by the harness.
+- Treat those test-file changes as read-only, evaluator-owned inputs. Do not edit, delete, revert, or replace them.
+- Do not use `git reset`, `git clean`, `git checkout`, `git restore`, or `git stash` in a way that can remove the pre-applied tests or change the checked-out base commit. Use read-only commands such as `git show`, `git log`, and `git diff` when examining history.
+- Run every relevant test case added or modified by the test patch. Passing neighboring existing tests or a custom reproduction is not a substitute.
+- Before submitting, confirm that the authoritative tests are still present, that they pass, and that relevant existing tests have not regressed.
+
+
+## Mandatory first command for issue 6992
+
+The harness has already applied the evaluator-owned test patch. You must begin by showing that patch, collecting the exact target cases, and running the complete target set.
+
+Your first `shell` tool call must use this exact command:
+
+`cd /testbed &amp;&amp; { git diff -- xarray/tests/test_dataarray.py xarray/tests/test_dataset.py xarray/tests/test_groupby.py; python -m pytest --collect-only -q xarray/tests/test_dataarray.py::TestDataArray::test_reset_index xarray/tests/test_dataset.py::TestDataset::test_reset_index xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_dims xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert xarray/tests/test_groupby.py::test_groupby_drops_nans &gt; /tmp/issue6992_gold_tests.txt; python -m pytest -q --tb=no xarray/tests/test_dataarray.py::TestDataArray::test_reset_index xarray/tests/test_dataset.py::TestDataset::test_reset_index xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_dims xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert xarray/tests/test_groupby.py::test_groupby_drops_nans; status=$?; echo &#x27;AUTHORITATIVE ISSUE 6992 TESTS (12 COLLECTED CASES):&#x27;; cat /tmp/issue6992_gold_tests.txt; exit $status; }`
+
+The final list printed by that command is the authoritative set of 12 test cases. All 12 must pass after your production-code fix. Do not submit after running only a subset.
+
+## Recommended Workflow
+
+Work through the issue step by step so that evidence from each tool result informs the next action:
+
+1. Analyze the codebase by locating and reading the relevant implementation and tests.
+2. Reproduce the reported behavior with a focused repository test or a small temporary script.
+3. Make the smallest source-code change that addresses the root cause.
+4. Re-run the same focused reproduction after the edit.
+5. Run the relevant repository tests and useful regression checks. Resolve every failure caused by the patch.
+6. Only after the fix is verified, summarize the changes and validation. In the same response, make one `shell` tool call whose command is exactly `echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT`. Do not combine it with another command.
+
+## Important Rules
+
+1. For each action, make exactly one `shell` tool call. Its `command` argument may contain one shell program, including pipelines, redirects, heredocs, or commands connected with `&amp;&amp;` or `||`.
+2. Wait for the tool result before deciding what to do next. Prefer focused commands whose useful output will not be lost to output truncation.
+3. Every tool call runs in a new subshell. Directory and environment-variable changes do not persist, so use `cd /testbed &amp;&amp; ...` and set needed environment variables in the same command.
+4. A custom script passing is not sufficient if relevant repository tests fail. Do not submit until the changed behavior and relevant regressions have been tested successfully.
+
+## Useful Shell Command Examples
+
+Inspect a focused file range:
+```bash
+cd /testbed &amp;&amp; nl -ba path/to/file.py | sed -n &#x27;10,80p&#x27;
+```
+
+Search for a symbol:
+```bash
+cd /testbed &amp;&amp; grep -R -n &quot;symbol_name&quot; package tests | head -50
+```
+
+Create a temporary reproduction without adding a debug file to the repository patch:
+```bash
+cat &lt;&lt;&#x27;EOF&#x27; &gt; /tmp/reproduce.py
+print(&quot;focused reproduction&quot;)
+EOF
+cd /testbed &amp;&amp; python /tmp/reproduce.py
+```
+
+Edit a file with a short Python script:
+```bash
+cd /testbed &amp;&amp; python - &lt;&lt;&#x27;PY&#x27;
+from pathlib import Path
+path = Path(&quot;path/to/file.py&quot;)
+text = path.read_text()
+path.write_text(text.replace(&quot;old text&quot;, &quot;new text&quot;, 1))
+PY
+```
+
+Run a focused test and inspect the patch:
+```bash
+cd /testbed &amp;&amp; python -m pytest path/to/test_file.py::test_name -xvs
+```
+```bash
+cd /testbed &amp;&amp; git diff --check &amp;&amp; git diff
+```
+
+&lt;system_information&gt;
+Linux   x86_64
+&lt;/system_information&gt;</pre></section></section>
+<section class="section"><h2>Model response choices</h2><section class="message reasoning"><div class="message-head">Model response · reasoning</div><pre>Let me start by running the mandatory first command to see the test changes and run all 12 test cases.
+</pre></section><section class="message assistant"><div class="message-head">Model response · assistant</div><div class="empty">content: null</div><pre>{
+  &quot;tool_calls&quot;: [
+    {
+      &quot;function&quot;: {
+        &quot;arguments&quot;: &quot;{\&quot;command\&quot;: \&quot;cd /testbed &amp;&amp; { git diff -- xarray/tests/test_dataarray.py xarray/tests/test_dataset.py xarray/tests/test_groupby.py; python -m pytest --collect-only -q xarray/tests/test_dataarray.py::TestDataArray::test_reset_index xarray/tests/test_dataset.py::TestDataset::test_reset_index xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_dims xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert xarray/tests/test_groupby.py::test_groupby_drops_nans &gt; /tmp/issue6992_gold_tests.txt; python -m pytest -q --tb=no xarray/tests/test_dataarray.py::TestDataArray::test_reset_index xarray/tests/test_dataset.py::TestDataset::test_reset_index xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_dims xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert xarray/tests/test_groupby.py::test_groupby_drops_nans; status=$?; echo &#x27;AUTHORITATIVE ISSUE 6992 TESTS (12 COLLECTED CASES):&#x27;; cat /tmp/issue6992_gold_tests.txt; exit $status; }\&quot;}&quot;,
+        &quot;name&quot;: &quot;shell&quot;
+      },
+      &quot;id&quot;: &quot;chatcmpl-tool-8228add700891c63&quot;,
+      &quot;type&quot;: &quot;function&quot;
+    }
+  ],
+  &quot;function_call&quot;: null,
+  &quot;provider_specific_fields&quot;: {
+    &quot;refusal&quot;: null,
+    &quot;reasoning&quot;: &quot;Let me start by running the mandatory first command to see the test changes and run all 12 test cases.\n&quot;,
+    &quot;reasoning_content&quot;: &quot;Let me start by running the mandatory first command to see the test changes and run all 12 test cases.\n&quot;
+  }
+}</pre></section></section>
+<section class="section"><h2>Environment result</h2><section class="message tool"><div class="message-head">Executed command and observation</div><pre>$ cd /testbed &amp;&amp; { git diff -- xarray/tests/test_dataarray.py xarray/tests/test_dataset.py xarray/tests/test_groupby.py; python -m pytest --collect-only -q xarray/tests/test_dataarray.py::TestDataArray::test_reset_index xarray/tests/test_dataset.py::TestDataset::test_reset_index xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_dims xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert xarray/tests/test_groupby.py::test_groupby_drops_nans &gt; /tmp/issue6992_gold_tests.txt; python -m pytest -q --tb=no xarray/tests/test_dataarray.py::TestDataArray::test_reset_index xarray/tests/test_dataset.py::TestDataset::test_reset_index xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_dims xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert xarray/tests/test_groupby.py::test_groupby_drops_nans; status=$?; echo &#x27;AUTHORITATIVE ISSUE 6992 TESTS (12 COLLECTED CASES):&#x27;; cat /tmp/issue6992_gold_tests.txt; exit $status; }
+returncode: 1
+
+diff --git a/xarray/tests/test_dataarray.py b/xarray/tests/test_dataarray.py
+index f27a6c07..3b69f8e8 100644
+--- a/xarray/tests/test_dataarray.py
++++ b/xarray/tests/test_dataarray.py
+@@ -2007,7 +2007,6 @@ class TestDataArray:
+     def test_reset_index(self) -&gt; None:
+         indexes = [self.mindex.get_level_values(n) for n in self.mindex.names]
+         coords = {idx.name: (&quot;x&quot;, idx) for idx in indexes}
+-        coords[&quot;x&quot;] = (&quot;x&quot;, self.mindex.values)
+         expected = DataArray(self.mda.values, coords=coords, dims=&quot;x&quot;)
+ 
+         obj = self.mda.reset_index(&quot;x&quot;)
+@@ -2018,16 +2017,19 @@ class TestDataArray:
+         assert len(obj.xindexes) == 0
+         obj = self.mda.reset_index([&quot;x&quot;, &quot;level_1&quot;])
+         assert_identical(obj, expected, check_default_indexes=False)
+-        assert list(obj.xindexes) == [&quot;level_2&quot;]
++        assert len(obj.xindexes) == 0
+ 
++        coords = {
++            &quot;x&quot;: (&quot;x&quot;, self.mindex.droplevel(&quot;level_1&quot;)),
++            &quot;level_1&quot;: (&quot;x&quot;, self.mindex.get_level_values(&quot;level_1&quot;)),
++        }
+         expected = DataArray(self.mda.values, coords=coords, dims=&quot;x&quot;)
+         obj = self.mda.reset_index([&quot;level_1&quot;])
+         assert_identical(obj, expected, check_default_indexes=False)
+-        assert list(obj.xindexes) == [&quot;level_2&quot;]
+-        assert type(obj.xindexes[&quot;level_2&quot;]) is PandasIndex
++        assert list(obj.xindexes) == [&quot;x&quot;]
++        assert type(obj.xindexes[&quot;x&quot;]) is PandasIndex
+ 
+-        coords = {k: v for k, v in coords.items() if k != &quot;x&quot;}
+-        expected = DataArray(self.mda.values, coords=coords, dims=&quot;x&quot;)
++        expected = DataArray(self.mda.values, dims=&quot;x&quot;)
+         obj = self.mda.reset_index(&quot;x&quot;, drop=True)
+         assert_identical(obj, expected, check_default_indexes=False)
+ 
+@@ -2038,14 +2040,16 @@ class TestDataArray:
+         # single index
+         array = DataArray([1, 2], coords={&quot;x&quot;: [&quot;a&quot;, &quot;b&quot;]}, dims=&quot;x&quot;)
+         obj = array.reset_index(&quot;x&quot;)
+-        assert_identical(obj, array, check_default_indexes=False)
++  </pre></section></section>
+<details><summary>Request settings and tool schema (messages omitted)</summary>
+<div class="inside"><pre>{
+  &quot;model&quot;: &quot;qwen35_9b_base_issue6992_exact_gold_tests_10seeds_v2_ctx260k&quot;,
+  &quot;max_tokens&quot;: 8192,
+  &quot;temperature&quot;: 0.6,
+  &quot;top_p&quot;: 0.95,
+  &quot;tools&quot;: [
+    {
+      &quot;type&quot;: &quot;function&quot;,
+      &quot;function&quot;: {
+        &quot;name&quot;: &quot;shell&quot;,
+        &quot;description&quot;: &quot;Execute one shell command in the coding repository. Use it to inspect files, edit code, and run tests.&quot;,
+        &quot;parameters&quot;: {
+          &quot;type&quot;: &quot;object&quot;,
+          &quot;properties&quot;: {
+            &quot;command&quot;: {
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;description&quot;: &quot;The shell command to execute.&quot;
+            }
+          },
+          &quot;required&quot;: [
+            &quot;command&quot;
+          ],
+          &quot;additionalProperties&quot;: false
+        }
+      }
+    }
+  ],
+  &quot;tool_choice&quot;: &quot;auto&quot;,
+  &quot;parallel_tool_calls&quot;: false,
+  &quot;extra_body&quot;: {
+    &quot;chat_template_kwargs&quot;: {
+      &quot;enable_thinking&quot;: true
+    },
+    &quot;seed&quot;: 4,
+    &quot;presence_penalty&quot;: 1.5,
+    &quot;top_k&quot;: 20,
+    &quot;min_p&quot;: 0.0,
+    &quot;repetition_penalty&quot;: 1.0
+  }
+}</pre></div></details>
+<details><summary>Call timestamps and top-level fields</summary>
+<div class="inside"><pre>{
+  &quot;step&quot;: 1,
+  &quot;response_schema&quot;: null,
+  &quot;start_time&quot;: &quot;2026-09-27 19:57:05.356979&quot;,
+  &quot;end_time&quot;: &quot;2026-09-27 19:57:18.435544&quot;
+}</pre></div></details>
+</article><nav class="page-nav"><div class="group"><span class="disabled">← Previous</span><a class="button" href="index.html">Call index</a></div><div class="group"><a class="button" rel="next" href="turn-002.html">Next →</a></div></nav>
+<p class="meta">The cumulative exact request is intentionally not embedded here;
+it remains available in model_context_2026-09-27T23-57-02.265545Z.json.</p>
+</main></body></html>

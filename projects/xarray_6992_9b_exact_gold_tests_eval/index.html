@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>xarray-6992 · 9B exact-gold-tests eval — Research Progress</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="crumb"><a href="../../index.html">&larr; all projects</a></div>
+
+    <div class="hero">
+      <h1>xarray-6992 · Qwen3.5-9B exact-gold-tests evaluation</h1>
+      <p>The three highest-scoring base-model Qwen-tool trajectories from the
+         10-seed exact-gold-tests evaluation. Each viewer is split into one page
+         per model call and preserves the model-facing history, retained reasoning,
+         shell action, and environment observation.</p>
+    </div>
+
+    <h2>Top trajectories</h2>
+    <!-- ENTRIES:START -->
+
+    <section class="entry">
+      <header>
+        <h2>Best three of ten seeds</h2>
+        <span class="badge done">done</span>
+        <span class="date">2026-10-03</span>
+      </header>
+
+      <p>Ranking uses the authoritative final failing-to-passing test score.
+         None of the ten seeds solved all 12 target cases.</p>
+
+      <table class="metrics">
+        <thead>
+          <tr><th>Rank</th><th>Seed</th><th class="num">Final F2P</th><th class="num">Executed steps</th><th>Trajectory</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td><td>4</td><td class="num">4/12</td><td class="num">165</td>
+            <td><a href="assets/seed_4/index.html" target="_blank" rel="noopener">open paginated viewer &rarr;</a></td>
+          </tr>
+          <tr>
+            <td>2</td><td>5</td><td class="num">3/12</td><td class="num">187</td>
+            <td><a href="assets/seed_5/index.html" target="_blank" rel="noopener">open paginated viewer &rarr;</a></td>
+          </tr>
+          <tr>
+            <td>3</td><td>9</td><td class="num">3/12</td><td class="num">127</td>
+            <td><a href="assets/seed_9/index.html" target="_blank" rel="noopener">open paginated viewer &rarr;</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The exact-test setup presents and executes the authoritative 12-case
+         command at the start of each rollout. These pages are static snapshots;
+         no model endpoint or repository container is needed to inspect them.</p>
+    </section>
+
+    <!-- ENTRIES:END -->
+
+  </div>
+</body>
+</html>
