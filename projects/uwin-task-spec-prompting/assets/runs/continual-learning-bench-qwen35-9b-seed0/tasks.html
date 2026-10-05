@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Final study tasks · pydata/xarray</title>
+  <style>
+    :root{color-scheme:light;--bg:#f6f8fa;--panel:#fff;--line:#d0d7de;
+    --text:#1f2328;--muted:#59636e;--blue:#0969da;--green:#1a7f37}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);
+    font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    main{max-width:1050px;margin:auto;padding:28px 20px 70px}a{color:var(--blue)}
+    header{margin-bottom:22px}h1{font-size:25px;margin:8px 0 4px}header p{color:var(--muted);margin:0}
+    .back{display:inline-block;padding:4px 9px;border:1px solid var(--line);border-radius:6px;
+    background:#fff;text-decoration:none}.task{background:var(--panel);border:1px solid var(--line);
+    border-radius:11px;padding:18px 20px;margin:16px 0}.task h2{font-size:18px;margin:0 0 4px}
+    .type{color:var(--green);font-weight:700;font-size:12px;text-transform:uppercase;
+    letter-spacing:.04em}.task h3{font-size:13px;margin:15px 0 4px;color:var(--muted)}
+    .task p{margin:5px 0}.task ul{margin:5px 0;padding-left:22px}.task li{margin:3px 0}
+    code{background:#f0f3f6;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+    .goal{border-left:4px solid var(--green);padding-left:10px}
+  </style>
+</head>
+<body><main>
+  <a class="back" href="index.html">&larr; trajectory viewer</a>
+  <header>
+    <h1>Final study tasks</h1>
+    <p>Qwen3.5-9B · pydata/xarray · issue-image base commit · seed 0</p>
+  </header>
+
+  <article class="task">
+    <div class="type">Behavior trace</div>
+    <h2>1. File I/O and Backend API</h2>
+    <p>Trace how <code>open_dataset()</code> handles file path resolution and engine selection. Start from <code>xarray/backends/api.py</code> and follow the code path to understand how the engine parameter is processed, how file paths are normalized, and how the appropriate backend store is selected. Document the complete call chain and the conditions under which different engines such as netcdf4, scipy, and h5netcdf are chosen.</p>
+    <h3>Starting paths</h3>
+    <ul><li><code>xarray/backends/api.py</code></li><li><code>xarray/backends/common.py</code></li><li><code>xarray/backends/plugins.py</code></li></ul>
+    <h3>Deliverables</h3>
+    <ul><li>A diagram or description of the call chain from open_dataset to backend store creation</li><li>Documentation of engine selection logic and conditions</li><li>A list of all engine-related parameters and their defaults</li></ul>
+    <h3>Knowledge goal</h3>
+    <p class="goal">Understand how xarray handles file I/O, engine selection, and path resolution for different file formats.</p>
+  </article>
+
+  <article class="task">
+    <div class="type">API contract</div>
+    <h2>2. Core Dataset API</h2>
+    <p>Investigate the <code>Dataset.sel()</code> method's coordinate matching behavior. Examine <code>xarray/core/dataset.py</code> to understand how <code>sel()</code> handles different coordinate types such as scalar labels, arrays, and datetime indices; how it performs label-based versus positional indexing; and what happens with multi-dimensional coordinates. Document the method's assumptions about coordinate names, dimension names, and coordinate types.</p>
+    <h3>Starting paths</h3>
+    <ul><li><code>xarray/core/dataset.py</code></li><li><code>xarray/core/variable.py</code></li><li><code>xarray/core/indexes.py</code></li></ul>
+    <h3>Deliverables</h3>
+    <ul><li>Documentation of sel() parameter contracts for dimensions, labels, method, and tolerance</li><li>A list of supported coordinate types and indexing modes</li><li>An explanation of how coordinate matching works for different data types</li></ul>
+    <h3>Knowledge goal</h3>
+    <p class="goal">Understand the complete API contract for <code>Dataset.sel()</code>, including edge cases and coordinate matching behavior.</p>
+  </article>
+
+  <article class="task">
+    <div class="type">Cross module</div>
+    <h2>3. GroupBy Operations and I/O</h2>
+    <p>Investigate how groupby operations interact with backends when saving results. Trace the code path from <code>xarray/core/groupby.py</code> through to the backends when using methods such as <code>to_netcdf()</code> or <code>save_mfdataset()</code> on a groupby object. Identify what happens to groupby metadata such as groups and bin edges during serialization and whether this information is preserved in the output files.</p>
+    <h3>Starting paths</h3>
+    <ul><li><code>xarray/core/groupby.py</code></li><li><code>xarray/backends/api.py</code></li><li><code>xarray/core/concat.py</code></li></ul>
+    <h3>Deliverables</h3>
+    <ul><li>A diagram of how groupby results are serialized to different backends</li><li>Documentation of what groupby metadata is preserved during I/O</li><li>A list of groupby-specific attributes that may be lost during serialization</li></ul>
+    <h3>Knowledge goal</h3>
+    <p class="goal">Understand the interaction between groupby operations and file I/O, including metadata preservation.</p>
+  </article>
+
+  <article class="task">
+    <div class="type">Edge case</div>
+    <h2>4. Numerical Reductions and NaN Handling</h2>
+    <p>Investigate how NaN values are handled in different reduction operations. Examine <code>xarray/core/_reductions.py</code> to understand the behavior of <code>mean()</code>, <code>sum()</code>, <code>std()</code>, <code>var()</code>, and other reductions when NaN values are present. Document how options such as <code>skipna</code> and <code>keep_attrs</code> affect results, and identify edge cases where NaN propagation might be unexpected.</p>
+    <h3>Starting paths</h3>
+    <ul><li><code>xarray/core/_reductions.py</code></li><li><code>xarray/core/ops.py</code></li><li><code>xarray/core/common.py</code></li></ul>
+    <h3>Deliverables</h3>
+    <ul><li>Documentation of NaN handling behavior for each reduction operation</li><li>A list of edge cases where NaN propagation differs from expectations</li><li>An explanation of how skipna and keep_attrs interact</li></ul>
+    <h3>Knowledge goal</h3>
+    <p class="goal">Understand NaN handling semantics across reduction operations and identify potential pitfalls.</p>
+  </article>
+
+  <article class="task">
+    <div class="type">Test design</div>
+    <h2>5. Concatenation and Merge Operations</h2>
+    <p>Design focused tests for edge cases in <code>concat()</code> when combining DataArrays with mismatched coordinates. Consider arrays with different index types, overlapping but differently named coordinates, and different dtypes for the same dimension. Create test cases that expose issues with coordinate alignment, dimension naming, and data type preservation.</p>
+    <h3>Starting paths</h3>
+    <ul><li><code>xarray/core/concat.py</code></li><li><code>xarray/tests/test_concat.py</code></li><li><code>xarray/tests/test_merge.py</code></li></ul>
+    <h3>Deliverables</h3>
+    <ul><li>A set of test cases covering coordinate mismatch scenarios</li><li>Expected behavior documentation for each test case</li><li>A list of coordinate-compatibility assumptions that the tests should verify</li></ul>
+    <h3>Knowledge goal</h3>
+    <p class="goal">Understand the contract for coordinate handling in <code>concat()</code> and identify testing gaps.</p>
+  </article>
+
+  <article class="task">
+    <div class="type">Small change</div>
+    <h2>6. Documentation and Developer Experience</h2>
+    <p>Improve the docstring for <code>apply_ufunc()</code> in <code>xarray/core/computation.py</code>. Add examples showing common use cases, clarify the distinction between <code>input_core_dims</code> and <code>output_core_dims</code>, document the behavior of <code>exclude_dims</code>, and provide examples for dask arrays versus NumPy arrays. The docstring should be self-contained and useful for new users.</p>
+    <h3>Starting paths</h3>
+    <ul><li><code>xarray/core/computation.py</code></li><li><code>xarray/tests/test_computation.py</code></li></ul>
+    <h3>Deliverables</h3>
+    <ul><li>An improved docstring with examples for apply_ufunc()</li><li>A list of documented common use cases</li><li>Clarification of complex parameter interactions</li></ul>
+    <h3>Knowledge goal</h3>
+    <p class="goal">Improve the documentation for <code>apply_ufunc()</code> so users can understand this complex API.</p>
+  </article>
+
+  <article class="task">
+    <div class="type">Behavior trace</div>
+    <h2>7. Alignment Mechanism</h2>
+    <p>Trace the alignment mechanism between DataArrays when performing operations. Start from <code>xarray/core/alignment.py</code> and follow the code path to understand how <code>align()</code> determines which dimensions to broadcast, how missing coordinates are handled, and what happens with outer, inner, left, and exact joins. Document the complete flow from input validation to output generation.</p>
+    <h3>Starting paths</h3>
+    <ul><li><code>xarray/core/alignment.py</code></li><li><code>xarray/core/ops.py</code></li><li><code>xarray/core/variable.py</code></li></ul>
+    <h3>Deliverables</h3>
+    <ul><li>A diagram of the alignment algorithm flow</li><li>Documentation of join-option behavior and when each option is appropriate</li><li>An explanation of how coordinate broadcasting is determined</li></ul>
+    <h3>Knowledge goal</h3>
+    <p class="goal">Understand the complete alignment algorithm and when each join option should be used.</p>
+  </article>
+
+  <article class="task">
+    <div class="type">API contract</div>
+    <h2>8. CF Conventions and Metadata</h2>
+    <p>Investigate CF-conventions encoding in xarray. Examine <code>xarray/conventions.py</code> to understand how CF attributes are encoded and decoded during file I/O. Document the mapping between CF conventions and xarray attributes, identify which CF attributes are automatically preserved, and explain how custom attributes interact with CF conventions. Focus on attributes such as <code>standard_name</code>, <code>units</code>, <code>long_name</code>, and coordinate references.</p>
+    <h3>Starting paths</h3>
+    <ul><li><code>xarray/conventions.py</code></li><li><code>xarray/coding/variables.py</code></li><li><code>xarray/tests/test_conventions.py</code></li></ul>
+    <h3>Deliverables</h3>
+    <ul><li>A mapping of CF conventions to xarray attributes</li><li>Documentation of automatic versus manual attribute preservation</li><li>A list of CF attributes that require special handling</li></ul>
+    <h3>Knowledge goal</h3>
+    <p class="goal">Understand how xarray implements CF conventions and preserves metadata during I/O.</p>
+  </article>
+</main></body></html>
