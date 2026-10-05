@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport"
-content="width=device-width,initial-scale=1"><title>Model trajectory · continual-learning-bench · UWIN Task Spec Prompting · seed 0 · call 13</title>
+content="width=device-width,initial-scale=1"><title>Model trajectory · pydata__xarray-6992 · call 13</title>
 <style>
 :root{color-scheme:light;--bg:#f6f8fa;--panel:#fff;--line:#d0d7de;
 --text:#1f2328;--muted:#59636e;--system:#9a6700;--developer:#953800;--user:#0969da;
@@ -53,377 +53,455 @@ background:#dafbe1;color:var(--assistant)}
 @media(max-width:700px){.header{position:static}.call{scroll-margin-top:10px}
 .call-head{display:block}.call-meta{text-align:left}}
 </style></head><body><main class="wrap">
-<header><h1>Model trajectory · continual-learning-bench · UWIN Task Spec Prompting · seed 0 · model call 13 of 28</h1>
-<div class="meta">snapshot: /data/group_data/maxlab/common_datasets/skowshik/uwin/task_proposals/continual-learning-bench/2026-10-05T22-01-50.091756Z_uwin_task_proposal<br>context: model_context_uwin.json ·
-finish=tool_calls · input=11785 ·
-output=50<br>trajectory step=
+<header><h1>Model trajectory · pydata__xarray-6992 · model call 13 of 22</h1>
+<div class="meta">snapshot: /data/group_data/maxlab/common_datasets/skowshik/uwin/task_proposals/pydata__xarray-6992/2026-10-05T22-25-29.661576Z_uwin_task_proposal<br>context: model_context_2026-10-05T22-25-29.661576Z_uwin_task_proposal.json ·
+finish=tool_calls · input=16715 ·
+output=55<br>trajectory step=
 13 · call kind=ordinary selected · selected choice=
 0</div></header>
 <nav class="page-nav"><div class="group"><a class="button" rel="prev" href="turn-012.html">← Previous</a><a class="button" href="index.html">Call index</a></div><div class="group"><a class="button" rel="next" href="turn-014.html">Next →</a></div></nav>
 <article class="call"><div class="call-head"><span class="call-title">Model call 13</span>
 <span class="call-meta">Only this model call is embedded in this page</span></div>
-<section class="section"><h2>New model input</h2><section class="message reasoning"><div class="message-head">New model input · reasoning</div><pre>Let me look at the interface.py to understand the core interface for tasks and systems.
+<section class="section"><h2>New model input</h2><section class="message reasoning"><div class="message-head">New model input · reasoning</div><pre>Now let me look at the dataset.py file and the backends to understand the API better.
 </pre></section><section class="message assistant"><div class="message-head">New model input · assistant</div><div class="empty">content: null</div><pre>{
   &quot;tool_calls&quot;: [
     {
-      &quot;id&quot;: &quot;chatcmpl-tool-a48d0f1a7240c74b&quot;,
+      &quot;id&quot;: &quot;chatcmpl-tool-b59f5b4e0b6bef01&quot;,
       &quot;type&quot;: &quot;function&quot;,
       &quot;function&quot;: {
         &quot;name&quot;: &quot;shell&quot;,
-        &quot;arguments&quot;: &quot;{\&quot;command\&quot;: \&quot;head -150 src/interface.py\&quot;}&quot;
+        &quot;arguments&quot;: &quot;{\&quot;command\&quot;: \&quot;head -200 xarray/core/dataset.py\&quot;}&quot;
       }
     }
   ]
-}</pre></section><section class="message tool"><div class="message-head">New model input · tool</div><pre>exit_code=0
-&quot;&quot;&quot;
-Generic interface for continual learning benchmark tasks.
-
-This interface supports online learning where systems must efficiently integrate
-new information from interactions and synthesize it with past knowledge.
-&quot;&quot;&quot;
-
+}</pre></section><section class="message tool"><div class="message-head">New model input · tool</div><pre>&lt;returncode&gt;0&lt;/returncode&gt;
+&lt;output&gt;
 from __future__ import annotations
 
+import copy
+import datetime
 import inspect
-import random as _random
-import statistics
-from abc import ABC, abstractmethod
-from dataclasses import asdict, dataclass, field
-from typing import Any, ClassVar, Optional
+import itertools
+import math
+import sys
+import warnings
+from collections import defaultdict
+from html import escape
+from numbers import Number
+from operator import methodcaller
+from os import PathLike
+from typing import (
+    IO,
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Collection,
+    Generic,
+    Hashable,
+    Iterable,
+    Iterator,
+    Literal,
+    Mapping,
+    MutableMapping,
+    Sequence,
+    cast,
+    overload,
+)
 
-from pydantic import BaseModel
+import numpy as np
+import pandas as pd
 
-from .usage import UsageEvent
+from ..coding.calendar_ops import convert_calendar, interp_calendar
+from ..coding.cftimeindex import CFTimeIndex, _parse_array_of_cftime_strings
+from ..plot.dataset_plot import _Dataset_PlotMethods
+from . import alignment
+from . import dtypes as xrdtypes
+from . import duck_array_ops, formatting, formatting_html, ops, utils
+from ._reductions import DatasetReductions
+from .alignment import _broadcast_helper, _get_broadcast_dims_map_common_coords, align
+from .arithmetic import DatasetArithmetic
+from .common import DataWithCoords, _contains_datetime_like_objects, get_chunksizes
+from .computation import unify_chunks
+from .coordinates import DatasetCoordinates, assert_coordinate_consistent
+from .duck_array_ops import datetime_to_numeric
+from .indexes import (
+    Index,
+    Indexes,
+    PandasIndex,
+    PandasMultiIndex,
+    assert_no_index_corrupted,
+    create_default_index_implicit,
+    filter_indexes_from_coords,
+    isel_indexes,
+    remove_unused_levels_categories,
+    roll_indexes,
+)
+from .indexing import is_fancy_indexer, map_index_queries
+from .merge import (
+    dataset_merge_method,
+    dataset_update_method,
+    merge_coordinates_without_align,
+    merge_data_and_coords,
+)
+from .missing import get_clean_interp_index
+from .npcompat import QUANTILE_METHODS, ArrayLike
+from .options import OPTIONS, _get_keep_attrs
+from .pycompat import is_duck_dask_array, sparse_array_type
+from .types import T_Dataset
+from .utils import (
+    Default,
+    Frozen,
+    HybridMappingProxy,
+    OrderedSet,
+    _default,
+    decode_numpy_dict_values,
+    drop_dims_from_indexers,
+    either_dict_or_kwargs,
+    infix_dims,
+    is_dict_like,
+    is_scalar,
+    maybe_wrap_array,
+)
+from .variable import (
+    IndexVariable,
+    Variable,
+    as_variable,
+    broadcast_variables,
+    calculate_dimensions,
+)
+
+if TYPE_CHECKING:
+    from ..backends import AbstractDataStore, ZarrStore
+    from ..backends.api import T_NetcdfEngine, T_NetcdfTypes
+    from .coordinates import Coordinates
+    from .dataarray import DataArray
+    from .groupby import DatasetGroupBy
+    from .merge import CoercibleMapping
+    from .resample import DatasetResample
+    from .rolling import DatasetCoarsen, DatasetRolling
+    from .types import (
+        CFCalendar,
+        CoarsenBoundaryOptions,
+        CombineAttrsOptions,
+        CompatOptions,
+        DatetimeUnitOptions,
+        Ellipsis,
+        ErrorOptions,
+        ErrorOptionsWithWarn,
+        InterpOptions,
+        JoinOptions,
+        PadModeOptions,
+        PadReflectOptions,
+        QueryEngineOptions,
+        QueryParserOptions,
+        ReindexMethodOptions,
+        SideOptions,
+        T_Xarray,
+    )
+    from .weighted import DatasetWeighted
+
+    try:
+        from dask.delayed import Delayed
+    except ImportError:
+        Delayed = None  # type: ignore
+    try:
+        from dask.dataframe import DataFrame as DaskDataFrame
+    except ImportError:
+        DaskDataFrame = None  # type: ignore
 
 
-@dataclass
-class Observation:
+# list of attributes of pd.DatetimeIndex that are ndarrays of time info
+_DATETIMEINDEX_COMPONENTS = [
+    &quot;year&quot;,
+    &quot;month&quot;,
+    &quot;day&quot;,
+    &quot;hour&quot;,
+    &quot;minute&quot;,
+    &quot;second&quot;,
+    &quot;microsecond&quot;,
+    &quot;nanosecond&quot;,
+    &quot;date&quot;,
+    &quot;time&quot;,
+    &quot;dayofyear&quot;,
+    &quot;weekofyear&quot;,
+    &quot;dayofweek&quot;,
+    &quot;quarter&quot;,
+]
+
+
+def _get_virtual_variable(
+    variables, key: Hashable, dim_sizes: Mapping = None
+) -&gt; tuple[Hashable, Hashable, Variable]:
+    &quot;&quot;&quot;Get a virtual variable (e.g., &#x27;time.year&#x27;) from a dict of xarray.Variable
+    objects (if possible)
+
     &quot;&quot;&quot;
-    Observation or feedback from the task about the system&#x27;s previous response.
+    from .dataarray import DataArray
 
-    Attributes:
-        content: Feedback content (e.g., &quot;correct&quot;, &quot;incorrect&quot;, reward signal, outcome)
-        metadata: Optional task-specific metadata (e.g., ground truth, explanation).
-            Standard keys:
-                instance_complete (bool): Whether this observation marks the end of
-                    a task instance (e.g., a poker hand, a coding issue, a problem).
-                    Systems can use this inside `respond()` to decide when to learn
-                    or clear per-instance state. Defaults to True for backward
-                    compatibility.
+    if dim_sizes is None:
+        dim_sizes = {}
+
+    if key in dim_sizes:
+        data = pd.Index(range(dim_sizes[key]), name=key)
+        variable = IndexVariable((key,), data)
+        return key, key, variable
+
+    if not isinstance(key, str):
+        raise KeyError(key)
+
+    split_key = key.split(&quot;.&quot;, 1)
+    if len(split_key) != 2:
+        raise KeyError(key)
+
+    ref_name, var_name = split_key
+    ref_var = variables[ref_name]
+
+    if _contains_datetime_like_objects(ref_var):
+        ref_var = DataArray(ref_var)
+        data = getattr(ref_var.dt, var_name).data
+    else:
+        data = getattr(ref_var, var_name).data
+    virtual_var = Variable(ref_var.dims, data)
+
+    return ref_name, var_name, virtual_var
+
+
+def _assert_empty(args: tuple, msg: str = &quot;%s&quot;) -&gt; None:
+    if args:
+        raise ValueError(msg % args)
+
+
+def _get_chunk(var, chunks):
+    &quot;&quot;&quot;
+    Return map from each dim to chunk sizes, accounting for backend&#x27;s preferred chunks.
     &quot;&quot;&quot;
 
-    content: str
-    instance_complete: bool = True
-    metadata: Optional[dict[str, Any]] = None
-
-
-@dataclass
-class Query:
-    &quot;&quot;&quot;
-    A task turn delivered to the system.
-
-    Attributes:
-        prompt: Natural language task prompt for the current timestep.
-        response_schema: Pydantic BaseModel subclass describing the expected
-            response structure for this turn.
-        feedback: Optional observation about the previous action.
-        instance_id: Stable benchmark instance identifier. Benchmark tasks are
-            expected to populate this on every query.
-        instance_index: Stable canonical benchmark instance index. Benchmark
-            tasks are expected to populate this on every query.
-        metadata: Optional task-specific metadata (e.g., timestep, episode_id, context)
-    &quot;&quot;&quot;
-
-    prompt: str
-    response_schema: type[BaseModel]
-    feedback: Optional[Observation] = None
-    instance_id: Optional[str] = None
-    instance_index: Optional[int] = None
-    metadata: Optional[dict[str, Any]] = None
-
-
-@dataclass
-class Response:
-    &quot;&quot;&quot;
-    System&#x27;s response to an interaction.
-
-    Attributes:
-        action: Structured response as a Pydantic BaseModel instance matching
-            the query&#x27;s response_schema.
-        metadata: Optional system-specific metadata (e.g., confidence, reasoning trace)
-    &quot;&quot;&quot;
-
-    action: BaseModel
-    metadata: Optional[dict[str, Any]] = None
-
-
-@dataclass
-class TaskAgentBrief:
-    &quot;&quot;&quot;Shared benchmark framing that tasks surface to systems up front.&quot;&quot;&quot;
-
-    objective: str
-    instance_unit: str
-    reward_definition: str
-    completion_definition: str
-    constraints: list[str] = field(default_factory=list)
-
-    def to_dict(self) -&gt; dict[str, Any]:
-        return asdict(self)
-
-
-@dataclass
-class InstanceOutcome:
-    &quot;&quot;&quot;Normalized per-instance outcome used for reward-first benchmark math.&quot;&quot;&quot;
-
-    instance_id: str
-    instance_index: int
-    reward: float
-    success: Optional[bool] = None
-    raw_metric_name: Optional[str] = None
-    raw_metric_value: Optional[float] = None
-    raw_metric_higher_is_better: Optional[bool] = None
-    metadata: Optional[dict[str, Any]] = None
-
-
-@dataclass
-class EvalMetrics:
-    &quot;&quot;&quot;
-    Task-internal supplementary evaluation metrics.
-
-    Each task computes its own loss metric (however the task defines it —
-    e.g. regret vs optimal, MAE, error count). The *framework* computes the
-    primary ``mean_gain`` (stateful minus stateless baseline reward) separately
-    from ``InstanceOutcome.reward`` values.
-
-    Attributes:
-        loss_curve: Per-instance loss values (for plotting the learning trajectory).
-            Cumulative loss is derivable as ``sum(loss_curve)``.
-        optimal_performance: Best achievable performance across all instances (task-specific units)
-        actual_performance: Actual performance achieved (task-specific units)
-        extra: Optional task-specific metric breakdown
-    &quot;&quot;&quot;
-
-    loss_curve: list[float]
-    optimal_performance: float
-    actual_performance: float
-    extra: Optional[dict[str, float]] = None
-
-
-@dataclass
-class TaskResult:
-    &quot;&quot;&quot;
-    Final evaluation result for a task.
-
-    Attributes:
-        metrics: Dictionary of additional metrics
-        summary: Human-readable summary of performance
-        eval_metrics: Standardized evaluation metrics (required)
-        instance_outcomes: Per-instance outcomes used to compute score
-    &quot;&quot;&quot;
-
-    metrics: dict[str, Any]
-    summary: str
-    eval_metrics: EvalMetrics
-    instance_outcomes: list[InstanceOutcome] = field(default_factory=list)</pre><pre>{
-  &quot;tool_call_id&quot;: &quot;chatcmpl-tool-a48d0f1a7240c74b&quot;
+&lt;/output&gt;</pre><pre>{
+  &quot;tool_call_id&quot;: &quot;chatcmpl-tool-b59f5b4e0b6bef01&quot;
 }</pre></section></section>
-<section class="section"><h2>Model response choices</h2><section class="message reasoning"><div class="message-head">Model response · reasoning</div><pre>Now let me look at the registry module to understand how tasks and systems are registered.
+<section class="section"><h2>Model response choices</h2><section class="message reasoning"><div class="message-head">Model response · reasoning</div><pre>Now let me check the backends API to understand how file I/O works.
 </pre></section><section class="message assistant"><div class="message-head">Model response · assistant</div><div class="empty">content: null</div><pre>{
   &quot;tool_calls&quot;: [
     {
       &quot;function&quot;: {
-        &quot;arguments&quot;: &quot;{\&quot;command\&quot;: \&quot;cat src/registry.py\&quot;}&quot;,
+        &quot;arguments&quot;: &quot;{\&quot;command\&quot;: \&quot;head -200 xarray/backends/api.py\&quot;}&quot;,
         &quot;name&quot;: &quot;shell&quot;
       },
-      &quot;id&quot;: &quot;chatcmpl-tool-844dd42870c5f5f8&quot;,
+      &quot;id&quot;: &quot;chatcmpl-tool-b33ef5285a0a69cb&quot;,
       &quot;type&quot;: &quot;function&quot;
     }
   ],
   &quot;function_call&quot;: null,
   &quot;provider_specific_fields&quot;: {
-    &quot;reasoning&quot;: &quot;Now let me look at the registry module to understand how tasks and systems are registered.\n&quot;,
+    &quot;reasoning&quot;: &quot;Now let me check the backends API to understand how file I/O works.\n&quot;,
     &quot;refusal&quot;: null,
-    &quot;reasoning_content&quot;: &quot;Now let me look at the registry module to understand how tasks and systems are registered.\n&quot;
+    &quot;reasoning_content&quot;: &quot;Now let me check the backends API to understand how file I/O works.\n&quot;
   }
 }</pre></section></section>
-<section class="section"><h2>Environment result</h2><section class="message tool"><div class="message-head">Executed command and observation</div><pre>$ cat src/registry.py
+<section class="section"><h2>Environment result</h2><section class="message tool"><div class="message-head">Executed command and observation</div><pre>$ head -200 xarray/backends/api.py
 returncode: 0
 
-&quot;&quot;&quot;
-Registry system for dynamically discovering and instantiating systems and tasks.
+from __future__ import annotations
 
-Uses decorators to register classes and introspection to extract parameter metadata.
-&quot;&quot;&quot;
+import os
+from glob import glob
+from io import BytesIO
+from numbers import Number
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Final,
+    Hashable,
+    Iterable,
+    Literal,
+    Mapping,
+    MutableMapping,
+    Sequence,
+    Type,
+    Union,
+    cast,
+    overload,
+)
 
-import importlib
-import inspect
-from functools import lru_cache
-from pathlib import Path
-from typing import Any, Callable, Type, get_type_hints
+import numpy as np
+
+from .. import backends, conventions
+from ..core import indexing
+from ..core.combine import (
+    _infer_concat_order_from_positions,
+    _nested_combine,
+    combine_by_coords,
+)
+from ..core.dataarray import DataArray
+from ..core.dataset import Dataset, _get_chunk, _maybe_chunk
+from ..core.indexes import Index
+from ..core.utils import is_remote_uri
+from . import plugins
+from .common import AbstractDataStore, ArrayWriter, _normalize_path
+from .locks import _get_scheduler
+
+if TYPE_CHECKING:
+    try:
+        from dask.delayed import Delayed
+    except ImportError:
+        Delayed = None  # type: ignore
+    from ..core.types import (
+        CombineAttrsOptions,
+        CompatOptions,
+        JoinOptions,
+        NestedSequence,
+    )
+    from .common import BackendEntrypoint
+
+    T_NetcdfEngine = Literal[&quot;netcdf4&quot;, &quot;scipy&quot;, &quot;h5netcdf&quot;]
+    T_Engine = Union[
+        T_NetcdfEngine,
+        Literal[&quot;pydap&quot;, &quot;pynio&quot;, &quot;pseudonetcdf&quot;, &quot;cfgrib&quot;, &quot;zarr&quot;],
+        Type[BackendEntrypoint],
+        str,  # no nice typing support for custom backends
+        None,
+    ]
+    T_Chunks = Union[int, dict[Any, Any], Literal[&quot;auto&quot;], None]
+    T_NetcdfTypes = Literal[
+        &quot;NETCDF4&quot;, &quot;NETCDF4_CLASSIC&quot;, &quot;NETCDF3_64BIT&quot;, &quot;NETCDF3_CLASSIC&quot;
+    ]
 
 
-# Global registries
-SYSTEMS_REGISTRY: dict[str, Type] = {}
-TASKS_REGISTRY: dict[str, Type] = {}
+DATAARRAY_NAME = &quot;__xarray_dataarray_name__&quot;
+DATAARRAY_VARIABLE = &quot;__xarray_dataarray_variable__&quot;
 
-_SRC_ROOT = Path(__file__).resolve().parent
-_TASKS_ROOT = _SRC_ROOT / &quot;tasks&quot;
-_SYSTEMS_ROOT = _SRC_ROOT / &quot;systems&quot;
-
-
-@lru_cache(maxsize=1)
-def _discover_task_modules() -&gt; dict[str, str]:
-    &quot;&quot;&quot;Discover task modules from `src/tasks/&lt;name&gt;/task.py`.&quot;&quot;&quot;
-    modules: dict[str, str] = {}
-    for path in sorted(_TASKS_ROOT.glob(&quot;*/task.py&quot;)):
-        task_name = path.parent.name
-        modules[task_name] = f&quot;src.tasks.{task_name}.task&quot;
-    return modules
+ENGINES = {
+    &quot;netcdf4&quot;: backends.NetCDF4DataStore.open,
+    &quot;scipy&quot;: backends.ScipyDataStore,
+    &quot;pydap&quot;: backends.PydapDataStore.open,
+    &quot;h5netcdf&quot;: backends.H5NetCDFStore.open,
+    &quot;pynio&quot;: backends.NioDataStore,
+    &quot;pseudonetcdf&quot;: backends.PseudoNetCDFDataStore.open,
+    &quot;cfgrib&quot;: backends.CfGribDataStore,
+    &quot;zarr&quot;: backends.ZarrStore.open_group,
+}
 
 
-@lru_cache(maxsize=1)
-def _discover_system_modules() -&gt; dict[str, str]:
-    &quot;&quot;&quot;Discover system modules from flat files or package directories.&quot;&quot;&quot;
-    modules: dict[str, str] = {}
-    for path in sorted(_SYSTEMS_ROOT.glob(&quot;*.py&quot;)):
-        if path.stem == &quot;__init__&quot; or path.stem.startswith(&quot;_&quot;):
-            continue
-        modules[path.stem] = f&quot;src.systems.{path.stem}&quot;
-    for path in sorted(_SYSTEMS_ROOT.iterdir()):
-        if not path.is_dir():
-            continue
-        if path.name.startswith(&quot;_&quot;) or path.name in {&quot;__pycache__&quot;, &quot;utils&quot;}:
-            continue
-        if not (path / &quot;__init__.py&quot;).exists():
-            continue
-        modules[path.name] = f&quot;src.systems.{path.name}&quot;
-    return modules
+def _get_default_engine_remote_uri() -&gt; Literal[&quot;netcdf4&quot;, &quot;pydap&quot;]:
+    engine: Literal[&quot;netcdf4&quot;, &quot;pydap&quot;]
+    try:
+        import netCDF4  # noqa: F401
+
+        engine = &quot;netcdf4&quot;
+    except ImportError:  # pragma: no cover
+        try:
+            import pydap  # noqa: F401
+
+            engine = &quot;pydap&quot;
+        except ImportError:
+            raise ValueError(
+                &quot;netCDF4 or pydap is required for accessing &quot;
+                &quot;remote datasets via OPeNDAP&quot;
+            )
+    return engine
 
 
-def register_system(name: str) -&gt; Callable:
-    &quot;&quot;&quot;Decorator: register a system class under ``name`` for CLI discovery.&quot;&quot;&quot;
+def _get_default_engine_gz() -&gt; Literal[&quot;scipy&quot;]:
+    try:
+        import scipy  # noqa: F401
 
-    def decorator(cls: Type) -&gt; Type:
-        SYSTEMS_REGISTRY[name] = cls
-        return cls
+        engine: Final = &quot;scipy&quot;
+    except ImportError:  # pragma: no cover
+        raise ValueError(&quot;scipy is required for accessing .gz files&quot;)
+    return engine
 
-    return decorator
+
+def _get_default_engine_netcdf() -&gt; Literal[&quot;netcdf4&quot;, &quot;scipy&quot;]:
+    engine: Literal[&quot;netcdf4&quot;, &quot;scipy&quot;]
+    try:
+        import netCDF4  # noqa: F401
+
+        engine = &quot;netcdf4&quot;
+    except ImportError:  # pragma: no cover
+        try:
+            import scipy.io.netcdf  # noqa: F401
+
+            engine = &quot;scipy&quot;
+        except ImportError:
+            raise ValueError(
+                &quot;cannot read or write netCDF files without &quot;
+                &quot;netCDF4-python or scipy installed&quot;
+            )
+    return engine
 
 
-def register_task(name: str) -&gt; Callable:
-    &quot;&quot;&quot;Decorator: register a task class under ``name`` for CLI discovery.&quot;&quot;&quot;
+def _get_default_engine(path: str, allow_remote: bool = False) -&gt; T_NetcdfEngine:
+    if allow_remote and is_remote_uri(path):
+        return _get_default_engine_remote_uri()  # type: ignore[return-value]
+    elif path.endswith(&quot;.gz&quot;):
+        return _get_default_engine_gz()
+    else:
+        return _get_default_engine_netcdf()
 
-    def decorator(cls: Type) -&gt; Type:
-        r_max = cls.__dict__.get(&quot;r_max&quot;)
-        if not isinstance(r_max, (int, float)) or isinstance(r_max, bool):
+
+def _validate_dataset_names(dataset: Dataset) -&gt; None:
+    &quot;&quot;&quot;DataArray.name and Dataset keys must be a string or None&quot;&quot;&quot;
+
+    def check_name(name: Hashable):
+        if isinstance(name, str):
+            if not name:
+                raise ValueError(
+                    f&quot;Invalid name {name!r} for DataArray or Dataset key: &quot;
+                    &quot;string must be length 1 or greater for &quot;
+                    &quot;serialization to netCDF files&quot;
+                )
+        elif name is not None:
             raise TypeError(
-                f&quot;Task &#x27;{name}&#x27; must define class attribute r_max as the mean &quot;
-                &quot;per-instance maximum reward for the default evaluation schedule.&quot;
+                f&quot;Invalid name {name!r} for DataArray or Dataset key: &quot;
+                &quot;must be either a string or None for serialization to netCDF &quot;
+                &quot;files&quot;
             )
-        if r_max &lt;= 0:
-            raise ValueError(f&quot;Task &#x27;{name}&#x27; r_max must be positive; got {r_max!r}.&quot;)
-        TASKS_REGISTRY[name] = cls
-        return cls
 
-    return decorator
+    for k in dataset.variables:
+        check_name(k)
 
 
-def get_system_class(name: str) -&gt; Type:
-    &quot;&quot;&quot;Get a system class by name, lazy-importing its module on demand.&quot;&quot;&quot;
-    module_map = _discover_system_modules()
-    if name not in SYSTEMS_REGISTRY:
-        if name in module_map:
-            importlib.import_module(module_map[name])
-        if name not in SYSTEMS_REGISTRY:
-            if name in module_map:
-                raise KeyError(
-                    f&quot;System module &#x27;{module_map[name]}&#x27; did not register &#x27;{name}&#x27;. &quot;
-                    f&#x27;Expected @register_system(&quot;{name}&quot;).&#x27;
+def _validate_attrs(dataset, invalid_netcdf=False):
+    &quot;&quot;&quot;`attrs` must have a string key and a value which is either: a number,
+    a string, an ndarray, a list/tuple of numbers/strings, or a numpy.bool_.
+
+    Notes
+    -----
+    A numpy.bool_ is only allowed when using the h5netcdf engine with
+    `invalid_netcdf=True`.
+    &quot;&quot;&quot;
+
+    valid_types = (str, Number, np.ndarray, np.number, list, tuple)
+    if invalid_netcdf:
+        valid_types += (np.bool_,)
+
+    def check_attr(name, value, valid_types):
+        if isinstance(name, str):
+            if not name:
+                raise ValueError(
+                    f&quot;Invalid name for attr {name!r}: string must be &quot;
+                    &quot;length 1 or greater for serialization to &quot;
+                    &quot;netCDF files&quot;
                 )
-            raise KeyError(
-                f&quot;System &#x27;{name}&#x27; not found. Available systems: {list_systems()}&quot;
+        else:
+            raise TypeError(
+                f&quot;Invalid name for attr: {name!r} must be a string for &quot;
+                &quot;serialization to netCDF files&quot;
             )
-    return SYSTEMS_REGISTRY[name]
 
+        if not isinstance(value, valid_types):
+            raise TypeError(
+                f&quot;Invalid value for attr {name!r}: {value!r}. For serialization to &quot;
+                &quot;netCDF files, its value must be of one of the following types: &quot;
+                f&quot;{&#x27;, &#x27;.join([vtype.__name__ for vtype in valid_types])}&quot;
+            )
 
-def get_task_class(name: str) -&gt; Type:
-    &quot;&quot;&quot;Get a task class by name, lazy-importing its module on demand.&quot;&quot;&quot;
-    module_map = _discover_task_modules()
-    if name not in TASKS_REGISTRY:
-        if name in module_map:
-            importlib.import_module(module_map[name])
-        if name not in TASKS_REGISTRY:
-            if name in module_map:
-                raise KeyError(
-                    f&quot;Task module &#x27;{module_map[name]}&#x27; did not register &#x27;{name}&#x27;. &quot;
-                    f&#x27;Expected @register_task(&quot;{name}&quot;).&#x27;
-                )
-            raise KeyError(f&quot;Task &#x27;{name}&#x27; not found. Available tasks: {list_tasks()}&quot;)
-    return TASKS_REGISTRY[name]
+    # Check attrs on the dataset itself
+    for k, v in dataset.attrs.items():
+        check_attr(k, v, valid_types)
 
-
-def list_systems() -&gt; list[str]:
-    return sorted(_discover_system_modules().keys())
-
-
-def list_tasks() -&gt; list[str]:
-    return sorted(_discover_task_modules().keys())
-
-
-def get_class_params(cls: Type) -&gt; dict[str, Any]:
-    &quot;&quot;&quot;
-    Extract parameter metadata from a class&#x27;s __init__ signature.
-
-    Args:
-        cls: Class to inspect
-
-    Returns:
-        Dict mapping parameter names to metadata:
-            {
-                &quot;param_name&quot;: {
-                    &quot;type&quot;: type annotation or None,
-                    &quot;default&quot;: default value or inspect.Parameter.empty,
-                    &quot;required&quot;: bool
-                }
-            }
-    &quot;&quot;&quot;
-    try:
-        sig = inspect.signature(cls.__init__)
-    except (ValueError, TypeError):
-        return {}
-
-    try:
-        resolved_hints = get_type_hints(cls.__init__)
-    except Exception:
-        resolved_hints = {}
-
-    params = {}
-    for param_name, param in sig.parameters.items():
-        # Skip &#x27;self&#x27;
-        if param_name == &quot;self&quot;:
-            continue
-
-        params[param_name] = {
-            &quot;type&quot;: resolved_hints.get(param_name)
-            if param_name in resolved_hints
-            else (
-                param.annotation
-                if param.annotation != inspect.Parameter.empty
-                else None
-            ),
-            &quot;default&quot;: param.default
-            if param.default != inspect.Parameter.empty
-            else inspect.Parameter.empty,
-            &quot;required&quot;: param.default == inspect.Parameter.empty,
-        }
-
-    return params
-
-
-def clear_registry_cache() -&gt; None:
-    &quot;&quot;&quot;Clear discovery caches for tests.&quot;&quot;&quot;
-    _discover_task_modules.cache_clear()
-    _discover_system_modules.cache_clear()</pre></section></section>
+</pre></section></section>
 <details><summary>Request settings and tool schema (messages omitted)</summary>
 <div class="inside"><pre>{
   &quot;model&quot;: &quot;/data/user_data/skowshik/.cache/huggingface/hub/models--Qwen--Qwen3.5-9B/snapshots/c202236235762e1c871ad0ccb60c8ee5ba337b9a&quot;,
@@ -468,10 +546,10 @@ def clear_registry_cache() -&gt; None:
 <div class="inside"><pre>{
   &quot;step&quot;: 13,
   &quot;response_schema&quot;: null,
-  &quot;start_time&quot;: &quot;2026-10-05 18:02:08.337165&quot;,
-  &quot;end_time&quot;: &quot;2026-10-05 18:02:09.499066&quot;
+  &quot;start_time&quot;: &quot;2026-10-05 18:25:47.492126&quot;,
+  &quot;end_time&quot;: &quot;2026-10-05 18:25:48.975197&quot;
 }</pre></div></details>
 </article><nav class="page-nav"><div class="group"><a class="button" rel="prev" href="turn-012.html">← Previous</a><a class="button" href="index.html">Call index</a></div><div class="group"><a class="button" rel="next" href="turn-014.html">Next →</a></div></nav>
 <p class="meta">The cumulative exact request is intentionally not embedded here;
-it remains available in model_context_uwin.json.</p>
+it remains available in model_context_2026-10-05T22-25-29.661576Z_uwin_task_proposal.json.</p>
 </main></body></html>

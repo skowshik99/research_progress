@@ -20,22 +20,24 @@
     <!-- ENTRIES:START -->
     <section class="entry">
       <header>
-        <h2>Continual Learning Bench — Qwen3.5-9B, seed 0</h2>
+        <h2>pydata/xarray — issue 6992 — Qwen3.5-9B, seed 0</h2>
         <span class="badge done">done</span>
         <span class="date">2026-10-05</span>
       </header>
-      <p>The model surveyed the Continual Learning Bench repository with
-         read-only native shell-tool calls, then proposed eight study tasks.
-         The viewer contains the exact per-call reasoning, shell action, newly
-         added observation, and final-answer repair turns.</p>
+      <p>The model surveyed the pydata/xarray repository inside the SWE-bench
+         image for issue 6992 with read-only native shell-tool calls, then
+         proposed eight study tasks. The environment used the issue's base
+         commit but did not apply its gold test patch or provide its issue
+         description or reference solution. The viewer contains the exact
+         per-call reasoning, shell action, observation, and final-answer repair.</p>
       <table class="metrics">
         <thead><tr><th>Metric</th><th class="num">Value</th><th>Notes</th></tr></thead>
         <tbody>
           <tr><td>model</td><td class="num">9B</td><td><code>Qwen3.5-9B</code></td></tr>
-          <tr><td>executed inspection steps</td><td class="num">24</td><td>read-only repository commands</td></tr>
-          <tr><td>model calls</td><td class="num">28</td><td>24 inspection calls and 4 final-answer attempts</td></tr>
-          <tr><td>accepted tasks</td><td class="num">8</td><td>all starting paths validated on disk</td></tr>
-          <tr><td>final-format repairs</td><td class="num">3</td><td>fencing, missing field, then path-count correction</td></tr>
+          <tr><td>executed inspection steps</td><td class="num">20</td><td>read-only commands inside the issue SIF</td></tr>
+          <tr><td>model calls</td><td class="num">22</td><td>20 inspection calls and 2 final-answer attempts</td></tr>
+          <tr><td>accepted tasks</td><td class="num">8</td><td>all starting paths validated inside the SIF</td></tr>
+          <tr><td>final-format repairs</td><td class="num">1</td><td>removed a Markdown fence from the final JSON</td></tr>
         </tbody>
       </table>
       <iframe class="example" sandbox
