@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Django and Sphinx trajectories — Research Progress</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="crumb"><a href="../../index.html">&larr; all projects</a></div>
+    <div class="hero">
+      <h1>Django and Sphinx — Qwen3.5-9B trajectories</h1>
+      <p>Exact-gold-test evaluations for four SWE-bench Verified issues.
+         Choose a repository and issue below, then a seed and a model call.</p>
+    </div>
+
+    <h2>Issues</h2>
+    <!-- ENTRIES:START -->
+    <section class="entry">
+      <header>
+        <h2>All available rendered seed histories</h2>
+        <span class="badge done">published</span>
+        <span class="date">2026-10-05</span>
+      </header>
+      <p>38 trajectory viewers. Each turn is a separate page with Previous and
+         Next links. The pages show model reasoning, native shell tool calls,
+         environment observations, and new model input. Model-call numbers
+         include repair attempts; the recorded execution step is shown separately.</p>
+      <table class="metrics">
+        <thead>
+          <tr><th>Repository</th><th>Issue ID</th><th>Issue</th>
+              <th>Available histories</th><th>Trajectories</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>django/django</code></td>
+            <td>10554</td>
+            <td>Union queryset with ordering breaks on ordering with derived querysets</td>
+            <td>8 completed seeds: 1–6, 8, 9</td>
+            <td><a href="assets/django-10554/index.html">open all seeds &rarr;</a></td>
+          </tr>
+          <tr>
+            <td><code>django/django</code></td>
+            <td>15629</td>
+            <td>Errors with db_collation — no propagation to foreign keys</td>
+            <td>10 completed seeds: 0–9</td>
+            <td><a href="assets/django-15629/index.html">open all seeds &rarr;</a></td>
+          </tr>
+          <tr>
+            <td><code>django/django</code></td>
+            <td>16263</td>
+            <td>Strip unused annotations from count queries</td>
+            <td>10 completed seeds: 0–9</td>
+            <td><a href="assets/django-16263/index.html">open all seeds &rarr;</a></td>
+          </tr>
+          <tr>
+            <td><code>sphinx-doc/sphinx</code></td>
+            <td>11510</td>
+            <td>source-read event does not modify included files</td>
+            <td>9 completed seeds and recovered partial seed 7</td>
+            <td><a href="assets/sphinx-11510/index.html">open all seeds &rarr;</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <p>“Completed” describes a saved rollout, not a passing solution.
+         Sphinx seed 7 timed out without an original result.json. Its viewer
+         contains 112 saved model calls and 111 executions confirmed by later
+         tool responses. Its last call has no confirmed execution, and its
+         final graded outcome is unknown.</p>
+      <p>These are static HTML snapshots. Raw JSON histories, credentials,
+         container images, and reconstruction inputs are not published.
+         The original on-disk renders are preserved.</p>
+    </section>
+    <!-- ENTRIES:END -->
+  </div>
+</body>
+</html>
