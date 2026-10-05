@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UWIN Task Spec Prompting — Research Progress</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="crumb"><a href="../../index.html">&larr; all projects</a></div>
+    <div class="hero">
+      <h1>UWIN Task Spec Prompting</h1>
+      <p>Repository-grounded task-proposal trajectories. Each run asks a model
+         to inspect a software repository and produce a diverse batch of
+         concrete study tasks without solving those tasks.</p>
+    </div>
+
+    <h2>Runs</h2>
+    <!-- ENTRIES:START -->
+    <section class="entry">
+      <header>
+        <h2>Continual Learning Bench — Qwen3.5-9B, seed 0</h2>
+        <span class="badge done">done</span>
+        <span class="date">2026-10-05</span>
+      </header>
+      <p>The model surveyed the Continual Learning Bench repository with
+         read-only native shell-tool calls, then proposed eight study tasks.
+         The viewer contains the exact per-call reasoning, shell action, newly
+         added observation, and final-answer repair turns.</p>
+      <table class="metrics">
+        <thead><tr><th>Metric</th><th class="num">Value</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>model</td><td class="num">9B</td><td><code>Qwen3.5-9B</code></td></tr>
+          <tr><td>executed inspection steps</td><td class="num">24</td><td>read-only repository commands</td></tr>
+          <tr><td>model calls</td><td class="num">28</td><td>24 inspection calls and 4 final-answer attempts</td></tr>
+          <tr><td>accepted tasks</td><td class="num">8</td><td>all starting paths validated on disk</td></tr>
+          <tr><td>final-format repairs</td><td class="num">3</td><td>fencing, missing field, then path-count correction</td></tr>
+        </tbody>
+      </table>
+      <iframe class="example" sandbox
+              src="assets/runs/continual-learning-bench-qwen35-9b-seed0/index.html"
+              title="UWIN task specification trajectory index" loading="lazy"></iframe>
+      <div class="example-link">
+        <a href="assets/runs/continual-learning-bench-qwen35-9b-seed0/index.html"
+           target="_blank" rel="noopener">open trajectory viewer &rarr;</a>
+      </div>
+      <p>The public viewer contains rendered HTML only. Raw model-context JSON,
+         local environment files, and credentials are not published. Future
+         UWIN task-specification runs will be added as separate entries and
+         run directories under this project.</p>
+    </section>
+    <!-- ENTRIES:END -->
+  </div>
+</body>
+</html>
