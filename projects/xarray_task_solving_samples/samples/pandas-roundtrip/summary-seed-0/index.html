@@ -1,0 +1,124 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UWIN trajectory study notes</title><style>
+body{margin:0;background:#f6f8fa;color:#1f2328;font:16px/1.6 system-ui,sans-serif}
+main{max-width:1100px;margin:auto;padding:24px}h1{font-size:25px}a{color:#0969da}
+.meta{font-size:13px;color:#59636e;overflow-wrap:anywhere}
+section,details{background:white;border:1px solid #d0d7de;border-radius:9px;
+margin:18px 0;padding:18px}pre{white-space:pre-wrap;overflow-wrap:anywhere;
+margin:0;font:14px/1.65 ui-monospace,monospace}summary{cursor:pointer;font-weight:600}
+.answer{border-left:5px solid #1a7f37}.reasoning{border-left:5px solid #8250df}
+.system{border-left:5px solid #9a6700}.user{border-left:5px solid #0969da}
+</style></head><body><main><h1>UWIN trajectory study notes</h1><p class="meta">Model: Qwen/Qwen3.5-9B<br>Source: /data/group_data/maxlab/common_datasets/skowshik/uwin/task_execution_all_xarray_files_and_tests/run_20261009T011448Z_017cd239/items/task_000073_properties_test_pandas_roundtrip.py_task_001/trajectory_seed_0/study/attempt_01/history.json</p><p><a href="input.html">View the full summary input and system prompt</a></p><section class="answer"><pre>
+
+# Study Notes: DataArray.to_pandas() for 1D Arrays
+
+## 1. Task and Scope
+
+Studied how a 1D `DataArray` converts to a `pandas.Series` via `to_pandas()`. Traced the code path from `test_roundtrip_dataarray` (property-based test) through `to_pandas()` in `xarray/core/dataarray.py` and `get_index()` in `xarray/core/common.py`. Verified behavior with runtime tests for both cases: with and without explicit coordinates.
+
+## 2. Important Notes and Learnings
+
+### Constructor Selection (Step 3, dataarray.py:2983)
+```python
+constructors = {0: lambda x: x, 1: pd.Series, 2: pd.DataFrame}
+constructor = constructors[self.ndim]  # ndim=1 → pd.Series
+```
+For 1D arrays, `pd.Series` is used directly.
+
+### Index Collection (Step 3, dataarray.py:3000)
+```python
+indexes = [self.get_index(dim) for dim in self.dims]
+```
+Iterates over all dimension names and collects a pandas Index for each.
+
+### get_index() Behavior (Step 6, common.py:453-461)
+```python
+def get_index(self, key: Hashable) -&gt; pd.Index:
+    if key not in self.dims:
+        raise KeyError(key)
+    try:
+        return self._indexes[key].to_pandas_index()
+    except KeyError:
+        return pd.Index(range(self.sizes[key]), name=key)
+```
+
+| Condition | Return Value |
+|-----------|--------------|
+| Index exists in `_indexes` | `self._indexes[key].to_pandas_index()` |
+| Index doesn&#x27;t exist | `pd.Index(range(self.sizes[key]), name=key)` |
+
+For `PandasIndex`, `to_pandas_index()` returns `self.index` (Step 10, indexes.py:343).
+
+### Index Name Relationship (Steps 11-12)
+Runtime verification showed:
+
+| Case | Series Index Name | Index Type |
+|------|-------------------|------------|
+| With coordinates | `&#x27;x&#x27;` (from coordinate) | `Int64Index` |
+| Without coordinates | `&#x27;x&#x27;` (from dimension) | `RangeIndex` |
+
+**Key insight**: The Series index name always equals the dimension name. When a coordinate exists, the name comes from the coordinate; when no coordinate exists, the fallback explicitly sets `name=key`.
+
+## 3. Corrections and Limits
+
+### Verified Claims
+- Constructor for 1D is `pd.Series` ✓
+- `get_index()` uses try/except to distinguish existing vs. missing indexes ✓
+- Index name matches dimension name in both cases ✓
+
+### Uncertainties
+- **How coordinate names are assigned**: The trajectory shows that coordinate names propagate to the Series index, but doesn&#x27;t explicitly verify whether `DataArray` constructor sets `index.name` on coordinate arrays. This remains unconfirmed.
+- **Multi-index support**: The code path handles single dimensions only. Behavior for DataArrays with multiple dimensions (producing MultiIndex) was not traced.
+- **Non-numeric coordinate types**: Tests only used `np.arange(n)` for coordinates. Behavior with datetime, categorical, or other index types was not verified.
+
+## 4. Useful Next Checks
+
+1. **Verify coordinate name propagation**: Check if `DataArray.__init__` explicitly sets `index.name` when creating coordinates from arrays.
+
+2. **Test multi-dimensional case**: Run `to_pandas()` on a 2D DataArray to understand MultiIndex construction.
+
+3. **Test non-default index types**: Create a DataArray with datetime coordinates and verify the resulting Series index type.
+
+4. **Check `_indexes` population**: Trace how coordinates are added to `_indexes` during `DataArray` construction.</pre></section><details class="reasoning"><summary>Model reasoning</summary><pre>The user wants me to write study notes from this coding-agent trajectory. I need to:
+
+1. Explain the important repository facts and learnings
+2. Give a compact but complete summary
+3. Check claims against evidence from the trajectory
+4. Note any corrections or limits
+5. Suggest useful next checks if needed
+
+Let me analyze what was actually discovered and verified:
+
+**What the task asked:**
+- Trace how a 1D DataArray is converted to a pandas Series
+- Identify: 1) What constructor is used for 1D arrays? 2) How are indexes obtained via get_index()? 3) What does get_index() return when an index exists vs. when it doesn&#x27;t? 4) What is the relationship between the DataArray&#x27;s dims and the resulting Series index name?
+
+**What was actually found:**
+
+1. **Constructor for 1D arrays**: `pd.Series` - This was verified in `to_pandas()` at line 2965-3001 in `xarray/core/dataarray.py`. The code shows `constructors = {0: lambda x: x, 1: pd.Series, 2: pd.DataFrame}`.
+
+2. **How indexes are obtained via get_index()**: The code in `to_pandas()` calls `indexes = [self.get_index(dim) for dim in self.dims]`. The `get_index()` method is in `xarray/core/common.py` at line 453-461.
+
+3. **What get_index() returns**:
+   - When index exists (in `_indexes`): Returns `self._indexes[key].to_pandas_index()`
+   - When no index exists: Returns `pd.Index(range(self.sizes[key]), name=key)`
+   
+   This was verified by looking at the code in `common.py`.
+
+4. **Relationship between DataArray&#x27;s dims and resulting Series index name**: 
+   - When a coordinate exists, the pandas Index preserves the coordinate name
+   - When no coordinate exists, the fallback creates a RangeIndex with `name=key` where `key` is the dimension name
+   - Both cases result in the Series index name matching the dimension name
+
+**What was verified with tests:**
+- Test with coordinates: Series index name is &#x27;x&#x27;, type is Int64Index (step 11)
+- Test without coordinates: Series index name is &#x27;x&#x27;, type is RangeIndex (step 12)
+
+**What I need to check:**
+The earlier final answer claims that when an index exists, the pandas Index&#x27;s name comes from the underlying index object. Looking at the evidence from step 11, the Int64Index was created with `name=&#x27;x&#x27;`, which suggests the coordinate name is preserved when available. I should verify whether the underlying index object itself carries the name or if it&#x27;s set during the `to_pandas_index()` conversion.
+
+The code path shows that `get_index()` retrieves the index from `self._indexes[key]` and calls `to_pandas_index()` on it. For PandasIndex objects, this method returns `self.index` directly, which means the name should already be set on the underlying index object. I need to trace how the coordinate name gets assigned to the index in the first place to confirm this.
+
+The key distinction is that when a coordinate exists, the Series index name comes from the coordinate name itself, not from the dimension name. When no coordinate exists, the fallback creates a RangeIndex with `name=key` where `key` is the dimension name. In both cases, the resulting Series index name matches the dimension name, but the source differs—either from the coordinate or from the dimension name itself.
+
+I should verify whether the coordinate&#x27;s name is explicitly set during DataArray construction or if it&#x27;s inherited from the coordinate variable.
+</pre></details></main></body></html>

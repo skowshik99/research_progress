@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>xarray task-solving and study-note samples — Research Progress</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="crumb"><a href="../../index.html">&larr; all projects</a></div>
+    <div class="hero">
+      <h1>xarray task-solving and study-note samples</h1>
+      <p>Four Qwen3.5-9B repository-study trajectories paired with three
+         independently sampled knowledge-note generations. Each summary output
+         links to the exact summarizer system prompt and complete trajectory input.</p>
+    </div>
+
+    <h2>Samples</h2>
+    <!-- ENTRIES:START -->
+    <section class="entry">
+      <header>
+        <h2>Original trajectories and generated knowledge notes</h2>
+        <span class="badge done">published</span>
+        <span class="date">2026-10-09</span>
+      </header>
+      <p>The set intentionally contains strong and flawed examples. “Completed”
+         means that the generation pipeline finished; it does not certify that
+         every technical conclusion is correct.</p>
+      <table class="metrics">
+        <thead>
+          <tr>
+            <th>Study task</th>
+            <th>Character</th>
+            <th>Original trajectory</th>
+            <th>Summary generations</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>PandasIndex.from_variables</code> dtype preservation</td>
+            <td>Strong source tracing and runtime probes</td>
+            <td><a href="samples/index-dtype/trajectory/index.html">23 model calls &rarr;</a></td>
+            <td>
+              <a href="samples/index-dtype/summary-seed-0/index.html">seed 0</a>
+              &middot; <a href="samples/index-dtype/summary-seed-1/index.html">seed 1</a>
+              &middot; <a href="samples/index-dtype/summary-seed-2/index.html">seed 2</a><br>
+              prompts:
+              <a href="samples/index-dtype/summary-seed-0/input.html">0</a>
+              &middot; <a href="samples/index-dtype/summary-seed-1/input.html">1</a>
+              &middot; <a href="samples/index-dtype/summary-seed-2/input.html">2</a>
+            </td>
+          </tr>
+          <tr>
+            <td>One-dimensional <code>DataArray.to_pandas()</code> round trip</td>
+            <td>Mostly strong, with a small unsupported follow-up claim</td>
+            <td><a href="samples/pandas-roundtrip/trajectory/index.html">14 model calls &rarr;</a></td>
+            <td>
+              <a href="samples/pandas-roundtrip/summary-seed-0/index.html">seed 0</a>
+              &middot; <a href="samples/pandas-roundtrip/summary-seed-1/index.html">seed 1</a>
+              &middot; <a href="samples/pandas-roundtrip/summary-seed-2/index.html">seed 2</a><br>
+              prompts:
+              <a href="samples/pandas-roundtrip/summary-seed-0/input.html">0</a>
+              &middot; <a href="samples/pandas-roundtrip/summary-seed-1/input.html">1</a>
+              &middot; <a href="samples/pandas-roundtrip/summary-seed-2/input.html">2</a>
+            </td>
+          </tr>
+          <tr>
+            <td><code>LRUCache.__getitem__</code> ordering</td>
+            <td>Correct central finding, but contradictory table and diagram</td>
+            <td><a href="samples/lru-cache/trajectory/index.html">2 model calls &rarr;</a></td>
+            <td>
+              <a href="samples/lru-cache/summary-seed-0/index.html">seed 0</a>
+              &middot; <a href="samples/lru-cache/summary-seed-1/index.html">seed 1</a>
+              &middot; <a href="samples/lru-cache/summary-seed-2/index.html">seed 2</a><br>
+              prompts:
+              <a href="samples/lru-cache/summary-seed-0/input.html">0</a>
+              &middot; <a href="samples/lru-cache/summary-seed-1/input.html">1</a>
+              &middot; <a href="samples/lru-cache/summary-seed-2/input.html">2</a>
+            </td>
+          </tr>
+          <tr>
+            <td><code>file_cache</code> fixture behavior</td>
+            <td>Diagnostic failure: trajectory and summaries preserve false cache conclusions</td>
+            <td><a href="samples/file-manager-cache/trajectory/index.html">4 model calls &rarr;</a></td>
+            <td>
+              <a href="samples/file-manager-cache/summary-seed-0/index.html">seed 0</a>
+              &middot; <a href="samples/file-manager-cache/summary-seed-1/index.html">seed 1</a>
+              &middot; <a href="samples/file-manager-cache/summary-seed-2/index.html">seed 2</a><br>
+              prompts:
+              <a href="samples/file-manager-cache/summary-seed-0/input.html">0</a>
+              &middot; <a href="samples/file-manager-cache/summary-seed-1/input.html">1</a>
+              &middot; <a href="samples/file-manager-cache/summary-seed-2/input.html">2</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p>The trajectory viewers are paginated by model call. They show the
+         model-facing prompt, retained reasoning, shell action, and resulting
+         observation. Summary pages show the generated Markdown and retained
+         reasoning; their “full summary input” links expose the exact system
+         prompt and source trajectory supplied to the summarizer.</p>
+    </section>
+    <!-- ENTRIES:END -->
+  </div>
+</body>
+</html>
