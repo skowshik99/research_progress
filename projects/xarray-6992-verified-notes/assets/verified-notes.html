@@ -1,0 +1,1435 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Ten xarray-6992 study notes</title><style>body{font:16px/1.5 system-ui;max-width:1200px;margin:30px auto;padding:20px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccc;padding:9px;text-align:left}pre{white-space:pre-wrap;background:#f5f5f5;padding:16px;overflow-wrap:anywhere}section{border-top:2px solid #999;margin-top:40px}a{color:#1761a0}</style><h1>Ten existing proposals → exploration → notes → fresh verification</h1><p>Five tasks each from dataset.py and indexes.py; Qwen3.5-9B; no new proposals. Final notes below are byte-identical model outputs. The human audit is separate and was not fed to the model. Pipeline completion does not establish correctness; improved issue-solving success was not measured.</p><h2>Summary</h2><pre>{
+  &quot;completed_pipelines&quot;: 10,
+  &quot;final_notes&quot;: 10,
+  &quot;model&quot;: &quot;Qwen3.5-9B&quot;,
+  &quot;files&quot;: [
+    &quot;xarray/core/dataset.py&quot;,
+    &quot;xarray/core/indexes.py&quot;
+  ],
+  &quot;existing_proposals_reused_unchanged&quot;: true,
+  &quot;new_task_proposal_calls&quot;: 0,
+  &quot;environment&quot;: &quot;Issue base production code plus gold test patch. Issue statement and production fix were not supplied to the model.&quot;,
+  &quot;exploration_step_cap&quot;: 100,
+  &quot;verification_step_cap&quot;: 100,
+  &quot;concurrent_pipelines&quot;: 3,
+  &quot;verification_includes_old_trajectory&quot;: false,
+  &quot;quality_assessment&quot;: &quot;Qualitative independent source/probe audit, not an exhaustive claim-level accuracy score.&quot;,
+  &quot;no_material_error_found&quot;: [
+    &quot;indexes_task_017&quot;,
+    &quot;indexes_task_049&quot;
+  ],
+  &quot;mostly_sound_with_smaller_issues&quot;: [
+    &quot;indexes_task_012&quot;,
+    &quot;indexes_task_026&quot;
+  ],
+  &quot;material_inaccuracies_or_scope_errors&quot;: [
+    &quot;dataset_task_015&quot;,
+    &quot;dataset_task_014&quot;,
+    &quot;dataset_task_041&quot;,
+    &quot;dataset_task_040&quot;,
+    &quot;dataset_task_016&quot;,
+    &quot;indexes_task_015&quot;
+  ],
+  &quot;strongest_complementary_issue_leads&quot;: [
+    &quot;dataset_task_015: dangling coordinate names, stale dimensions and repr failure&quot;,
+    &quot;indexes_task_012: singleton level retains old name&quot;,
+    &quot;indexes_task_017: complete shared-index coordinate group&quot;
+  ],
+  &quot;coverage_gaps&quot;: [
+    &quot;IndexVariable-to-base-Variable conversion is not fully captured.&quot;,
+    &quot;Mixed dimension-plus-level reset requests and per-index deduplication are not fully captured.&quot;,
+    &quot;Full-reset versus partial-reset conditions remain unreliable in the reset_index note.&quot;
+  ],
+  &quot;overlap&quot;: &quot;Substantial: index identity/group membership, reconstruction, and coordinate cleanup recur across notes. Ten files do not represent ten independent discoveries.&quot;,
+  &quot;verifier_effect&quot;: &quot;Corrects some original premises and fills some evidence gaps, but also retains or introduces false claims despite surfaced evidence.&quot;,
+  &quot;recommendation&quot;: &quot;Useful investigation leads, not trusted memory or a complete fix recipe without checking the annotated conditions.&quot;,
+  &quot;notes_manually_edited&quot;: false,
+  &quot;human_audit_fed_back_to_model&quot;: false,
+  &quot;blind_held_out_evaluation&quot;: false,
+  &quot;solver_success_improvement_measured&quot;: false
+}</pre><table><tr><th>Case</th><th>Topic</th><th>6992 relevance</th><th>Quality</th></tr><tr><td><a href="#dataset_task_015">dataset_task_015</a></td><td>reset_index</td><td>Very high</td><td>Useful, but scope errors</td></tr><tr><td><a href="#dataset_task_014">dataset_task_014</a></td><td>set_index</td><td>High API relevance; moderate actual help</td><td>Mixed; definite factual errors</td></tr><tr><td><a href="#dataset_task_041">dataset_task_041</a></td><td>_replace / _replace_with_new_dims</td><td>High supporting value</td><td>Mixed; definite factual errors</td></tr><tr><td><a href="#dataset_task_040">dataset_task_040</a></td><td>indexes / xindexes</td><td>Moderate-high supporting value</td><td>Mostly sound architecture; wrong test conclusion</td></tr><tr><td><a href="#dataset_task_016">dataset_task_016</a></td><td>drop_vars / drop_sel</td><td>Moderate-high comparison value</td><td>Mixed; wrong selection semantics</td></tr><tr><td><a href="#indexes_task_012">indexes_task_012</a></td><td>PandasMultiIndex.keep_levels</td><td>High</td><td>Strong narrow finding; minor factual error</td></tr><tr><td><a href="#indexes_task_017">indexes_task_017</a></td><td>Indexes.get_all_coords</td><td>High supporting value</td><td>Strong narrow note; no substantive error found</td></tr><tr><td><a href="#indexes_task_026">indexes_task_026</a></td><td>PandasMultiIndex.create_variables</td><td>High supporting value</td><td>Mostly correct core; smaller API/edge-case issues</td></tr><tr><td><a href="#indexes_task_015">indexes_task_015</a></td><td>PandasMultiIndex.from_variables_maybe_expand</td><td>High API relevance; moderate actual help</td><td>Mixed; branch conditions overgeneralized</td></tr><tr><td><a href="#indexes_task_049">indexes_task_049</a></td><td>assert_no_index_corrupted</td><td>High supporting value</td><td>Strong narrow note; no substantive error found</td></tr></table><section id="dataset_task_015"><h2>dataset_task_015: reset_index</h2><h3>Independent audit (not model context)</h3><pre>{
+  &quot;topic&quot;: &quot;reset_index&quot;,
+  &quot;relevance&quot;: &quot;Very high&quot;,
+  &quot;overall&quot;: &quot;Useful, but scope errors&quot;,
+  &quot;findings&quot;: [
+    &quot;Reproduces dangling _coord_names and stale _dims in coordinate-only reset/drop.&quot;,
+    &quot;Connects inconsistent metadata to negative DataVariables.__len__ and repr failure.&quot;,
+    &quot;Identifies the single-level naming mismatch and failing changed tests.&quot;
+  ],
+  &quot;issues&quot;: [
+    &quot;Full-MultiIndex-reset deletion rule is stated without distinguishing partial-level resets.&quot;,
+    &quot;Single-level rename rule is overstated for all partial resets; it applies when only one level remains.&quot;,
+    &quot;Attributes all eight drop/convert failures to renaming; several concern dropping/converting instead.&quot;,
+    &quot;Blanket assertion that all original claims are verified is not justified; base-Variable conversion and mixed dimension/level requests remain uncovered.&quot;
+  ],
+  &quot;independent_evidence&quot;: [
+    &quot;independent_audit/baseline_states.txt&quot;,
+    &quot;independent_audit/changed_tests.txt&quot;,
+    &quot;audit_scope/repr_scope_corrected_probe.txt&quot;,
+    &quot;runs/dataset_task_015/tasks/task_015/03_verification/history.json (steps 50,56,63,64)&quot;
+  ]
+}</pre><h3>Unmodified model-written final note</h3><pre># Verified Repository Notes: Dataset reset_index Operation
+
+## Verified Findings
+
+### Call Chain and Implementation
+
+**Primary location**: `xarray/core/dataset.py`, line 4108 - `def reset_index(...)`
+
+The `reset_index` method implementation (lines 4108-4186) follows this call chain:
+1. Validates requested coordinates exist in `_indexes` (line 4135-4137)
+2. Iterates through `dims_or_levels` names (line 4144)
+3. For each name, gets index and all associated coordinates via `self.xindexes.get_all_coords(name)` (line 4146)
+4. Handles `PandasMultiIndex` special case when name is not in dimensions (lines 4149-4165)
+5. If `drop=True`, adds name to `drop_variables` (line 4167)
+6. Creates new indexes by filtering out `drop_indexes` (lines 4170-4171)
+7. Creates new variables by filtering out `drop_variables` (lines 4173-4174)
+8. Calls `self._replace()` with new variables, coord_names, and indexes (line 4177)
+
+**Key helper method**: `xarray/core/indexes.py`, line 1111 - `get_all_coords(key)`
+- Returns all coordinate variables sharing the same index
+- For MultiIndex, includes both the dimension coordinate AND all level coordinates
+
+**Index classes**:
+- `PandasIndex`: `xarray/core/indexes.py`, line 217
+- `PandasMultiIndex`: `xarray/core/indexes.py`, line 537
+
+### Bugs Identified
+
+#### Bug 1: MultiIndex dimension coordinate not removed
+
+When `reset_index` is called on a MultiIndex with `drop=False`, the dimension coordinate is NOT removed from `_variables` or `_coord_names`.
+
+**Evidence from shell step 50**:
+```
+Test 1: MultiIndex with drop=False
+  Before: _variables = [&#x27;x&#x27;, &#x27;foo&#x27;, &#x27;bar&#x27;]
+  Before: _coord_names = {&#x27;bar&#x27;, &#x27;x&#x27;, &#x27;foo&#x27;}
+  After: _variables = [&#x27;x&#x27;, &#x27;foo&#x27;, &#x27;bar&#x27;]  # &#x27;x&#x27; should be removed
+  After: _coord_names = {&#x27;bar&#x27;, &#x27;x&#x27;, &#x27;foo&#x27;}  # &#x27;x&#x27; should be removed
+```
+
+**Source**: `xarray/tests/test_dataset.py::TestDataset::test_reset_index` fails because &#x27;x&#x27; coordinate not removed for MultiIndex.
+
+**Test output from shell step 63**:
+```
+FAILED xarray/tests/test_dataset.py::TestDataset::test_reset_index
+```
+
+#### Bug 2: drop=True doesn&#x27;t update _dims and _coord_names
+
+When `reset_index` is called with `drop=True`, the `_dims` and `_coord_names` are not updated to reflect the removed dimension/coordinate.
+
+**Evidence from shell step 50**:
+```
+Test 2: Regular index with drop=True
+  Before: _variables = [&#x27;x&#x27;]
+  Before: _coord_names = {&#x27;x&#x27;}
+  Before: _dims = {&#x27;x&#x27;: 2}
+  After: _variables = []  # Correctly removed
+  After: _coord_names = {&#x27;x&#x27;}  # Should be set()
+  After: _dims = {&#x27;x&#x27;: 2}  # Should be {}
+```
+
+**Source**: `xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_dims` fails because `len(reset.dims)` is 1, not 0.
+
+**Test output from shell step 63**:
+```
+FAILED xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_dims
+```
+
+#### Bug 3: Repr bug in DataVariables.__len__
+
+Due to Bug 2, `DataVariables.__len__` returns a negative value when `_variables` is empty but `_coord_names` is not.
+
+**Evidence from shell step 64**:
+```
+Repr bug confirmed: __len__() should return &gt;= 0
+```
+
+**Source**: `xarray/core/dataset.py` line 396 (`DataVariables.__len__`), `xarray/core/formatting.py` line 330.
+
+#### Bug 4: MultiIndex level rename not working
+
+When resetting a MultiIndex level, the level coordinates should be renamed to the dimension coordinate, but this doesn&#x27;t happen.
+
+**Evidence from shell step 56**:
+```
+ds[&quot;bar&quot;].variable.values: [1 2 1 2]
+reset[&quot;x&quot;].variable.values: [(&#x27;a&#x27;, 1) (&#x27;a&#x27;, 2) (&#x27;b&#x27;, 1) (&#x27;b&#x27;, 2)]
+Are they identical? [False False False False]
+```
+
+**Source**: `xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert` fails for all 8 parametrized cases.
+
+**Test output from shell step 63**:
+```
+FAILED xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[foo-False-dropped0-converted0-renamed0]
+FAILED xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[foo-True-dropped1-converted1-renamed1]
+FAILED xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[x-False-dropped2-converted2-renamed2]
+FAILED xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[x-True-dropped3-converted3-renamed3]
+FAILED xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[arg4-False-dropped4-converted4-renamed4]
+FAILED xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[arg5-True-dropped5-converted5-renamed5]
+FAILED xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[arg6-False-dropped6-converted6-renamed6]
+FAILED xarray/tests/test_dataset.py::TestDataset::test_reset_index_drop_convert[arg7-True-dropped7-converted7-renamed7]
+```
+
+### Test Results Summary
+
+- **test_reset_index**: FAILED (1 test)
+- **test_reset_index_keep_attrs**: PASSED (1 test)
+- **test_reset_index_drop_dims**: FAILED (1 test)
+- **test_reset_index_drop_convert** (8 parametrized): FAILED (8 tests)
+
+**Total**: 10 failed, 1 passed
+
+**Source**: `xarray/tests/test_dataset.py::TestDataset` (shell step 63)
+
+## Summary
+
+The `reset_index` method in xarray&#x27;s Dataset class has multiple bugs related to MultiIndex handling and dimension/coordinate cleanup:
+
+1. MultiIndex dimension coordinates are not removed when `drop=False`
+2. When `drop=True`, `_dims` and `_coord_names` are not updated
+3. The repr fails with `ValueError: __len__() should return &gt;= 0` due to the mismatch between `_variables` and `_coord_names`
+4. MultiIndex level renaming does not work correctly
+
+All claims in the original notes have been verified through fresh investigation.
+</pre></section><section id="dataset_task_014"><h2>dataset_task_014: set_index</h2><h3>Independent audit (not model context)</h3><pre>{
+  &quot;topic&quot;: &quot;set_index&quot;,
+  &quot;relevance&quot;: &quot;High API relevance; moderate actual help&quot;,
+  &quot;overall&quot;: &quot;Mixed; definite factual errors&quot;,
+  &quot;findings&quot;: [
+    &quot;Correctly refutes the original task&#x27;s _get_stack_index/_stack_once premise.&quot;,
+    &quot;Locates PandasIndex.from_variables, PandasMultiIndex.from_variables_maybe_expand and _replace_with_new_dims.&quot;
+  ],
+  &quot;issues&quot;: [
+    &quot;set_coords does not necessarily create an index; the final note wrongly says it marks coordinates as indexed.&quot;,
+    &quot;set_coords need not use an IndexVariable; our probe retains a base Variable with no indexes.&quot;,
+    &quot;Claims only index values change/dimensions stay unchanged without the required scope: a new target dimension name can change dimensions.&quot;,
+    &quot;Does not establish the central cleanup and base-variable conversion requirements.&quot;
+  ],
+  &quot;independent_evidence&quot;: [
+    &quot;audit_scope/set_coords_and_dimension_scope.txt&quot;,
+    &quot;runs/dataset_task_014/tasks/task_014/03_verification/history.json (step 19)&quot;
+  ]
+}</pre><h3>Unmodified model-written final note</h3><pre># Verified Repository Notes: `Dataset.set_index` Implementation in xarray
+
+## Verified Call Chain
+
+The `Dataset.set_index` method implementation has been verified through source inspection and testing. The call chain is:
+
+```
+Dataset.set_index (dataset.py:3968)
+  → Loop over dimension/variable pairs
+    → Single variable case: PandasIndex.from_variables (dataset.py:4066)
+    → Multi-variable or append case: PandasMultiIndex.from_variables_maybe_expand (dataset.py:4075)
+  → Build new_indexes and new_variables dictionaries
+  → Call _replace_with_new_dims (dataset.py:4104)
+    → calculate_dimensions (variable.py:3104)
+    → _replace (dataset.py:968)
+```
+
+## Index Creation Pathways
+
+### Single Variable → PandasIndex
+- Validates variable is 1D along the target dimension (dataset.py:4062-4065)
+- Creates `PandasIndex` from variable values (dataset.py:4066)
+- Calls `idx.create_variables()` to generate `IndexVariable` (dataset.py:4067)
+- Original variable is removed from dataset (dataset.py:4057)
+
+### Multiple Variables or Append → PandasMultiIndex
+- No existing index: Creates new multi-index from all variables (dataset.py:4075)
+- With existing index (append): Expands existing multi-index with new levels (dataset.py:4069-4072)
+- Uses `pd.Categorical` for consistent level ordering (indexes.py:678)
+- Returns both the `PandasMultiIndex` and coordinate variables (indexes.py:656)
+
+## Verified Behavior
+
+| Scenario | Result |
+|----------|--------|
+| Single variable `set_index(x=&#x27;a&#x27;)` | `x` becomes index with values from `a`; `a` removed |
+| Multiple variables `set_index(x=[&#x27;a&#x27;, &#x27;b&#x27;])` | `x` becomes `PandasMultiIndex`; `a`, `b` preserved as level coordinates |
+| Append `set_index(x=&#x27;a&#x27;, append=True)` | Existing `x` + new `a` form multi-index; `x_level_0` created |
+| Invalid variable | Raises `ValueError: &quot;variable(s) do not exist&quot;` |
+| Dimension mismatch | Raises `ValueError: &quot;dimension mismatch&quot;` |
+
+## Difference from `set_coords`
+
+| Feature | `set_index` | `set_coords` |
+|---------|-------------|--------------|
+| **Purpose** | Convert to actual index | Mark coordinate as indexed |
+| **Index type** | Creates `PandasIndex`/`PandasMultiIndex` | Uses existing `IndexVariable` |
+| **Variable removal** | Removes original variable | Keeps original variable |
+| **Multi-index** | Supported via multiple variables | Not supported |
+| **Validation** | Checks dimension matches | Minimal validation |
+
+## Methods NOT Used by `set_index`
+
+The task premise incorrectly suggested tracing through `_get_stack_index` and `_stack_once`. These methods are **NOT called by `set_index`**. They are used by `stack`/`unstack` operations:
+- `_get_stack_index`: dataset.py:4233
+- `_stack_once`: dataset.py:4288
+- Called from `stack` (dataset.py:4325, 4394) and `unstack` (dataset.py:4652)
+
+**Evidence:** `grep -n &quot;_get_stack_index\|_stack_once&quot; xarray/core/dataset.py` shows no matches in the `set_index` method (lines 3968-4104).
+
+## Verified Source Paths
+
+| Component | Path | Line(s) |
+|-----------|------|---------|
+| `set_index` method | `xarray/core/dataset.py` | 3968-4105 |
+| `_replace_with_new_dims` | `xarray/core/dataset.py` | 1018-1025 |
+| `_replace` | `xarray/core/dataset.py` | 968-1017 |
+| `calculate_dimensions` | `xarray/core/variable.py` | 3104-3127 |
+| `PandasIndex.from_variables` | `xarray/core/indexes.py` | 250-281 |
+| `PandasMultiIndex.from_variables_maybe_expand` | `xarray/core/indexes.py` | 651-705 |
+| `PandasIndex.create_variables` | `xarray/core/indexes.py` | 322-343 |
+| `PandasMultiIndex.create_variables` | `xarray/core/indexes.py` | 735-770 |
+| `IndexVariable` class | `xarray/core/variable.py` | 2754-2780 |
+| `_get_stack_index` | `xarray/core/dataset.py` | 4233-4287 |
+| `_stack_once` | `xarray/core/dataset.py` | 4288-4346 |
+| `stack` method | `xarray/core/dataset.py` | 4347-4395 |
+| `unstack` method | `xarray/core/dataset.py` | 4601-4650 |
+| `reset_index` method | `xarray/core/dataset.py` | 4108-4180 |
+| `set_coords` method | `xarray/core/dataset.py` | 1670-1693 |
+
+## Verified Implementation Details
+
+1. **Dimension preservation**: Dimension sizes remain the same; only index values change (verified: `ds.dims` unchanged after `set_index`)
+2. **Multi-index level coordinates**: Preserved as separate coordinates (e.g., `a`, `b` remain alongside `x`) (verified: `a`, `b` in `ds2._variables` after multi-variable `set_index`)
+3. **Original variable removal**: Original variable is removed from `_variables` and `_coord_names` (verified: `&#x27;a&#x27; not in ds2._variables` after `set_index(x=&#x27;a&#x27;)`)
+4. **New dataset creation**: Returns new dataset with different `_variables` and `_indexes` objects (verified: `ds is ds2` is `False`)
+
+## Corrections to Original Claims
+
+**Claim:** &quot;Trace through `_get_stack_index` and `_stack_once` to understand how dimensions are converted to index coordinates&quot;
+
+**Correction:** These methods are NOT called by `set_index`. The actual path uses:
+- `PandasIndex.from_variables` (dataset.py:4066) for single variables
+- `PandasMultiIndex.from_variables_maybe_expand` (dataset.py:4075) for multiple variables
+
+**Evidence:** `grep -n &quot;set_index&quot; xarray/core/dataset.py | grep -E &quot;_get_stack_index|_stack_once&quot;` returns no matches.
+
+## Notes on Line Number Discrepancies
+
+Some line numbers in the original notes are slightly off due to code changes:
+- `set_index` method: Notes say 3968-4104, actual is 3968-4105
+- `PandasIndex.from_variables`: Notes say 4019, actual is 4066
+- `PandasMultiIndex.from_variables_maybe_expand`: Notes say 4027, actual is 4075
+- `reset_index`: Notes say 4115, actual is 4108
+- `PandasIndex.create_variables`: Notes say 362-374, actual is 322-343
+- `PandasMultiIndex.create_variables`: Notes say 761, actual is 760
+
+These discrepancies do not affect the factual accuracy of the implementation claims.
+</pre></section><section id="dataset_task_041"><h2>dataset_task_041: _replace / _replace_with_new_dims</h2><h3>Independent audit (not model context)</h3><pre>{
+  &quot;topic&quot;: &quot;_replace / _replace_with_new_dims&quot;,
+  &quot;relevance&quot;: &quot;High supporting value&quot;,
+  &quot;overall&quot;: &quot;Mixed; definite factual errors&quot;,
+  &quot;findings&quot;: [
+    &quot;Explains that _replace does not recalculate omitted dims.&quot;,
+    &quot;Explains that _replace_with_new_dims calculates dimensions from the supplied complete variable mapping.&quot;,
+    &quot;Correctly identifies fastpath caller responsibility and un-copied explicitly supplied mappings.&quot;
+  ],
+  &quot;issues&quot;: [
+    &quot;_replace_vars_and_dims does NOT always recalculate indexes; the outdated docstring contradicts the implementation.&quot;,
+    &quot;Public persist returns a new shallow copy, not the original self.&quot;,
+    &quot;isel&#x27;s fancy/DataArray path does use _replace; the direct-constructor claim is overbroad.&quot;,
+    &quot;assign_coords description conflates updating a new copy with mutating the original Dataset.&quot;,
+    &quot;Call-chain shorthand passes inplace positionally although the implementation passes inplace=inplace; that positional argument would bind encoding.&quot;
+  ],
+  &quot;independent_evidence&quot;: [
+    &quot;audit_replacement/source_extra.txt&quot;,
+    &quot;audit_replacement/replacement_probes.txt&quot;,
+    &quot;runs/dataset_task_041/tasks/task_041/03_verification/history.json (step 17)&quot;
+  ]
+}</pre><h3>Unmodified model-written final note</h3><pre># Dataset Replacement Mechanism in xarray - Verified Findings
+
+## Core Replacement Methods
+
+### `_replace` method (`xarray/core/dataset.py`, lines 968-1017)
+- **Purpose**: Fastpath constructor for internal use - the main mechanism for creating new Dataset instances
+- **Parameters**:
+  - `variables`: dict of Variable objects (default: None → copies existing)
+  - `coord_names`: set of coordinate names (default: None → copies existing)
+  - `dims`: dict of dimension names to sizes (default: None → copies existing)
+  - `attrs`: global attributes (default: `_default` → shallow copy)
+  - `indexes`: dict of coordinate names to Index objects (default: None → copies existing)
+  - `encoding`: encoding attributes (default: `_default` → shallow copy)
+  - `inplace`: bool (default: False)
+- **Behavior** (verified via runtime tests):
+  - **If `inplace=True`**: Directly modifies `self`&#x27;s internal state attributes, returns `self`
+  - **If `inplace=False`**: Creates new Dataset via `_construct_direct()` with copied state
+  - **Critical**: Explicitly passed arguments are used **directly** (not copied). Caller must ensure they are valid and not aliased elsewhere
+
+### `_replace_with_new_dims` method (`xarray/core/dataset.py`, lines 1018-1029)
+- **Purpose**: Convenience method for replacing variables while recalculating dimensions
+- **Call Chain**: `calculate_dimensions(variables)` → `_replace(variables, coord_names, dims, attrs, indexes, inplace)`
+- **Critical Behavior**: Does **NOT** preserve existing variables - the caller must provide ALL variables they want in the result
+
+### `_replace_vars_and_dims` method (`xarray/core/dataset.py`, lines 1032-1047)
+- **Purpose**: Deprecated version of `_replace_with_new_dims()`
+- **Behavior**: Always recalculates indexes from variables by calling `_replace` with `indexes=None`
+
+## Low-Level Constructor
+
+### `_construct_direct` method (`xarray/core/dataset.py`, lines 941-966)
+- **Purpose**: Low-level constructor that bypasses validation
+- **Behavior**: Creates new Dataset via `object.__new__(cls)` and directly assigns:
+  - `obj._variables`, `obj._coord_names`, `obj._dims`
+  - `obj._indexes`, `obj._attrs`, `obj._close`, `obj._encoding`
+  - If `dims` is None, calls `calculate_dimensions(variables)`
+  - If `indexes` is None, defaults to `{}`
+
+## Dimension Calculation
+
+### `calculate_dimensions` function (`xarray/core/variable.py`, lines 3104-3132)
+- **Purpose**: Calculate dimension sizes from a set of variables
+- **Returns**: `dict[Hashable, int]` mapping dimension names to sizes
+- **Raises ValueError** if:
+  - A dimension name conflicts with a scalar variable
+  - Dimension sizes conflict between variables
+
+## Dataset Internal State
+
+When `_replace` updates state, these internal attributes are modified:
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `_variables` | `dict[Hashable, Variable]` | All variables (data + coordinates) |
+| `_coord_names` | `set[Hashable]` | Names of coordinate variables |
+| `_dims` | `dict[Hashable, int]` | Dimension names to sizes |
+| `_indexes` | `dict[Hashable, Index]` | Index objects for coordinates |
+| `_attrs` | `dict[Hashable, Any]` | Global dataset attributes |
+| `_encoding` | `dict[Hashable, Any]` | Encoding metadata |
+| `_close` | `Callable[[], None]` | Function to close file handles |
+
+## Copy Semantics (Verified via Runtime Tests)
+
+- **In-place mode** (`inplace=True`): Returns `self`, same object id, same internal dict ids
+- **Non-in-place mode** (`inplace=False`): Returns new object, new internal dict ids
+- **Shallow copy**: `attrs` and `encoding` are shallow copied when not passed explicitly (modifying mutable values inside affects both)
+- **Direct assignment**: Explicitly passed arguments are used directly (no copying)
+
+## Usage Patterns Observed
+
+**Pattern 1: Simple variable replacement**
+```python
+new_ds = ds._replace(variables=new_variables_dict)
+```
+
+**Pattern 2: Replace with new dimensions**
+```python
+# Must provide ALL variables (including coordinates)
+new_ds = ds._replace_with_new_dims(variables=all_vars_dict)
+```
+
+**Pattern 3: In-place modification**
+```python
+ds._replace(variables=new_variables, inplace=True)  # Returns self
+```
+
+**Pattern 4: Indexing operations**
+```python
+# Pattern used in sel
+result = ds.isel(indexers=query_results.dim_indexers, drop=drop)
+return result._overwrite_indexes(*query_results.as_tuple()[1:])
+# _overwrite_indexes uses _replace internally
+```
+
+## Methods Using `_replace` (Verified)
+
+- `isel` - uses `_construct_direct` directly (not `_replace`)
+- `sel` - uses `_overwrite_indexes` → `_replace`
+- `assign` - uses `update` → `_replace`
+- `drop_vars` - uses `_replace_with_new_dims`
+- `rename_dims` - uses `_replace`
+- `merge` - uses `_replace`
+- `update` - uses `_replace` with `inplace=True`
+
+## Methods NOT Using `_replace` (Clarification)
+
+- `load` - modifies data in-place directly, returns `self` (line 707-738)
+- `persist` - uses `_persist_inplace` which modifies in-place, returns `self` (line 919-938)
+- `assign_coords` - uses `coords.update` → `_update_coords` directly (modifies in-place)
+
+## Edge Cases (Verified)
+
+- **Empty variable dict**: Works, returns dataset with no variables but original dimensions preserved
+- **Variables with conflicting dimensions**: `_replace` preserves original dimensions (when `dims=None`), `_replace_with_new_dims` recalculates from variables
+- **Partial variable replacement**: Works, only specified variables are replaced
+- **Indexes that don&#x27;t match**: `_replace` accepts any indexes dict, even if it doesn&#x27;t match coord_names or variables
+
+## DataArray&#x27;s `_replace` Method (`xarray/core/dataarray.py`, lines 448-462)
+
+- Similar pattern to Dataset&#x27;s `_replace` but for DataArrays
+- Uses `type(self)(variable, coords, name=name, indexes=indexes, fastpath=True)` to construct a new DataArray
+- `_replace_maybe_drop_dims` handles dimension changes intelligently
+- `_overwrite_indexes` manages index replacements with coordinates
+</pre></section><section id="dataset_task_040"><h2>dataset_task_040: indexes / xindexes</h2><h3>Independent audit (not model context)</h3><pre>{
+  &quot;topic&quot;: &quot;indexes / xindexes&quot;,
+  &quot;relevance&quot;: &quot;Moderate-high supporting value&quot;,
+  &quot;overall&quot;: &quot;Mostly sound architecture; wrong test conclusion&quot;,
+  &quot;findings&quot;: [
+    &quot;Correctly explains coordinate-key maps, shared MultiIndex object identity, get_all_coords and index-group caches.&quot;,
+    &quot;Correctly differentiates xarray index objects from pandas index views.&quot;
+  ],
+  &quot;issues&quot;: [
+    &quot;Says 70/70 selected dataset tests passed, but its own step 60 visibly lists ten failures (60 passed, 10 failed among those 70).&quot;,
+    &quot;Calling reset_index failures unrelated to core index functionality is unsupported; keep_levels is part of the reference correction.&quot;,
+    &quot;Broad &#x27;works correctly&#x27; claims from limited probes are not proof of general correctness.&quot;
+  ],
+  &quot;independent_evidence&quot;: [
+    &quot;audit_index_views/index_view_source.txt&quot;,
+    &quot;audit_index_views/index_view_and_drop_probes.txt&quot;,
+    &quot;runs/dataset_task_040/tasks/task_040/03_verification/history.json (steps 48,60,61,62)&quot;
+  ]
+}</pre><h3>Unmodified model-written final note</h3><pre># Verified Repository Notes: xarray Dataset Indexes and xindexes Properties
+
+## Task Summary
+This investigation verified the implementation of Dataset indexes and xindexes properties in xarray, tracing from property getters to understand how indexes are stored and retrieved.
+
+## Verified Facts
+
+### 1. Dataset Property Definitions
+
+**`Dataset.indexes` property** (`xarray/core/dataset.py:1640-1649`):
+```python
+@property
+def indexes(self) -&gt; Indexes[pd.Index]:
+    &quot;&quot;&quot;Mapping of pandas.Index objects used for label based indexing.
+    ...
+    &quot;&quot;&quot;
+    return self.xindexes.to_pandas_indexes()
+```
+- Returns an `Indexes` object containing pandas.Index objects
+- Calls `to_pandas_indexes()` on the `xindexes` object
+
+**`Dataset.xindexes` property** (`xarray/core/dataset.py:1654-1657`):
+```python
+@property
+def xindexes(self) -&gt; Indexes[Index]:
+    &quot;&quot;&quot;Mapping of xarray Index objects used for label based indexing.&quot;&quot;&quot;
+    return Indexes(self._indexes, {k: self._variables[k] for k in self._indexes})
+```
+- Returns an `Indexes` object wrapping the internal `_indexes` dict
+- Stores references to coordinate variables in `_variables`
+- Implements `collections.abc.Mapping` interface
+
+**Correction to original notes**: The `xindexes` property is at lines 1654-1657, not 1648-1650.
+
+### 2. Internal Storage Structure
+
+**`Dataset._indexes`** (`xarray/core/dataset.py:610`):
+- A plain `dict` mapping coordinate names to xarray `Index` objects
+- Created from `merge_data_and_coords()` return value (which returns `_MergeResult.indexes` as a dict)
+
+**`Dataset.xindexes`** (`xarray/core/indexes.py:1008`):
+- An `Indexes` object (a `collections.abc.Mapping` proxy)
+- Stores `_indexes` dict and `_variables` dict
+- Provides efficient lookup via `__getitem__`, `__iter__`, `__len__`, `__contains__`
+
+### 3. Call Chain for Index Storage and Retrieval
+
+Verified call chain from Dataset creation:
+1. `Dataset.__init__` (`xarray/core/dataset.py:576-610`) calls `merge_data_and_coords()`
+2. `merge_data_and_coords()` (`xarray/core/merge.py:570-582`) calls `_create_indexes_from_coords()`
+3. `_create_indexes_from_coords()` (`xarray/core/merge.py:584-617`) calls `create_default_index_implicit()`
+4. `create_default_index_implicit()` (`xarray/core/indexes.py:953-998`) creates either `PandasIndex` or `PandasMultiIndex` objects
+
+### 4. Index Types
+
+**`PandasIndex`** (`xarray/core/indexes.py:217-347`):
+- Wraps a single `pd.Index`
+- Stores: `index`, `dim`, `coord_dtype`
+- Used for simple 1D coordinates
+- Implements methods: `from_variables()`, `create_variables()`, `to_pandas_index()`, `isel()`, `sel()`, `join()`, `reindex_like()`, `roll()`, `rename()`, `copy()`
+
+**`PandasMultiIndex`** (`xarray/core/indexes.py:537-640`):
+- Wraps a `pd.MultiIndex`
+- Stores: `index`, `dim`, `coord_dtype`, `level_coords_dtype`
+- Used for multi-level coordinates
+- Inherits from `PandasIndex`
+- Implements methods: `from_variables()`, `concat()`, `stack()`, `unstack()`
+
+### 5. Indexes Class Methods
+
+**`Indexes.is_multi(key)`** (`xarray/core/indexes.py:1105-1108`):
+- Returns `True` if the key maps to a multi-coordinate index
+- Implementation: `len(self._id_coord_names[self._coord_name_id[key]]) &gt; 1`
+
+**`Indexes.get_all_coords(key)`** (`xarray/core/indexes.py:1120-1140`):
+- Returns all coordinate variables having the same index
+- Raises `ValueError` if key not in indexes (errors=&quot;raise&quot;)
+- Returns empty dict if errors=&quot;ignore&quot;
+
+**`Indexes.get_all_dims(key)`** (`xarray/core/indexes.py:1142-1163`):
+- Returns all dimensions shared by an index
+- Uses `calculate_dimensions()` on `get_all_coords()`
+
+**`Indexes.group_by_index()`** (`xarray/core/indexes.py:1159-1175`):
+- Returns list of unique indexes and their corresponding coordinates
+- Groups by index identity using `_id_index` and `_id_coord_names`
+
+**`Indexes.to_pandas_indexes()`** (`xarray/core/indexes.py:1178-1193`):
+- Returns an `Indexes[pd.Index]` object
+- Converts xarray Index objects to pandas.Index objects via `to_pandas_index()`
+
+**`Indexes.copy_indexes(deep=True)`** (`xarray/core/indexes.py:1195-1227`):
+- Returns tuple of (indexes dict, variables dict)
+- Preserves unique indexes
+- Applies `deep` parameter to `idx.copy(deep=deep)`
+
+**`Indexes.copy()`** (`xarray/core/indexes.py:1088-1089`):
+- Returns a new `Indexes` object with copies of indexes and variables
+- No `deep` parameter (unlike `copy_indexes()`)
+
+### 6. Helper Properties
+
+**`Indexes._coord_name_id`** (`xarray/core/indexes.py:1054-1057`):
+- Caches mapping from coordinate names to index IDs
+- Computed lazily on first access
+
+**`Indexes._id_index`** (`xarray/core/indexes.py:1058-1061`):
+- Caches mapping from index IDs to index objects
+- Uses `get_unique()` to find unique indexes
+
+**`Indexes._id_coord_names`** (`xarray/core/indexes.py:1062-1072`):
+- Caches mapping from index IDs to coordinate name tuples
+- Used by `is_multi()` and `get_all_coords()`
+
+### 7. Runtime Verification Evidence
+
+Verified via Python execution (steps 19-39):
+- `ds._indexes` is a `dict` containing `PandasIndex` objects
+- `ds.xindexes` is an `Indexes` object containing `PandasIndex` objects
+- `ds.indexes` is an `Indexes` object containing `pd.Index` objects
+- Coordinate variables are `IndexVariable` objects in `ds._variables`
+- For MultiIndex: all level coordinates share the same `PandasMultiIndex` object
+- `ds.xindexes.is_multi(&quot;time&quot;)` returns `True` for MultiIndex coordinates
+- `ds.xindexes._coord_name_id`, `ds.xindexes._id_index`, `ds.xindexes._id_coord_names` work correctly
+- `ds.xindexes.group_by_index()` returns unique indexes with their coordinates
+- `ds.xindexes.to_pandas_indexes()` converts to pandas indexes
+- `ds.xindexes.copy_indexes(deep=True/False)` works correctly
+- `ds.xindexes.get_all_coords(&quot;time&quot;)` returns all coordinates for a MultiIndex
+- `ds.xindexes.get_all_dims(&quot;time&quot;)` returns dimension mapping
+- `assert_no_index_corrupted()` raises `ValueError` when partial removal would corrupt MultiIndex
+
+### 8. Test Suite Results
+
+Verified via pytest execution (steps 48-62):
+- All 68 tests in `xarray/tests/test_indexes.py` pass
+- All 20 tests in `TestIndexes` class pass
+- Most `test_dataset.py` index-related tests pass (70/70 selected tests)
+- Some `reset_index` tests fail (pre-existing issue, not related to core index functionality)
+
+## Summary
+
+The notes accurately describe the xarray Dataset indexes and xindexes implementation. The only correction needed was the line number for the `xindexes` property (1654-1657, not 1648-1650). All verified facts align with the source code and runtime behavior.
+</pre></section><section id="dataset_task_016"><h2>dataset_task_016: drop_vars / drop_sel</h2><h3>Independent audit (not model context)</h3><pre>{
+  &quot;topic&quot;: &quot;drop_vars / drop_sel&quot;,
+  &quot;relevance&quot;: &quot;Moderate-high comparison value&quot;,
+  &quot;overall&quot;: &quot;Mixed; wrong selection semantics&quot;,
+  &quot;findings&quot;: [
+    &quot;Correctly traces complete MultiIndex-group deletion, filtering coordinate names and dimension recalculation in drop_vars.&quot;,
+    &quot;Correctly reports that passing a MultiIndex level name as a drop_sel dimension raises ValueError.&quot;
+  ],
+  &quot;issues&quot;: [
+    &quot;ds.loc[...] is label-based sel, not equivalent to isel with those labels as positions.&quot;,
+    &quot;For the tested two-level index, sel(level=value, drop=True) leaves a PandasIndex, not a MultiIndex structure.&quot;,
+    &quot;The failure on a non-dimension level name occurs at get_index, before pandas.Index.drop; the causal explanation is misleading.&quot;,
+    &quot;Missing fresh step references on most retained findings.&quot;
+  ],
+  &quot;independent_evidence&quot;: [
+    &quot;audit_index_views/index_view_source.txt&quot;,
+    &quot;audit_index_views/index_view_and_drop_probes.txt&quot;,
+    &quot;runs/dataset_task_016/tasks/task_016/03_verification/history.json (steps 58,66)&quot;
+  ]
+}</pre><h3>Unmodified model-written final note</h3><pre># Verified Repository Notes: xarray Dataset Drop Operations
+
+## Task Summary
+Traced `drop_vars` and `drop_sel` methods in xarray Dataset class to understand how variables and coordinates are dropped, including MultiIndex handling and index updates.
+
+## Verified Implementation Details
+
+### `drop_vars` Method (`xarray/core/dataset.py:4854`)
+
+**Call Chain:**
+1. Input validation: Converts names to set; raises `ValueError` if `errors=&quot;raise&quot;` and any name not found
+2. **MultiIndex handling (GH6505)**: Detects `PandasMultiIndex`, adds all other levels and dimension coordinate to drop list, issues `DeprecationWarning`
+3. **Index corruption check**: Calls `assert_no_index_corrupted(self.xindexes, names)`
+4. **Variable filtering**: Creates new variables dict excluding dropped names
+5. **Coord/index filtering**: Creates new `coord_names` and `indexes` dicts excluding dropped names
+6. **Dataset replacement**: Calls `self._replace_with_new_dims(variables, coord_names, indexes)`
+
+**MultiIndex Detection Code:**
+```python
+# Lines 4880-4905
+other_names = set()
+for var in names:
+    maybe_midx = self._indexes.get(var, None)
+    if isinstance(maybe_midx, PandasMultiIndex):
+        idx_coord_names = set(maybe_midx.index.names + [maybe_midx.dim])
+        idx_other_names = idx_coord_names - set(names)
+        other_names.update(idx_other_names)
+if other_names:
+    names |= set(other_names)
+    warnings.warn(
+        f&quot;Deleting a single level of a MultiIndex is deprecated. Previously, this deleted all levels of a MultiIndex. &quot;
+        f&quot;Please also drop the following variables: {other_names!r} to avoid an error in the future.&quot;,
+        DeprecationWarning,
+        stacklevel=2,
+    )
+```
+
+### `drop_sel` Method (`xarray/core/dataset.py:4966`)
+
+**Call Chain:**
+1. Input parsing: Converts `labels` to dict format using `either_dict_or_kwargs()`
+2. **Per-dimension processing**:
+   - Calls `self.get_index(dim)` (returns pandas Index via `self._indexes[key].to_pandas_index()`)
+   - Calls `index.drop(labels_for_dim, errors=errors)` (pandas Index.drop)
+   - Calls `ds.loc[{dim: new_index}]` (equivalent to `ds.isel({dim: new_index})`)
+
+**Key Code:**
+```python
+# Lines 5030-5034
+index = self.get_index(dim)  # From common.py:453
+new_index = index.drop(labels_for_dim, errors=errors)
+ds = ds.loc[{dim: new_index}]  # Triggers isel()
+```
+
+## MultiIndex Handling
+
+### In `drop_vars`:
+- Detects `PandasMultiIndex` via `self._indexes.get(var, None)`
+- Collects all level names plus dimension name
+- Issues `DeprecationWarning`: &quot;Deleting a single level of a MultiIndex is deprecated&quot;
+- Drops ALL levels of the MultiIndex together
+
+### In `drop_sel`:
+- Does NOT handle MultiIndex level names directly
+- Uses pandas Index.drop which doesn&#x27;t support dropping MultiIndex levels
+- **Raises `ValueError: dimension &#x27;xxx&#x27; does not have coordinate labels`** for MultiIndex level names
+
+### Alternative: `sel()` with MultiIndex
+- Handles MultiIndex via `PandasMultiIndex.sel()` method
+- With `drop=True`, drops level coordinates but keeps MultiIndex structure
+- Creates a new dimension for remaining levels
+
+## Index Updates
+
+### For `drop_vars`:
+- Direct filtering of the indexes dict
+- Indexes removed if their coordinate name is in dropped names
+
+### For `drop_sel`:
+- Via `isel_indexes()` → `_apply_indexes()`
+- Calls `index.isel()` on each index
+- For `PandasIndex`, `isel()` returns `None` for scalar indexing (line 359-360), causing index removal
+- For array indexing, `isel()` returns new index which replaces old one
+
+### `assert_no_index_corrupted` (`xarray/core/indexes.py:1407`)
+- Prevents partial removal of coordinates sharing an index
+- Checks if any index&#x27;s coordinate set partially overlaps with names to remove
+- Raises `ValueError` if partial overlap detected
+
+## Source References (Corrected)
+
+| Method | Location | Purpose |
+|--------|----------|---------|
+| `drop_vars` | `dataset.py:4854` | Drop variables by name |
+| `drop_sel` | `dataset.py:4966` | Drop index labels |
+| `get_index` | `common.py:453` | Get pandas Index for dimension |
+| `assert_no_index_corrupted` | `indexes.py:1407` | Prevent partial index removal |
+| `isel_indexes` | `indexes.py:1369` | Update indexes via isel |
+| `_apply_indexes` | `indexes.py:1345` | Apply index methods |
+| `PandasIndex.isel` | `indexes.py:346` | Index isel implementation |
+| `PandasMultiIndex.sel` | `indexes.py:771` | MultiIndex selection |
+
+## Verified Test Results
+
+All core drop tests pass:
+- `test_drop_variables` - Basic drop_vars removes variables and indexes correctly
+- `test_drop_multiindex_level` - drop_vars with MultiIndex drops all levels with deprecation warning
+- `test_drop_index_labels` - drop_sel removes index labels and updates dimension size
+- `test_drop_labels_by_keyword` - drop_sel with keyword arguments works correctly
+- `test_drop_labels_by_position` - drop_sel with positional arguments works correctly
+- `test_sel_drop` - sel() with drop=True works correctly
+- `test_sel_drop_mindex` - sel() with MultiIndex and drop=True creates new dimension
+
+## Verified Behavior Examples
+
+```python
+# drop_vars with MultiIndex - drops all levels
+mindex = pd.MultiIndex.from_product([[&#x27;a&#x27;, &#x27;b&#x27;], [1, 2]], names=[&#x27;lvl1&#x27;, &#x27;lvl2&#x27;])
+ds = xr.Dataset({&#x27;data&#x27;: ([&#x27;x&#x27;], np.ones(4))}, {&#x27;x&#x27;: mindex})
+with warnings.catch_warnings(record=True) as w:
+    warnings.simplefilter(&#x27;always&#x27;)
+    ds_dropped = ds.drop_vars(&#x27;lvl1&#x27;)
+    # Warning issued, all levels (x, lvl1, lvl2) dropped
+
+# drop_sel with MultiIndex - raises ValueError
+ds.drop_sel(lvl1=&#x27;a&#x27;)  # ValueError: dimension &#x27;lvl1&#x27; does not have coordinate labels
+
+# sel() with MultiIndex and drop=True - creates new dimension
+ds_selected = ds.sel(lvl1=&#x27;a&#x27;, drop=True)
+# Result: Dimension (lvl2: 2), coordinate &#x27;lvl2&#x27; remains
+
+# drop_sel with regular dimension - works correctly
+ds = xr.Dataset({&#x27;A&#x27;: ([&#x27;x&#x27;, &#x27;y&#x27;], np.arange(6).reshape(2, 3))}, {&#x27;x&#x27;: [0, 1], &#x27;y&#x27;: [&#x27;a&#x27;, &#x27;b&#x27;, &#x27;c&#x27;]})
+ds_dropped = ds.drop_sel(y=&#x27;a&#x27;)
+# Result: Dimension (y: 2), index updated to [&#x27;b&#x27;, &#x27;c&#x27;]
+```
+
+## Correction to Original Notes
+
+**Line Number Corrections:**
+- `PandasIndex.isel`: Original notes said line 318, actual is line 346
+- `PandasMultiIndex.sel`: Original notes said line 712, actual is line 771
+</pre></section><section id="indexes_task_012"><h2>indexes_task_012: PandasMultiIndex.keep_levels</h2><h3>Independent audit (not model context)</h3><pre>{
+  &quot;topic&quot;: &quot;PandasMultiIndex.keep_levels&quot;,
+  &quot;relevance&quot;: &quot;High&quot;,
+  &quot;overall&quot;: &quot;Strong narrow finding; minor factual error&quot;,
+  &quot;findings&quot;: [
+    &quot;Correctly traces pandas.droplevel, the single-level PandasIndex result and dtype preservation.&quot;,
+    &quot;Correctly observes that the current result keeps the level name and create_variables emits that key, not the dimension name.&quot;,
+    &quot;Fresh verification checks previously unresolved create_variables behavior.&quot;
+  ],
+  &quot;issues&quot;: [
+    &quot;Attribute table wrongly says coord_dtype is N/A for PandasMultiIndex; it exists and is object in the audited example.&quot;,
+    &quot;Does not explicitly connect the observed old level name to the changed test&#x27;s required dimension-name correction.&quot;,
+    &quot;No exact fresh step references for most runtime evidence; no direct keep_levels test does not mean no indirect coverage.&quot;
+  ],
+  &quot;independent_evidence&quot;: [
+    &quot;independent_audit/source.txt&quot;,
+    &quot;audit_multiindex_helpers/multiindex_helper_probes.txt&quot;
+  ]
+}</pre><h3>Unmodified model-written final note</h3><pre># Verified Repository Notes: PandasMultiIndex.keep_levels()
+
+## Implementation Location
+
+**Source:** `/testbed/xarray/core/indexes.py`, lines 705-719
+
+```python
+def keep_levels(
+    self, level_variables: Mapping[Any, Variable]
+) -&gt; PandasMultiIndex | PandasIndex:
+    &quot;&quot;&quot;Keep only the provided levels and return a new multi-index with its
+    corresponding coordinates.&quot;&quot;&quot;
+    index = self.index.droplevel(
+        [k for k in self.index.names if k not in level_variables]
+    )
+
+    if isinstance(index, pd.MultiIndex):
+        level_coords_dtype = {k: self.level_coords_dtype[k] for k in index.names}
+        return self._replace(index, level_coords_dtype=level_coords_dtype)
+    else:
+        return PandasIndex(
+            index, self.dim, coord_dtype=self.level_coords_dtype[index.name]
+        )
+```
+
+**Usage Location:** `/testbed/xarray/core/dataset.py`, line 4163
+
+```python
+idx = index.keep_levels(level_vars)
+idx_vars = idx.create_variables(level_vars)
+```
+
+## Verified Behavior
+
+### Type Conversion Threshold
+
+| Input `level_variables` | Result Type | Result Index |
+|------------------------|-------------|--------------|
+| Single level (e.g., `{&#x27;a&#x27;: ...}`) | `PandasIndex` | `Index([...], name=&#x27;a&#x27;)` |
+| Multiple levels (2+) | `PandasMultiIndex` | `MultiIndex([...], name=&#x27;mydim&#x27;)` |
+| Empty dict `{}` | `ValueError` | N/A |
+
+**Evidence:** Runtime tests confirmed that keeping one level returns `PandasIndex`, while keeping two or more levels returns `PandasMultiIndex`. Empty selection raises `ValueError: Cannot remove 2 levels from an index with 2 levels: at least one level must be left.`
+
+**Root Cause:** This behavior stems from pandas&#x27; `droplevel()` method, which automatically converts a `MultiIndex` with one level to a regular `Index`.
+
+### Data Preservation
+
+Index values are preserved from the original MultiIndex, not the level categories.
+
+**Evidence:**
+- Original: `MultiIndex([(&#x27;a&#x27;, &#x27;1&#x27;), (&#x27;a&#x27;, &#x27;2&#x27;), (&#x27;a&#x27;, &#x27;3&#x27;), (&#x27;b&#x27;, &#x27;1&#x27;), (&#x27;b&#x27;, &#x27;2&#x27;), (&#x27;b&#x27;, &#x27;3&#x27;)], name=&#x27;mydim&#x27;)`
+- After `keep_levels({&#x27;a&#x27;: ...})`: `Index([&#x27;a&#x27;, &#x27;a&#x27;, &#x27;a&#x27;, &#x27;b&#x27;, &#x27;b&#x27;, &#x27;b&#x27;], dtype=&#x27;object&#x27;, name=&#x27;a&#x27;)`
+
+### Attribute Differences
+
+| Attribute | PandasMultiIndex | PandasIndex |
+|-----------|------------------|-------------|
+| `level_coords_dtype` | Dict mapping level names to dtypes | N/A |
+| `coord_dtype` | N/A | Single dtype for the index |
+
+**Evidence:**
+- Original: `level_coords_dtype = {&#x27;a&#x27;: dtype(&#x27;&lt;U1&#x27;), &#x27;b&#x27;: dtype(&#x27;&lt;U1&#x27;)}`
+- After keeping &#x27;a&#x27;: `coord_dtype = dtype(&#x27;&lt;U1&#x27;)`
+
+### Dtype Preservation
+
+The `coord_dtype` is correctly set from the original `level_coords_dtype` for the kept level.
+
+**Evidence:** Runtime tests confirmed correct preservation for:
+- String dtypes (`&lt;U1`)
+- Numeric dtypes (`int64`, `float64`)
+
+### create_variables() Behavior
+
+When the result is a `PandasIndex`, `create_variables()` returns a single variable using `PandasIndexingAdapter`.
+
+**Evidence:**
+```python
+result = pmi.keep_levels({&#x27;a&#x27;: Variable(...)})
+idx_vars = result.create_variables({&#x27;a&#x27;: Variable(...)})
+# Result keys: [&#x27;a&#x27;]
+# Adapter type: PandasIndexingAdapter
+```
+
+### reorder_levels() Comparison
+
+The `reorder_levels()` method (`/testbed/xarray/core/indexes.py`, lines 722-729) has similar structure but **always returns `PandasMultiIndex`** because it does not drop levels.
+
+**Evidence:**
+```python
+def reorder_levels(
+    self, level_variables: Mapping[Any, Variable]
+) -&gt; PandasMultiIndex:  # Always returns PandasMultiIndex
+    index = self.index.reorder_levels(level_variables.keys())
+    level_coords_dtype = {k: self.level_coords_dtype[k] for k in index.names}
+    return self._replace(index, level_coords_dtype=level_coords_dtype)
+```
+
+## Test Coverage
+
+**No dedicated tests found:** The repository does not have tests specifically for `keep_levels()` in `/testbed/xarray/tests/test_indexes.py` or other test files. The `grep -r &quot;keep_levels&quot; /testbed/xarray/tests/` command returned no matches.
+</pre></section><section id="indexes_task_017"><h2>indexes_task_017: Indexes.get_all_coords</h2><h3>Independent audit (not model context)</h3><pre>{
+  &quot;topic&quot;: &quot;Indexes.get_all_coords&quot;,
+  &quot;relevance&quot;: &quot;High supporting value&quot;,
+  &quot;overall&quot;: &quot;Strong narrow note; no substantive error found&quot;,
+  &quot;findings&quot;: [
+    &quot;Correctly explains identity-based grouping and returns all registered dimension/level coordinates for the canonical MultiIndex setup.&quot;,
+    &quot;Correctly distinguishes index-group size from pandas MultiIndex level count in is_multi.&quot;,
+    &quot;Correctly verifies error handling and the existing test_get_all_coords behavior.&quot;
+  ],
+  &quot;issues&quot;: [
+    &quot;Most facts lack exact fresh shell-step references, although source paths and runtime/test outputs are given.&quot;,
+    &quot;A transient first-round probe filename is treated as a nonexistent repository test; this is an evidence-provenance ambiguity, not a defect in get_all_coords.&quot;,
+    &quot;Does not diagnose set/reset_index cleanup itself; it supplies the group-membership mechanism needed to investigate that cleanup.&quot;
+  ],
+  &quot;independent_evidence&quot;: [
+    &quot;independent_audit/source.txt&quot;,
+    &quot;audit_multiindex_helpers/multiindex_helper_probes.txt&quot;,
+    &quot;runs/indexes_task_017/tasks/task_017/03_verification/history.json&quot;
+  ]
+}</pre><h3>Unmodified model-written final note</h3><pre># Verified Repository Notes: `Indexes.get_all_coords()` Method
+
+## Implementation Details
+
+### Location
+- **File**: `/testbed/xarray/core/indexes.py`
+- **Method**: `get_all_coords()` at line 1111
+- **Class**: `Indexes`
+
+### Algorithm
+```python
+def get_all_coords(self, key: Hashable, errors: ErrorOptions = &quot;raise&quot;) -&gt; dict[Hashable, Variable]:
+    if errors not in [&quot;raise&quot;, &quot;ignore&quot;]:
+        raise ValueError(&#x27;errors must be either &quot;raise&quot; or &quot;ignore&quot;&#x27;)
+
+    if key not in self._indexes:
+        if errors == &quot;raise&quot;:
+            raise ValueError(f&quot;no index found for {key!r} coordinate&quot;)
+        else:
+            return {}
+
+    all_coord_names = self._id_coord_names[self._coord_name_id[key]]
+    return {k: self._variables[k] for k in all_coord_names}
+```
+
+### Data Structures
+
+| Property | Lines | Description |
+|----------|-------|-------------|
+| `_coord_name_id` | 1054-1057 | Maps coordinate names to index object IDs (lazy computation) |
+| `_id_coord_names` | 1066-1073 | Maps index IDs to tuples of coordinate names sharing that index (lazy computation) |
+| `_variables` | 1075 | Maps coordinate names to Variable objects |
+
+**Multi-Index Behavior**: All coordinate names sharing a multi-index (dimension name + level names) map to the same index ID.
+
+Example verified output:
+```python
+_coord_name_id = {&#x27;z&#x27;: 140..., &#x27;one&#x27;: 140..., &#x27;two&#x27;: 140...}  # Same ID for all three
+_id_coord_names = {140...: (&#x27;z&#x27;, &#x27;one&#x27;, &#x27;two&#x27;)}
+```
+
+## Execution Trace (Verified)
+
+For `get_all_coords(&#x27;one&#x27;)` with a multi-index:
+
+1. Check `&#x27;one&#x27; in self._indexes` → `True`
+2. Retrieve index ID: `self._coord_name_id[&#x27;one&#x27;]` → same ID as &#x27;z&#x27; and &#x27;two&#x27;
+3. Retrieve all coordinate names: `self._id_coord_names[&lt;index_id&gt;]` → `(&#x27;z&#x27;, &#x27;one&#x27;, &#x27;two&#x27;)`
+4. Return dictionary of all variables: `{&#x27;z&#x27;: &lt;Variable&gt;, &#x27;one&#x27;: &lt;Variable&gt;, &#x27;two&#x27;: &lt;Variable&gt;}`
+
+## Related Methods
+
+| Method | Lines | Description |
+|--------|-------|-------------|
+| `is_multi(key)` | 1105-1108 | Returns `True` if `len(_id_coord_names[_coord_name_id[key]]) &gt; 1` |
+| `get_all_dims(key)` | 1145-1170 | Returns dimensions shared by all coordinates in the result |
+| `group_by_index()` | 1174-1186 | Returns list of (index, coordinates) tuples for all unique indexes |
+
+## Test Evidence
+
+**Test file**: `/testbed/xarray/tests/test_indexes.py:603-617`
+
+**Test function**: `test_get_all_coords`
+
+**Verified behavior**:
+```python
+expected = {
+    &quot;z&quot;: indexes.variables[&quot;z&quot;],
+    &quot;one&quot;: indexes.variables[&quot;one&quot;],
+    &quot;two&quot;: indexes.variables[&quot;two&quot;],
+}
+assert indexes.get_all_coords(&quot;one&quot;) == expected
+```
+
+All 68 tests in `test_indexes.py` pass.
+
+## Error Handling (Verified)
+
+- Invalid `errors` parameter: raises `ValueError(&#x27;errors must be either &quot;raise&quot; or &quot;ignore&quot;&#x27;)`
+- Non-existent key with `errors=&quot;raise&quot;`: raises `ValueError(f&quot;no index found for {key!r} coordinate&quot;)`
+- Non-existent key with `errors=&quot;ignore&quot;`: returns `{}`
+
+## Corrections to Original Notes
+
+1. **Line numbers**: The original notes cited lines 4075-4091 in `xarray/core/dataset.py` for the multi-index setup pattern. The actual code is at lines 4083-4084.
+
+2. **Non-existent test file**: The notes referenced `test_dataset5.py` which does not exist in the repository. The correct test is at `/testbed/xarray/tests/test_indexes.py:603-617`.
+
+## Additional Verified Behavior
+
+- **Single-level MultiIndex**: Returns `is_multi() == True` because the check is based on the number of coordinate names sharing the same index (dimension name + level name = 2), not the number of levels in the pandas MultiIndex.
+
+- **`group_by_index()` output**: For a multi-index with dimension &#x27;z&#x27; and levels &#x27;one&#x27;, &#x27;two&#x27;, returns:
+  ```python
+  [
+    (PandasIndex, {&#x27;x&#x27;: ...}),
+    (PandasIndex, {&#x27;y&#x27;: ...}),
+    (PandasMultiIndex, {&#x27;z&#x27;: ..., &#x27;one&#x27;: ..., &#x27;two&#x27;: ...})
+  ]
+  ```
+</pre></section><section id="indexes_task_026"><h2>indexes_task_026: PandasMultiIndex.create_variables</h2><h3>Independent audit (not model context)</h3><pre>{
+  &quot;topic&quot;: &quot;PandasMultiIndex.create_variables&quot;,
+  &quot;relevance&quot;: &quot;High supporting value&quot;,
+  &quot;overall&quot;: &quot;Mostly correct core; smaller API/edge-case issues&quot;,
+  &quot;findings&quot;: [
+    &quot;Correctly describes dimension and level IndexVariable creation, index-backed data rather than supplied data, and attrs/encoding preservation.&quot;,
+    &quot;Correctly quotes the actual adapter __array__ implementation.&quot;,
+    &quot;Checks empty-row, unnamed-level and integration cases.&quot;
+  ],
+  &quot;issues&quot;: [
+    &quot;The listed IndexVariable attributes dim and fastpath do not exist; dims is a tuple and fastpath is a constructor argument.&quot;,
+    &quot;CategoricalDtype is rejected by the adapter with TypeError, not generally converted successfully with possible metadata loss. The &#x27;may lose&#x27; claim is also inconclusive wording retained in final notes.&quot;,
+    &quot;Empty-row input returns a nonempty mapping of empty variables; &#x27;empty IndexVars&#x27; is ambiguous.&quot;,
+    &quot;Declared coordinate dtype can differ from materialized NumPy values dtype in this base implementation; dtype preservation needs this distinction.&quot;,
+    &quot;Most findings lack exact fresh step references. Performance timing is a single lazy-construction measurement, not a general performance guarantee.&quot;
+  ],
+  &quot;independent_evidence&quot;: [
+    &quot;independent_audit/source.txt&quot;,
+    &quot;audit_multiindex_helpers/multiindex_helper_probes.txt&quot;,
+    &quot;audit_creation/adapter_actual_source.txt&quot;,
+    &quot;audit_creation/creation_edge_cases.txt&quot;
+  ]
+}</pre><h3>Unmodified model-written final note</h3><pre># Repository Notes: PandasMultiIndex.create_variables() Execution Trace
+
+## Verified Facts
+
+### 1. Method Location and Signature
+
+**File:** `/testbed/xarray/core/indexes.py:735-766`
+
+```python
+def create_variables(
+    self, variables: Mapping[Any, Variable] | None = None
+) -&gt; IndexVars:
+```
+
+**Correction:** Original notes claimed lines 737-769; actual lines are 735-766.
+
+---
+
+### 2. Execution Flow (8 Steps)
+
+| Step | Operation | Source Code Location |
+|------|-----------|---------------------|
+| 1 | Handle None input | Line 739: `if variables is None: variables = {}` |
+| 2 | Initialize result | Line 741: `index_vars: IndexVars = {}` |
+| 3 | Iterate names | Line 742: `for name in (self.dim,) + self.index.names:` |
+| 4 | Determine level/dtype | Lines 743-748 |
+| 5 | Extract metadata | Lines 750-757: copy attrs and encoding if present, else `{}` |
+| 6 | Create adapter | Line 758: `PandasMultiIndexingAdapter(self.index, dtype=dtype, level=level)` |
+| 7 | Create IndexVariable | Lines 759-766: with `fastpath=True` |
+| 8 | Return | Line 768: `return index_vars` |
+
+---
+
+### 3. IndexVars Structure
+
+**Type Definition:** `/testbed/xarray/core/indexes.py:31`
+```python
+IndexVars = Dict[Any, &quot;Variable&quot;]
+```
+
+**Contents:**
+- **Keys:** Follow order `(self.dim,) + self.index.names`
+- **Values:** `IndexVariable` objects with:
+  - `dim`: Dimension name (`self.dim`)
+  - `_data`: `PandasMultiIndexingAdapter` instance
+  - `attrs`: From input variable (or `{}`)
+  - `encoding`: From input variable (or `{}`)
+  - `fastpath=True`: For efficient creation
+
+---
+
+### 4. PandasMultiIndexingAdapter Behavior
+
+**File:** `/testbed/xarray/core/indexing.py:1506-1599`
+
+**`__array__` method:** Lines 1526-1530
+```python
+def __array__(self, dtype: DTypeLike = None) -&gt; np.ndarray:
+    if self.level is not None:
+        return self.array.get_level_values(self.level).values
+    else:
+        return super().__array__(dtype)
+```
+
+- `level=None`: Returns full MultiIndex as object dtype
+- `level set`: Returns single level via `get_level_values(level)`
+
+---
+
+### 5. Key Observations (Verified by Runtime Tests)
+
+1. **Dimension Variable Handling:** Input variable for `self.dim` has `attrs` and `encoding` preserved, but data always comes from MultiIndex (not input variable&#x27;s data).
+
+2. **Dtype Preservation:** Level dtypes come from `level_coords_dtype[name]`, set during `PandasMultiIndex.__init__`. Custom dtypes are preserved.
+
+3. **Partial Input Handling:** Missing level variables get empty `{}` for `attrs` and `encoding`.
+
+4. **Key Order:** Result dict keys follow `(self.dim,) + self.index.names` order.
+
+---
+
+### 6. Test Coverage Verified
+
+**Test:** `/testbed/xarray/tests/test_indexes.py::TestPandasMultiIndex::test_create_variables` (line 446)
+- All 11 `TestPandasMultiIndex` tests pass
+- Test verifies dtype preservation, attribute/encoding copying, and level coordinate creation
+
+---
+
+### 7. Additional Verified Behavior
+
+#### Empty MultiIndex
+- Works correctly with empty arrays
+- Returns empty IndexVars with proper structure
+
+#### Unnamed Levels
+- Auto-named as `x_level_0`, `x_level_1`, etc.
+- Example: `pd.MultiIndex.from_arrays([[0, 1], [2, 3]])` → `[&#x27;x_level_0&#x27;, &#x27;x_level_1&#x27;]`
+
+#### Large MultiIndex Performance
+- Fast creation: ~0.0001s for 10,000 elements
+- No explicit caching mechanism in `PandasMultiIndexingAdapter`
+
+#### from_variables_maybe_expand Integration
+- Calls `create_variables` internally (line 706)
+- Properly handles attrs and encoding preservation
+
+---
+
+### 8. Known Limitations
+
+1. **Categorical Dtypes:** `PandasMultiIndexingAdapter.__init__` converts categorical dtypes to numpy dtypes, which may lose categorical metadata.
+
+2. **Memoization:** Docstring claims &quot;memoized&quot; but no explicit caching mechanism found in `PandasMultiIndexingAdapter`.
+
+---
+
+### 9. Source Files Referenced
+
+| File | Lines | Purpose |
+|------|-------|---------|
+| `/testbed/xarray/core/indexes.py` | 31 | `IndexVars` type definition |
+| `/testbed/xarray/core/indexes.py` | 735-766 | `PandasMultiIndex.create_variables()` method |
+| `/testbed/xarray/core/indexing.py` | 1506-1599 | `PandasMultiIndexingAdapter` class |
+| `/testbed/xarray/tests/test_indexes.py` | 446 | `test_create_variables` test |
+</pre></section><section id="indexes_task_015"><h2>indexes_task_015: PandasMultiIndex.from_variables_maybe_expand</h2><h3>Independent audit (not model context)</h3><pre>{
+  &quot;topic&quot;: &quot;PandasMultiIndex.from_variables_maybe_expand&quot;,
+  &quot;relevance&quot;: &quot;High API relevance; moderate actual help&quot;,
+  &quot;overall&quot;: &quot;Mixed; branch conditions overgeneralized&quot;,
+  &quot;findings&quot;: [
+    &quot;Correctly traces existing-index levels/codes, row-aligned new variables, returned coordinate mapping and level order.&quot;,
+    &quot;Correctly replaces the original stack/unstack call-site claim with set_index.&quot;,
+    &quot;Checks single-variable, missing-data, unused-level and dimension mismatch cases.&quot;
+  ],
+  &quot;issues&quot;: [
+    &quot;The blanket adapter requirement is false: raw current/new Variables are accepted in the single-current-variable branch. The verifier&#x27;s own step 12 proves this.&quot;,
+    &quot;The method is not called only with append=True: default append=False with multiple supplied variables also calls it.&quot;,
+    &quot;Cited step 29 uses set_index(x=&#x27;a&#x27;) with default append=False, which takes the PandasIndex path and does not prove this helper was called.&quot;,
+    &quot;Strong verified badges do not repair the missing branch conditions.&quot;
+  ],
+  &quot;independent_evidence&quot;: [
+    &quot;independent_audit/source.txt (set_index branch and from_variables_maybe_expand)&quot;,
+    &quot;audit_expansion/expansion_contract_probes.txt&quot;,
+    &quot;runs/indexes_task_015/tasks/task_015/03_verification/history.json (steps 12,29)&quot;
+  ]
+}</pre><h3>Unmodified model-written final note</h3><pre># PandasMultiIndex.from_variables_maybe_expand() - Verified Repository Notes
+
+## Source Location
+- **File:** `/testbed/xarray/core/indexes.py`
+- **Lines:** 651-703 (verified via `cat -n xarray/core/indexes.py | head -n 750 | tail -n 100`)
+
+## Method Signature
+```python
+@classmethod
+def from_variables_maybe_expand(
+    cls,
+    dim: Hashable,
+    current_variables: Mapping[Any, Variable],
+    variables: Mapping[Any, Variable],
+) -&gt; tuple[PandasMultiIndex, IndexVars]
+```
+
+## Core Behavior
+
+### Input Requirements
+- **Variables must be wrapped in `PandasMultiIndexingAdapter`**
+  - Raw `Variable` objects fail with: `AttributeError: &#x27;numpy.ndarray&#x27; object has no attribute &#x27;array&#x27;`
+  - Correct usage: Variables must be obtained from `PandasMultiIndex.create_variables()`
+  - **Verification:** Step 10 - Direct raw Variable objects fail; Step 11 - Correct usage succeeds
+
+### Dimension Compatibility Check
+- `_check_dim_compat({**current_variables, **variables})` called at line 667
+- Enforces all variables share the same dimension
+- Mismatched dimensions raise: `ValueError: unmatched dimensions for multi-index variables &#x27;x&#x27; (&#x27;x&#x27;,), &#x27;a&#x27; (&#x27;x&#x27;,), &#x27;b&#x27; (&#x27;x&#x27;,), &#x27;c&#x27; (&#x27;y&#x27;,)`
+- **Verification:** Step 22 - Mismatched dimensions test
+
+### Multi-Index Expansion Path (`len(current_variables) &gt; 1`)
+```python
+# Lines 669-679
+data = cast(PandasMultiIndexingAdapter, next(iter(current_variables.values()))._data)
+current_index = data.array
+names.extend(current_index.names)
+codes.extend(current_index.codes)
+levels.extend(current_index.levels)
+for name in current_index.names:
+    level_variables[name] = current_variables[name]
+```
+- Extracts existing MultiIndex from adapter&#x27;s `.array` property
+- Preserves original level order
+- **Verification:** Steps 11, 24, 48
+
+### Single-Variable Expansion Path (`len(current_variables) == 1`)
+```python
+# Lines 681-689
+var = next(iter(current_variables.values()))
+new_var_name = f&quot;{dim}_level_0&quot;
+names.append(new_var_name)
+cat = pd.Categorical(var.values, ordered=True)
+codes.append(cat.codes)
+levels.append(cat.categories)
+level_variables[new_var_name] = var
+```
+- Converts single 1D variable to categorical level named `{dim}_level_0`
+- **Verification:** Step 12 - Single-variable expansion test
+
+### New Variable Processing
+```python
+# Lines 691-696
+for name, var in variables.items():
+    names.append(name)
+    cat = pd.Categorical(var.values, ordered=True)
+    codes.append(cat.codes)
+    levels.append(cat.categories)
+    level_variables[name] = var
+```
+- All new variables converted to ordered `Categorical`
+- Supports various dtypes: int, float, string
+- **Verification:** Steps 14, 15, 16, 20, 47
+
+## Resulting MultiIndex Structure
+
+### Example: 2-Level Expansion + 1 New Variable
+```python
+# Original
+names: [&#x27;a&#x27;, &#x27;b&#x27;]
+codes: [[0, 1, 2], [0, 1, 2]]
+levels: [[1, 2, 3], [10, 20, 30]]
+values: [(1, 10), (2, 20), (3, 30)]
+
+# After adding &#x27;c&#x27; with values [100, 200, 300]
+names: [&#x27;a&#x27;, &#x27;b&#x27;, &#x27;c&#x27;]
+codes: [[0, 1, 2], [0, 1, 2], [0, 1, 2]]
+levels: [[1, 2, 3], [10, 20, 30], [100, 200, 300]]
+values: [(1, 10, 100), (2, 20, 200), (3, 30, 300)]
+```
+- **Verification:** Steps 11, 24, 48
+
+## Return Values
+
+### 1. `PandasMultiIndex` Object
+- Contains expanded `pd.MultiIndex`
+- Has `dim` attribute
+- Has `level_coords_dtype` dict mapping level names to dtypes
+- **Verification:** Step 20
+
+### 2. `IndexVars` Dictionary
+- Contains dimension variable: tuple of all level values
+- Contains individual level variables (1D arrays)
+- Keys: `{dim, *level_names}`
+- **Verification:** Step 20
+
+## Edge Cases (Verified)
+
+| Case | Behavior | Verification |
+|------|----------|--------------|
+| Empty `variables` dict | Returns unchanged MultiIndex | Step 13 |
+| Different dtypes (float, string) | Works correctly | Step 14 |
+| NaN values | Excluded from categories, code -1 | Step 15 |
+| Unused levels | Preserved in expansion | Step 18 |
+| Level order | Preserved (new levels appended) | Step 17 |
+| Mismatched dimensions | Raises `ValueError` | Step 22 |
+
+## Usage Context
+
+### Called in `set_index` (append mode)
+- **File:** `/testbed/xarray/core/dataset.py:4075`
+- Context: `set_index(indexes=..., append=True)`
+- Expands existing MultiIndex with new coordinate
+- **Verification:** Step 29
+
+### NOT used in:
+- `stack()` - uses `PandasMultiIndex.stack()` instead
+- `unstack()` - uses `PandasMultiIndex.unstack()` instead
+- **Correction:** Notes claim about stack/unstack usage is **incorrect**. The method is only called in `set_index` with `append=True`.
+
+## Verified Claims Summary
+
+| Claim | Status | Evidence |
+|-------|--------|----------|
+| Method expands existing MultiIndex with new levels | ✅ Verified | Steps 11, 24, 48 |
+| Raw Variable objects fail | ✅ Verified | Step 10 |
+| Single-variable branch creates `{dim}_level_0` | ✅ Verified | Step 12 |
+| Empty variables returns unchanged | ✅ Verified | Step 13 |
+| Different dtypes supported | ✅ Verified | Step 14 |
+| NaN values handled | ✅ Verified | Step 15 |
+| Level order preserved | ✅ Verified | Step 17 |
+| Unused levels preserved | ✅ Verified | Step 18 |
+| IndexVars contains dimension + level variables | ✅ Verified | Step 20 |
+| Dimension compatibility enforced | ✅ Verified | Step 22 |
+| Used in set_index (append) | ✅ Verified | Step 29 |
+| Used in stack/unstack | ❌ Incorrect | Uses different methods |
+</pre></section><section id="indexes_task_049"><h2>indexes_task_049: assert_no_index_corrupted</h2><h3>Independent audit (not model context)</h3><pre>{
+  &quot;topic&quot;: &quot;assert_no_index_corrupted&quot;,
+  &quot;relevance&quot;: &quot;High supporting value&quot;,
+  &quot;overall&quot;: &quot;Strong narrow note; no substantive error found&quot;,
+  &quot;findings&quot;: [
+    &quot;Correctly states the exact nonempty-partial-intersection predicate and identity-based coordinate grouping.&quot;,
+    &quot;Correctly verifies empty, unknown, complete-group and singleton-index removals.&quot;,
+    &quot;Correctly distinguishes direct Dataset deletion, which raises on a partial MultiIndex removal, from drop_vars, which warns and expands the set before validation.&quot;
+  ],
+  &quot;issues&quot;: [
+    &quot;This is a partial-removal guard, not a general validator for all Dataset metadata invariants or a repair operation.&quot;,
+    &quot;Custom-index applicability follows the type-agnostic predicate; it is not proof of every custom index&#x27;s semantic dependencies.&quot;,
+    &quot;Most findings lack exact fresh shell-step references; the generic Coordinates call-site label could identify the concrete implementation more precisely.&quot;
+  ],
+  &quot;independent_evidence&quot;: [
+    &quot;independent_audit/source.txt&quot;,
+    &quot;audit_multiindex_helpers/multiindex_helper_probes.txt&quot;,
+    &quot;audit_index_views/index_view_and_drop_probes.txt&quot;,
+    &quot;runs/indexes_task_049/tasks/task_049/03_verification/history.json&quot;
+  ]
+}</pre><h3>Unmodified model-written final note</h3><pre>## Verified Repository Notes: `assert_no_index_corrupted()` Function
+
+### Function Definition
+**Location**: `xarray/core/indexes.py` lines 1407-1425
+
+```python
+def assert_no_index_corrupted(
+    indexes: Indexes[Index],
+    coord_names: set[Hashable],
+) -&gt; None:
+    &quot;&quot;&quot;Assert removing coordinates will not corrupt indexes.&quot;&quot;&quot;
+    for index, index_coords in indexes.group_by_index():
+        common_names = set(index_coords) &amp; coord_names
+        if common_names and len(common_names) != len(index_coords):
+            common_names_str = &quot;, &quot;.join(f&quot;{k!r}&quot; for k in common_names)
+            index_names_str = &quot;, &quot;.join(f&quot;{k!r}&quot; for k in index_coords)
+            raise ValueError(
+                f&quot;cannot remove coordinate(s) {common_names_str}, which would corrupt &quot;
+                f&quot;the following index built from coordinates {index_names_str}:\n&quot;
+                f&quot;{index}&quot;
+            )
+```
+
+### Corruption Detection Logic
+An index is considered corrupted when removing coordinates would **partially overlap** with the index&#x27;s coordinate dependencies:
+- Condition: `common_names and len(common_names) != len(index_coords)`
+- Mathematical equivalent: `(I ∩ R) ≠ ∅ AND (I ∩ R) ≠ I` where I=index_coords, R=coord_names
+
+### MultiIndex Coordinate Grouping
+**Source**: `xarray/core/indexes.py` line 1165 (`group_by_index()` method)
+
+For `PandasMultiIndex`, the index depends on both the dimension coordinate and all level coordinates:
+- Example: MultiIndex with dimension &#x27;x&#x27; and levels [&#x27;foo&#x27;, &#x27;bar&#x27;] has `index_coords = {&#x27;x&#x27;, &#x27;foo&#x27;, &#x27;bar&#x27;}`
+- This grouping is established by `group_by_index()` which returns tuples of `(index, coords_dict)`
+
+### Error Message Format
+```
+cannot remove coordinate(s) &#x27;foo&#x27;, which would corrupt the following index built from coordinates &#x27;x&#x27;, &#x27;foo&#x27;, &#x27;bar&#x27;:
+&lt;xarray.core.indexes.PandasMultiIndex object at 0x7fec96887ca0&gt;
+```
+
+### Test Results Verified
+All test cases from the notes were verified with fresh shell execution:
+
+| Test Case | coord_names | Result |
+|-----------|-------------|--------|
+| Remove &#x27;foo&#x27; only | `{&#x27;foo&#x27;}` | **ValueError** raised |
+| Remove &#x27;bar&#x27; only | `{&#x27;bar&#x27;}` | **ValueError** raised |
+| Remove all multi-index coords | `{&#x27;x&#x27;, &#x27;foo&#x27;, &#x27;bar&#x27;}` | **OK** (no error) |
+| Remove unrelated coord | `{&#x27;value&#x27;}` | **OK** (no error) |
+| Remove single-coordinate index | `{&#x27;x&#x27;}` (regular index) | **OK** (no error) |
+| Empty coord_names set | `set()` | **OK** (no error) |
+| Remove non-existent coord | `{&#x27;nonexistent&#x27;}` | **OK** (no error) |
+
+### Call Sites Verified
+1. **`Dataset.__delitem__`**: Line 1561 in `xarray/core/dataset.py`
+2. **`Dataset.drop_vars`**: Line 4901 in `xarray/core/dataset.py` (with deprecation warning handling for partial MultiIndex removal)
+3. **`Coordinates.__delitem__`**: Line 411 in `xarray/core/coordinates.py`
+
+### Key Implementation Details
+- `group_by_index()` is the critical method that establishes which coordinates belong to which index
+- The check is **conservative**: raises error if ANY coordinate of an index is removed but NOT ALL
+- Works identically for `PandasIndex`, `PandasMultiIndex`, and custom Index subclasses
+- All existing tests in `xarray/tests/test_indexes.py` pass (68 tests)
+- `test_delitem` and `test_delitem_multiindex_level` pass
+
+### Verified Integration Behavior
+- `del ds[&#x27;foo&#x27;]` on MultiIndex Dataset raises ValueError for partial removal ✓
+- `ds.drop_vars(&#x27;foo&#x27;)` shows DeprecationWarning and automatically includes all MultiIndex coordinates before calling `assert_no_index_corrupted()` ✓
+
+### Source References
+- `xarray/core/indexes.py`: Lines 1407-1425 (function), 1165 (`group_by_index`), 1054 (`_coord_name_id`), 1066 (`_id_coord_names`)
+- `xarray/core/dataset.py`: Lines 1561, 4901
+- `xarray/core/coordinates.py`: Line 411
+</pre></section></html>
