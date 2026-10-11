@@ -11,13 +11,26 @@
     <div class="crumb"><a href="../../index.html">&larr; all projects</a></div>
     <div class="hero">
       <h1>xarray task-solving and study-note samples</h1>
-      <p>Four Qwen3.5-9B repository-study trajectories paired with three
-         independently sampled knowledge-note generations. Each summary output
-         links to the exact summarizer system prompt and complete trajectory input.</p>
+      <p>Qwen3.5-9B repository-study trajectories, generated repository
+         learnings, and verification passes. The published views expose the
+         model-facing inputs, tool interactions, and final outputs.</p>
     </div>
 
     <h2>Samples</h2>
     <!-- ENTRIES:START -->
+    <section class="entry">
+      <header>
+        <h2>End-to-end exploration and verification: backend engine selection</h2>
+        <span class="badge done">published</span>
+        <span class="date">2026-10-11</span>
+      </header>
+      <p>A complete file-based pipeline run over <code>xarray/backends/api.py</code>:
+         an existing task proposal is explored in the repository, converted into
+         initial learnings, then checked in a fresh tool-using verification
+         trajectory and rewritten. The model outputs are unchanged; completion
+         does not independently certify their technical correctness.</p>
+      <p><a href="samples/backend-engine-verification/index.html">Open all stages and outputs &rarr;</a></p>
+    </section>
     <section class="entry">
       <header>
         <h2>Original trajectories and generated knowledge notes</h2>

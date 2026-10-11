@@ -1,0 +1,124 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Original exploration final response</title><style>body{font:16px/1.6 system-ui;max-width:1150px;margin:25px auto;padding:20px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f6f8fa;padding:18px}table{border-collapse:collapse;width:100%}td,th{padding:12px;border:1px solid #ddd;text-align:left}a{color:#0969da}section{margin:25px 0}</style></head><body><h1>Original exploration final response</h1><p><a href="trajectory_html/index.html">Full exploration trajectory</a> · <a href="final_response.md">Exact Markdown response</a></p><pre>
+
+Now I have gathered all the necessary information. Let me compile the repository information and learnings.
+
+---
+
+# Repository Information and Learnings
+
+## Task Premises Checked
+
+The task asked to trace `_get_default_engine()` in `xarray/backends/api.py` and document the decision tree for:
+1. Remote URIs
+2. `.gz` files
+3. Standard netCDF files
+
+Additionally, identify dependency checks and error messages.
+
+**All premises are verified and accurate.** The function exists as described and the decision tree matches the implementation.
+
+---
+
+## Decision Flow Diagram for Engine Selection
+
+```
+_get_default_engine(path, allow_remote=False)
+│
+├─ If allow_remote=True AND is_remote_uri(path):
+│   └─ Call _get_default_engine_remote_uri()
+│       │
+│       ├─ Try: import netCDF4 → Return &quot;netcdf4&quot;
+│       │
+│       ├─ Except ImportError:
+│       │   └─ Try: import pydap → Return &quot;pydap&quot;
+│       │
+│       └─ Except ImportError:
+│           └─ Raise ValueError: &quot;netCDF4 or pydap is required for accessing remote datasets via OPeNDAP&quot;
+│
+├─ Elif path.endswith(&quot;.gz&quot;):
+│   └─ Call _get_default_engine_gz()
+│       │
+│       ├─ Try: import scipy → Return &quot;scipy&quot;
+│       │
+│       └─ Except ImportError:
+│           └─ Raise ValueError: &quot;scipy is required for accessing .gz files&quot;
+│
+└─ Else (standard netCDF file):
+    └─ Call _get_default_engine_netcdf()
+        │
+        ├─ Try: import netCDF4 → Return &quot;netcdf4&quot;
+        │
+        ├─ Except ImportError:
+        │   └─ Try: import scipy.io.netcdf → Return &quot;scipy&quot;
+        │
+        └─ Except ImportError:
+            └─ Raise ValueError: &quot;cannot read or write netCDF files without netCDF4-python or scipy installed&quot;
+```
+
+### Key Observation
+The `.gz` check (`path.endswith(&quot;.gz&quot;)`) happens **before** the standard netCDF check, meaning `.gz` files are handled separately regardless of whether netCDF4 is available.
+
+---
+
+## List of Dependency Checks and Error Messages
+
+| Function | Dependency | Success Returns | Error Message (if missing) |
+|----------|------------|-----------------|----------------------------|
+| `_get_default_engine_remote_uri()` | `netCDF4` | `&quot;netcdf4&quot;` | — |
+| `_get_default_engine_remote_uri()` | `pydap` (fallback) | `&quot;pydap&quot;` | — |
+| `_get_default_engine_remote_uri()` | both missing | — | `ValueError: &quot;netCDF4 or pydap is required for accessing remote datasets via OPeNDAP&quot;` |
+| `_get_default_engine_gz()` | `scipy` | `&quot;scipy&quot;` | `ValueError: &quot;scipy is required for accessing .gz files&quot;` |
+| `_get_default_engine_netcdf()` | `netCDF4` | `&quot;netcdf4&quot;` | — |
+| `_get_default_engine_netcdf()` | `scipy.io.netcdf` (fallback) | `&quot;scipy&quot;` | — |
+| `_get_default_engine_netcdf()` | both missing | — | `ValueError: &quot;cannot read or write netCDF files without netCDF4-python or scipy installed&quot;` |
+
+---
+
+## Repository Behavior and Contracts
+
+### Source Reference
+- **File**: `xarray/backends/api.py`
+- **Function**: `_get_default_engine(path: str, allow_remote: bool = False) -&gt; T_NetcdfEngine`
+- **Lines**: ~120-130 (as of this inspection)
+
+### `is_remote_uri()` Implementation
+- **File**: `xarray/core/utils.py`
+- **Function**: `is_remote_uri(path: str) -&gt; bool`
+- **Line**: ~649
+- **Pattern**: `r&quot;^[a-z][a-z0-9]*(\://|\:\:)&quot;`
+- **Matches**: `http://`, `https://`, `ftp://`, `opendap://`, `s3://`, `gs://`, `file://`, `http::/` (double colon)
+
+### Available Engines
+From `xarray/backends/api.py` (lines ~57-65):
+```python
+ENGINES = {
+    &quot;netcdf4&quot;: backends.NetCDF4DataStore.open,
+    &quot;scipy&quot;: backends.ScipyDataStore,
+    &quot;pydap&quot;: backends.PydapDataStore.open,
+    &quot;h5netcdf&quot;: backends.H5NetCDFStore.open,
+    &quot;pynio&quot;: backends.NioDataStore,
+    &quot;pseudonetcdf&quot;: backends.PseudoNetCDFDataStore.open,
+    &quot;cfgrib&quot;: backends.CfGribDataStore,
+    &quot;zarr&quot;: backends.ZarrStore.open_group,
+}
+```
+
+### Test Verification
+Test: `xarray/tests/test_backends_api.py::test__get_default_engine`
+- **Status**: PASSED
+- **Tests**:
+  - Remote URI (`http://example.org/test.nc`, `allow_remote=True`) → `&quot;netcdf4&quot;`
+  - `.gz` file (`/example.gz`) → `&quot;scipy&quot;`
+  - Standard file (`/example`) → `&quot;netcdf4&quot;`
+
+---
+
+## Summary
+
+The `_get_default_engine()` function implements a simple priority-based decision tree:
+1. **Remote URIs** (when `allow_remote=True`): Prefer `netcdf4`, fallback to `pydap`
+2. **`.gz` files**: Always use `scipy` (only netCDF3 supported)
+3. **Standard netCDF files**: Prefer `netcdf4`, fallback to `scipy`
+
+The function raises `ValueError` when no required dependency is available, with specific messages indicating which engine is needed and why.
+</pre></body></html>

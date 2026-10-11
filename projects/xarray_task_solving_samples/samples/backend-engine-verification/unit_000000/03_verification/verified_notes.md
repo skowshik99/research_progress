@@ -1,0 +1,45 @@
+Verified repository information and learnings
+
+## Core Function and Signature
+
+The function `xarray.backends.api._get_default_engine(path: str, allow_remote: bool = False)` determines which backend engine to use for a given file path. It returns a literal engine name: `"netcdf4"` or `"scipy"` for local files, and `"netcdf4"` or `"pydap"` for remote URIs.
+
+## Decision Tree
+
+The function implements the following decision logic:
+1. If `allow_remote=True` and the path is a remote URI (detected via `is_remote_uri()`), it calls `_get_default_engine_remote_uri()`
+2. Else if the path ends with `.gz`, it calls `_get_default_engine_gz()`
+3. Otherwise, it calls `_get_default_engine_netcdf()`
+
+## Remote URI Detection and Engine Selection
+
+**Detection**: The function `xarray.core.utils.is_remote_uri(path)` uses the regex pattern `r"^[a-z][a-z0-9]*(\://|\:\:)"` to identify remote URIs. This matches schemes including `http://`, `https://`, `ftp://`, `opendap://`, `s3://`, `gs://`, `file://`, and even `http::/` (double colon).
+
+**Engine Selection**: The function `_get_default_engine_remote_uri()` attempts to import `netCDF4` first; if successful, it returns `"netcdf4"`. If that fails, it tries to import `pydap` and returns `"pydap"` if successful. If both imports fail, it raises `ValueError("netCDF4 or pydap is required for accessing remote datasets via OPeNDAP")`.
+
+## `.gz` File Engine Selection
+
+The function `_get_default_engine_gz()` handles paths ending with `.gz`. It requires `scipy` to be installed; if present, it returns `"scipy"`. If `scipy` is missing, it raises `ValueError("scipy is required for accessing .gz files")`.
+
+## Standard netCDF File Engine Selection
+
+The function `_get_default_engine_netcdf()` handles local netCDF files. It first attempts to import `netCDF4`; if successful, it returns `"netcdf4"`. If that fails, it tries to import `scipy.io.netcdf` and returns `"scipy"` if successful. If both imports fail, it raises `ValueError("cannot read or write netCDF files without netCDF4-python or scipy installed")`.
+
+## Available Engines in the Codebase
+
+The `ENGINES` dictionary in `xarray/backends/api.py` defines mappings for eight engine names: `"netcdf4"`, `"scipy"`, `"pydap"`, `"h5netcdf"`, `"pynio"`, `"pseudonetcdf"`, `"cfgrib"`, and `"zarr"`. However, `_get_default_engine()` only considers `netcdf4`, `scipy`, and `pydap` depending on file type; other engines are not part of automatic selection.
+
+## Test Coverage
+
+The test `xarray/tests/test_backends_api.py::test__get_default_engine` verifies the happy path when dependencies are present:
+- Remote URI with `allow_remote=True` returns `"netcdf4"`
+- `.gz` file returns `"scipy"`
+- Standard file returns `"netcdf4"`
+
+The test passes in the environment. Note that the test is decorated with `@requires_netCDF4` and `@requires_scipy`, meaning it only runs when both dependencies are available. The error cases (missing dependencies) are not explicitly tested.
+
+## Integration Context
+
+The `open_dataset()` and `open_dataarray()` functions do not use `_get_default_engine()` when `engine=None`; instead, they call `plugins.guess_engine(filename_or_obj)` to determine the engine. The `_get_default_engine()` function is used in `to_netcdf()` when `engine=None` (line 1172 in `xarray/backends/api.py`).
+
+The `allow_remote` parameter defaults to `False` and is not set to `True` by default in user-facing open functions. Non-`.gz` compressed formats (e.g., `.bz2`, `.zip`) are not handled specially by `_get_default_engine()` and are treated as standard netCDF files.
