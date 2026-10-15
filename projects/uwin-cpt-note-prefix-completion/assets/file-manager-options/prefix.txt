@@ -1,0 +1,20 @@
+# Verified repository information and learnings
+
+## OPTIONS accessed in file_manager.py
+
+Two global configuration options are accessed in `xarray/backends/file_manager.py`:
+
+### `file_cache_maxsize`
+- **Location**: Line 16 in `xarray/backends/file_manager.py`: `FILE_CACHE = LRUCache(maxsize=OPTIONS["file_cache_maxsize"], on_evict=lambda k, v: v.close())`
+- **Effect**: Sets the maximum number of open files held in xarray's global LRU cache. When the cache evicts a file, the `on_evict` lambda automatically closes it.
+- **Default value**: 128 (defined in `xarray/core/options.py` line 65)
+- **Validation**: Must be a positive integer via `_positive_integer` validator. Setting to 0 raises `ValueError`.
+- **Usage**:
+  - At module load time, `FILE_CACHE` is initialized with this value
+  - The setter `xarray.set_options(file_cache_maxsize=<int>)` calls `_set_file_cache_maxsize(value)` which directly assigns `FILE_CACHE.maxsize = value`
+  - At module load time, an assertion ensures `FILE_CACHE.maxsize >= 1` (line 18)
+- **Test evidence**: `xarray/tests/test_options.py::test_file_cache_maxsize` confirms:
+  - Setting `file_cache_maxsize=0` raises `ValueError`
+  - Setting `file_cache_maxsize=123` updates `FILE_CACHE.maxsize` to 123
+  - The setting is reverted when exiting the context manager
+

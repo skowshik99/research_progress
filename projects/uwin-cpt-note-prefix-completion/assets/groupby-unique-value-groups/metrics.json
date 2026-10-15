@@ -1,0 +1,19 @@
+{
+  "model": "uwin-cpt-9b",
+  "temperature": 0,
+  "prefix_characters": 1816,
+  "reference_characters": 4322,
+  "generated_characters": 6695,
+  "exact_continuation_match": false,
+  "exact_matching_start_characters": 57,
+  "word_sequence_similarity": 0.25239203516938197,
+  "finish_reason": "length",
+  "usage": {
+    "prompt_tokens": 531,
+    "total_tokens": 2579,
+    "completion_tokens": 2048,
+    "prompt_tokens_details": null
+  },
+  "elapsed_seconds": 24.045,
+  "unique_prefix_matches": 1
+}

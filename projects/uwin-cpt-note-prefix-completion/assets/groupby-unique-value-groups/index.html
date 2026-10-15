@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CPT note-prefix completion comparison</title>
+<style>
+:root{color-scheme:dark;--bg:#0c1220;--panel:#151e30;--ink:#e5edf8;--muted:#a6b5ca}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,sans-serif}
+header{padding:26px 28px 16px;max-width:1800px;margin:auto}
+h1{font-size:25px;margin:0 0 10px}p{line-height:1.55;margin:8px 0;color:var(--muted)}
+.meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.badge{background:#1c2a40;border:1px solid #334563;padding:7px 10px;border-radius:7px;font-size:13px}
+.toolbar{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:16px}
+a{color:#a4d1ff}label{color:var(--muted);font-size:14px}
+.comparison{display:grid;grid-template-columns:minmax(320px,.85fr) minmax(380px,1.1fr) minmax(380px,1.1fr);
+gap:16px;padding:0 28px 28px;max-width:1800px;margin:auto;overflow:auto}
+.panel{background:var(--panel);border:1px solid #30405b;border-radius:10px;overflow:hidden}
+.panel h2{font-size:17px;margin:0;padding:16px;border-bottom:1px solid #30405b}
+.panel .subtitle{font-size:12px;color:var(--muted);padding:10px 16px;border-bottom:1px solid #30405b}
+pre{margin:0;padding:18px;font:13px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;
+white-space:pre-wrap;overflow-wrap:anywhere;height:68vh;min-height:400px;overflow:auto;tab-size:4}
+mark{color:inherit;border-radius:2px}
+.generated-difference{background:#553740}
+.reference-difference{background:#234f43}
+body:has(#highlight:not(:checked)) mark{background:transparent}
+footer{padding:0 28px 24px;max-width:1800px;margin:auto;font-size:13px;color:var(--muted)}
+@media(max-width:800px){header{padding:20px}.comparison{padding:0 20px 20px;grid-template-columns:320px 380px 380px}}
+</style></head><body><header>
+<h1>CPT note-prefix completion</h1>
+<p><strong>xarray/core/groupby.py · unique_value_groups</strong><br>
+One training note, continued from its exact text prefix through the raw completions endpoint.</p>
+<div class="meta">
+<span class="badge">Model: uwin-cpt-9b</span><span class="badge">Temperature: 0</span>
+<span class="badge">Prefix: 1816 characters</span>
+<span class="badge">Unique among 3531 training notes</span>
+<span class="badge">Generated: 6695 characters</span>
+<span class="badge">Finish: length</span>
+<span class="badge">Word sequence similarity: 25.2%</span>
+</div>
+<p>The prefix is the only model input. The original continuation is displayed for comparison.
+Highlights indicate differences in wording; the similarity value measures wording, not factual correctness.
+All three columns contain the complete text.</p>
+<div class="toolbar">
+<a href="../../index.html">Project page</a>
+<label><input type="checkbox" id="highlight" checked> Highlight differences</label>
+<a href="original_note.md">Complete training note</a>
+<a href="generated_continuation.md">Generated text</a>
+<a href="reference_continuation.md">Original continuation</a>
+<a href="request.json">Exact request</a><a href="response.json">Raw response</a>
+<a href="metrics.json">Metrics</a>
+</div></header>
+<main class="comparison">
+<section class="panel"><h2>Input prefix</h2><div class="subtitle">First 1816 characters · exact and unmodified</div>
+<pre># Verified repository information and learnings
+
+## Function definition and contract
+
+**Location**: `xarray/core/groupby.py:67-92`
+
+**Signature**:
+```python
+def unique_value_groups(ar, sort: bool = True) -&gt; tuple[np.ndarray | pd.Index, list[list[int]]]:
+```
+
+**Purpose**: Groups an array by its unique values, returning unique values and a list of index lists for each group.
+
+**Parameters**:
+- `ar`: array-like (must be 1-D; 2-D arrays raise `ValueError`)
+- `sort`: bool, default `True`; whether to sort unique values
+
+**Returns**:
+- `values`: unique values as `np.ndarray` or `pd.Index` (or `pd.MultiIndex`)
+- `indices`: `list[list[int]]` where each inner list contains the indices in `ar` that share that unique value
+
+## Core algorithm (verified by code and probes)
+
+### 1. pd.factorize call (`line 85`)
+```python
+inverse, values = pd.factorize(ar, sort=sort)
+```
+- `inverse`: integer codes for each element (0, 1, 2, ...)
+- `values`: array of unique values
+- **NaN behavior**: pandas assigns `-1` in `inverse` for NaN values; NaN values are **not** included in `values`
+
+**Probe verification**: For input `[1, nan, 2, nan, 1, 3]`, `pd.factorize` returns `inverse=[0, -1, 1, -1, 0, 2]` and `values=[1., 2., 3.]`.
+
+### 2. MultiIndex name preservation (`line 86-87`)
+```python
+if isinstance(values, pd.MultiIndex):
+    values.names = ar.names
+```
+- If `values` is a `pd.MultiIndex`, the names from the input array `ar` are copied to `values`
+
+**Probe verification**: For `MultiIndex([(1, &#x27;a&#x27;), (2, &#x27;b&#x27;), (1, &#x27;a&#x27;), (3, &#x27;c&#x27;)], names=[&#x27;level1&#x27;, &#x27;level2&#x27;])`, `unique_value_groups` returns a `MultiIndex` with names `[&#x27;level1&#x27;, &#x27;level2&#x27;]`.
+
+**Limitation**: When `IndexVariable` is created with these values in GroupBy, the MultiIndex is converted to a numpy array of tuples, losing the MultiIndex structure and names.
+
+</pre></section>
+<section class="panel"><h2>Model-generated continuation</h2><div class="subtitle">Greedy generation · temperature 0 · 24.0 seconds</div>
+<pre>### 3. Group construction (`line 88-91`)
+```python
+<mark class="generated-difference">groups</mark> = [[] for _ in range(len(values))]
+for <mark class="generated-difference">i,</mark> g in enumerate(inverse):
+    if g <mark class="generated-difference">!=</mark> <mark class="generated-difference">-1:</mark>
+        <mark class="generated-difference">groups[g].append(i)
+return values, groups</mark>
+```
+- Creates <mark class="generated-difference">a list of</mark> empty <mark class="generated-difference">lists,</mark> <mark class="generated-difference">one</mark> <mark class="generated-difference">per</mark> unique value
+- Iterates through `inverse`, appending index <mark class="generated-difference">`i`</mark> to `groups[g]` only <mark class="generated-difference">if</mark> `g <mark class="generated-difference">!=</mark> -1` <mark class="generated-difference">(skips</mark> <mark class="generated-difference">NaN)</mark>
+
+**Probe verification**: For input `[1, nan, 2, nan, 1, 3]`, the function returns <mark class="generated-difference">`values=[1., 2., 3.]` and `indices=[[0,</mark> 4], [2], <mark class="generated-difference">[5]]`.</mark>
+
+## NaN handling <mark class="generated-difference">behavior</mark> <mark class="generated-difference">(verified</mark> <mark class="generated-difference">by</mark> <mark class="generated-difference">probes)
+
+| Input | `inverse` from `pd.factorize` | `values` | `groups` |</mark>
+<mark class="generated-difference">|-------|-------------------------------|----------|----------|</mark>
+<mark class="generated-difference">|</mark> `[1, nan, <mark class="generated-difference">2,</mark> nan, <mark class="generated-difference">1,</mark> <mark class="generated-difference">3]`</mark> <mark class="generated-difference">|</mark> <mark class="generated-difference">`[0,</mark> <mark class="generated-difference">-1,</mark> 1, <mark class="generated-difference">-1,</mark> <mark class="generated-difference">0,</mark> 2]` <mark class="generated-difference">|</mark> <mark class="generated-difference">`[1., 2., 3.]` |</mark> `[[0, 4], <mark class="generated-difference">[2],</mark> <mark class="generated-difference">[5]]`</mark> |
+| `[nan, nan, nan]` | <mark class="generated-difference">`[-1,</mark> <mark class="generated-difference">-1, -1]`</mark> | `[]` | <mark class="generated-difference">`[]`</mark> |
+| <mark class="generated-difference">`[1,</mark> <mark class="generated-difference">2, 3]`</mark> | <mark class="generated-difference">`[0, 1, 2]`</mark> | <mark class="generated-difference">`[1,</mark> <mark class="generated-difference">2, 3]`</mark> | <mark class="generated-difference">`[[0],</mark> [1], [2]]` <mark class="generated-difference">|
+
+**Key</mark> <mark class="generated-difference">observations**:
+-</mark> <mark class="generated-difference">NaN</mark> <mark class="generated-difference">values</mark> <mark class="generated-difference">are</mark> <mark class="generated-difference">**excluded** from both `values` and `groups`
+- The `-1` sentinel in `inverse` is used to identify and skip NaN values
+- Empty groups (all NaN) result in empty `values` and `groups`
+
+## Sort parameter behavior (verified by probes)
+
+| Input | `sort=True` | `sort=False` |
+|-------|-------------|--------------|
+| `[3, 1, 2, 1, 3]` | `values=[1, 2, 3]`, `groups=[[1, 3], [2], [0, 4]]` | `values=[3, 1, 2]`, `groups=[[0, 4], [1, 3], [2]]` |
+| `[1, nan, 2, nan, 1, 3]` | `values=[1., 2., 3.]`, `groups=[[0, 4], [2], [5]]` | `values=[1., 2., 3.]`, `groups=[[0, 4], [2], [5]]` |
+
+**Key observations**:
+- `sort=True`:</mark> unique values <mark class="generated-difference">are</mark> <mark class="generated-difference">sorted in ascending order</mark>
+- <mark class="generated-difference">`sort=False`:</mark> <mark class="generated-difference">unique</mark> <mark class="generated-difference">values preserve the order of their first appearance
+- NaN values are always excluded regardless of sort order
+
+## MultiIndex handling (verified by probes)
+
+**Probe setup**:
+```python
+import pandas as pd
+import numpy as np
+from xarray.core.groupby import unique_value_groups
+
+data = pd.MultiIndex.from_tuples(
+    [(1, &#x27;a&#x27;), (2, &#x27;b&#x27;), (1, &#x27;a&#x27;), (3, &#x27;c&#x27;)],
+    names=[&#x27;level1&#x27;, &#x27;level2&#x27;]
+)
+ar = np.array(data)
+```
+
+**Results**:
+- `values` type: `pd.MultiIndex`
+- `values.names`: `[&#x27;level1&#x27;, &#x27;level2&#x27;]`
+- `groups`: `[[0, 2], [1], [3]]`
+
+**Limitation**: When `IndexVariable` is created with these values in GroupBy, the MultiIndex</mark> is converted to a numpy array of tuples, losing the MultiIndex structure and names.
+
+<mark class="generated-difference">## Test coverage (verified by code inspection)
+
+**Test**: `xarray/tests/test_groupby.py::test_unique_value_groups`
+
+**Test cases**:
+1. `np.array([1, 2, 3])` with `sort=True`
+2. `np.array([1, 2, 3])` with `sort=False`
+3. `np.array([1, np.nan, 2, np.nan, 1, 3])` with `sort=True`
+</mark>4. <mark class="generated-difference">`np.array([1,</mark> <mark class="generated-difference">np.nan,</mark> <mark class="generated-difference">2, np.nan, 1, 3])` with `sort=False`
+5. `pd.MultiIndex` with `sort=True`
+6. `pd.MultiIndex` with `sort=False`
+
+**All 6 tests pass**.
+
+## Usage in GroupBy
+
+**Location**: `xarray/core/groupby.py:356-357`
+
+```python
+if isinstance(group, (DataArray, pd.MultiIndex)):
+    unique_values, indices = unique_value_groups(group)
+```
+
+**Context**: Used in the `GroupBy.__init__` method when the group</mark> is <mark class="generated-difference">a `DataArray` or `pd.MultiIndex`.
+
+## Additional verified behaviors
+
+### 2-D array handling
+- **Behavior**: Raises `ValueError`
+- **Error message**: &quot;unique_value_groups</mark> only <mark class="generated-difference">works</mark> <mark class="generated-difference">on</mark> <mark class="generated-difference">1-D</mark> <mark class="generated-difference">arrays&quot;
+-</mark> <mark class="generated-difference">**Location**:</mark> <mark class="generated-difference">`xarray/core/groupby.py:84`
+
+###</mark> <mark class="generated-difference">Empty</mark> <mark class="generated-difference">array</mark> <mark class="generated-difference">handling
+- **Input**: `np.array([])`
+- **Output**: `values=[]`, `groups=[]`</mark>
+
+<mark class="generated-difference">###</mark> <mark class="generated-difference">Single</mark> <mark class="generated-difference">element</mark> <mark class="generated-difference">handling
+-</mark> <mark class="generated-difference">**Input**:</mark> <mark class="generated-difference">`np.array([5])`
+-</mark> <mark class="generated-difference">**Output**:</mark> <mark class="generated-difference">`values=[5]`,</mark> <mark class="generated-difference">`groups=[[0]]`
+
+###</mark> <mark class="generated-difference">All</mark> <mark class="generated-difference">NaN</mark> <mark class="generated-difference">handling
+-</mark> <mark class="generated-difference">**Input**:</mark> <mark class="generated-difference">`np.array([nan,</mark> <mark class="generated-difference">nan,</mark> <mark class="generated-difference">nan])`
+-</mark> <mark class="generated-difference">**Output**:</mark> <mark class="generated-difference">`values=[]`,</mark> <mark class="generated-difference">`groups=[]`
+
+###</mark> <mark class="generated-difference">Dask</mark> <mark class="generated-difference">array</mark> <mark class="generated-difference">handling
+-</mark> <mark class="generated-difference">**Behavior**:</mark> <mark class="generated-difference">Works correctly
+- **Output**: `values` is</mark> a <mark class="generated-difference">numpy</mark> <mark class="generated-difference">array, `groups`</mark> is <mark class="generated-difference">a</mark> <mark class="generated-difference">list of lists
+
+### Datetime handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of datetime64, `groups` is a list of lists
+
+### String handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of strings, `groups` is a list of lists
+
+### Complex number handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of complex numbers, `groups` is a list of lists
+
+### Inf handling
+- **Behavior**: Works correctly (treated as regular values, not NaN)
+- **Output**: `values` includes `inf` and `-inf`, `groups` includes indices</mark> for <mark class="generated-difference">these</mark> <mark class="generated-difference">values
+
+###</mark> <mark class="generated-difference">Sparse array handling</mark>
+<mark class="generated-difference">- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array, `groups` is a list of lists
+
+### Categorical handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array, `groups` is a list of lists
+
+### Object dtype handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of object dtype, `groups` is a list of lists
+
+### Integer dtype handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of int64, `groups` is a list of lists
+
+### Float dtype handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of float64, `groups` is a list of lists
+
+### Boolean dtype handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of bool, `groups` is a list of lists
+
+### Timedelta handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of timedelta64, `groups` is a list of lists
+
+### Period handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of period dtype, `groups` is a list of lists
+
+### Quoted string handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of bytes, `groups` is a list of lists
+
+### Unicode string handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of unicode strings, `groups` is a list of lists
+
+### Mixed type handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of object dtype, `groups` is a list of lists
+
+### Large array handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array, `groups` is a list of lists
+
+### Sparse array handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array, `groups` is a list of lists
+
+### Categorical handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array, `groups` is a list of lists
+
+### Datetime handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of datetime64, `groups` is a list of lists
+
+### String handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of strings, `groups` is a list of lists
+
+### Complex number handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of complex numbers, `groups` is a list of lists
+
+### Inf handling
+- **Behavior**: Works correctly (treated as regular values, not NaN)
+- **Output**: `values` includes</mark></pre></section>
+<section class="panel"><h2>Ground-truth note continuation</h2><div class="subtitle">Remaining 4322 characters of the original training text</div>
+<pre>### 3. Group construction (`line 88-91`)
+```python
+<mark class="reference-difference">groups: list[list[int]]</mark> = [[] for _ in range(len(values))]
+for <mark class="reference-difference">n,</mark> g in enumerate(inverse):
+    if g <mark class="reference-difference">&gt;=</mark> <mark class="reference-difference">0:</mark>
+        <mark class="reference-difference">groups[g].append(n)</mark>
+```
+- Creates <mark class="reference-difference">an</mark> empty <mark class="reference-difference">list</mark> <mark class="reference-difference">for</mark> <mark class="reference-difference">each</mark> unique value
+- Iterates through `inverse`, appending index <mark class="reference-difference">`n`</mark> to `groups[g]` only <mark class="reference-difference">when</mark> `g <mark class="reference-difference">&gt;= 0`
+- **NaN handling**: indices where `g ==</mark> -1` <mark class="reference-difference">(NaN</mark> <mark class="reference-difference">values) are skipped</mark>
+
+**Probe verification**: For input `[1, nan, 2, nan, 1, 3]`, the function returns <mark class="reference-difference">`groups=[[0,</mark> 4], [2], <mark class="reference-difference">[5]]`, correctly excluding the NaN indices.</mark>
+
+##<mark class="reference-difference"> Usage in xarray GroupBy
+
+**Location**: `xarray/core/groupby.py:430-436`
+
+###</mark> NaN handling <mark class="reference-difference">before</mark> <mark class="reference-difference">`unique_value_groups`</mark> <mark class="reference-difference">(`line</mark> <mark class="reference-difference">430-431`)</mark>
+<mark class="reference-difference">```python</mark>
+<mark class="reference-difference">if isinstance(group, DataArray) and group.isnull().any():
+    obj = obj.where(group.notnull(), drop=True)
+    group = group.dropna(group_dim)
+```
+- NaN values in the group coordinate are dropped **before** calling `unique_value_groups`
+- The underlying object `obj` is also filtered to remove values where the group was NaN
+- **Result**: `unique_value_groups` typically never encounters NaN values in normal groupby operations
+
+**Probe verification**: For a DataArray with coordinates</mark> `[1, nan, <mark class="reference-difference">3,</mark> nan, <mark class="reference-difference">5]`,</mark> <mark class="reference-difference">GroupBy</mark> <mark class="reference-difference">produces</mark> <mark class="reference-difference">`_group_indices=[[0],</mark> <mark class="reference-difference">[1], [2]]` and `_unique_coord=[1., 3., 5.]`, correctly excluding NaN indices.
+
+### Sort parameter logic (`line 434`)
+```python
+sort = bins is None and (not isinstance(group_as_index, pd.MultiIndex))
+```
+- `sort=True` when `bins=None` and group is not a `MultiIndex`
+- `sort=False` when group is a `MultiIndex` (to preserve tuple order)
+
+**Probe verification**: For input `[3,</mark> 1, <mark class="reference-difference">2,</mark> <mark class="reference-difference">1, 3]`, `sort=True` returns `values=[1, 2, 3]` with groups `[[1, 3], [2], [0, 4]]`, while `sort=False` returns `values=[3, 1,</mark> 2]` <mark class="reference-difference">with</mark> <mark class="reference-difference">groups</mark> `[[0, 4], <mark class="reference-difference">[1,</mark> <mark class="reference-difference">3], [2]]`.
+
+## Probe evidence summary
+
+| Input type | Example input | `pd.factorize` output | `unique_value_groups` groups | Notes</mark> |
+<mark class="reference-difference">|------------|---------------|----------------------|------------------------------|-------|
+| Basic numeric | `[1,2,1,3,2,1,4]` | `inverse=[0,1,0,2,1,0,3]`, `values=[1,2,3,4]` | `[[0,2,5],[1,4],[3],[6]]` | Standard grouping |
+| With NaN | `[1,nan,2,nan,1,3]` | `inverse=[0,-1,1,-1,0,2]`, `values=[1,2,3]` | `[[0,4],[2],[5]]` | NaN indices skipped |
+| Strings | `[&#x27;a&#x27;,&#x27;b&#x27;,&#x27;a&#x27;,&#x27;c&#x27;,&#x27;b&#x27;,&#x27;a&#x27;]` | `inverse=[0,1,0,2,1,0]`, `values=[&#x27;a&#x27;,&#x27;b&#x27;,&#x27;c&#x27;]` | `[[0,2,5],[1,4],[3]]` | Works with object arrays |
+| MultiIndex | `MultiIndex([(1,&#x27;a&#x27;),...]` | `inverse=[0,1,2,3]`, `values=MultiIndex` | `[[0],[1],[2],[3]]` | MultiIndex preserved in return |
+| Sort=False | `[3,1,2,1,3]` | `inverse=[0,1,2,1,0]`, `values=[3,1,2]` | `[[0,4],[1,3],[2]]` | Order preserved |
+| 2D array | `[[1,2],[1,3],[2,1]]` | **Raises ValueError** | N/A | 2-D arrays are not supported |
+| All NaN </mark>| `[nan, nan, nan]` | <mark class="reference-difference">`inverse=[-1,-1,-1]`,</mark> <mark class="reference-difference">`values=[]`</mark> | `[]` | <mark class="reference-difference">Returns empty groups</mark> |
+| <mark class="reference-difference">Empty</mark> <mark class="reference-difference">array</mark> | <mark class="reference-difference">`[]`</mark> | <mark class="reference-difference">`inverse=[]`,</mark> <mark class="reference-difference">`values=[]`</mark> | <mark class="reference-difference">`[]` | Returns empty groups |
+
+## GroupBy internal state (probe verification)
+
+- **With NaN in group coordinate**: `_group_indices=[[0],</mark> [1], [2]]` <mark class="reference-difference">(NaN</mark> <mark class="reference-difference">indices</mark> <mark class="reference-difference">excluded),</mark> <mark class="reference-difference">`_unique_coord`</mark> <mark class="reference-difference">contains</mark> <mark class="reference-difference">3</mark> unique values <mark class="reference-difference">(NaN</mark> <mark class="reference-difference">dropped)</mark>
+- <mark class="reference-difference">**With</mark> <mark class="reference-difference">MultiIndex**:</mark> <mark class="reference-difference">`_unique_coord`</mark> is converted<mark class="reference-difference"> to numpy array of tuples, `_group_indices=[0, 1, 2, 3]` (one index per unique tuple)
+
+## Corrections and verified limitations
+
+1. **Type annotation bug**: The return type annotation `tuple[np.ndarray | pd.Index, list[list[int]]]` does not include `pd.MultiIndex`, which is a valid return type when the input is a `pd.MultiIndex`.
+
+2. **Documentation bug**: The docstring states &quot;This will be flattened if it is not already 1-D&quot;, but there is no flattening code in the implementation. 2-D arrays raise a `ValueError` from `pd.factorize`.
+
+3. **MultiIndex preservation limitation**: While `unique_value_groups` preserves MultiIndex structure and names in its return value, `IndexVariable` (used in GroupBy) converts it</mark> to a numpy array of tuples, losing the MultiIndex structure and names.
+
+4. <mark class="reference-difference">**Single</mark> <mark class="reference-difference">usage**:</mark> <mark class="reference-difference">`unique_value_groups`</mark> is <mark class="reference-difference">called</mark> only <mark class="reference-difference">once</mark> <mark class="reference-difference">in</mark> <mark class="reference-difference">`xarray/core/groupby.py`</mark> <mark class="reference-difference">at</mark> <mark class="reference-difference">line</mark> <mark class="reference-difference">436,</mark> <mark class="reference-difference">during</mark> <mark class="reference-difference">GroupBy</mark> <mark class="reference-difference">initialization.</mark>
+
+<mark class="reference-difference">5.</mark> <mark class="reference-difference">**Edge</mark> <mark class="reference-difference">cases**:</mark> <mark class="reference-difference">All-NaN</mark> <mark class="reference-difference">arrays</mark> <mark class="reference-difference">return</mark> <mark class="reference-difference">empty</mark> <mark class="reference-difference">groups;</mark> <mark class="reference-difference">empty</mark> <mark class="reference-difference">arrays</mark> <mark class="reference-difference">return</mark> <mark class="reference-difference">empty</mark> <mark class="reference-difference">groups;</mark> <mark class="reference-difference">GroupBy</mark> <mark class="reference-difference">raises</mark> <mark class="reference-difference">`ValueError:</mark> <mark class="reference-difference">Failed</mark> <mark class="reference-difference">to</mark> <mark class="reference-difference">group</mark> <mark class="reference-difference">data.</mark> <mark class="reference-difference">Are</mark> <mark class="reference-difference">you</mark> <mark class="reference-difference">grouping</mark> <mark class="reference-difference">by</mark> a <mark class="reference-difference">variable</mark> <mark class="reference-difference">that</mark> is <mark class="reference-difference">all</mark> <mark class="reference-difference">NaN?`</mark> for <mark class="reference-difference">all-NaN</mark> <mark class="reference-difference">group</mark> <mark class="reference-difference">coordinates.</mark>
+</pre></section>
+</main>
+<footer>Frozen CPT snapshot: 20261014T095820Z · zero-based dataset row 2169 ·
+unit_002176 · source SHA-256: c9e45ff9aa68ef28ee483c51b335171394659b71077e91edf332a8c2b04482a8<br>
+The ground truth here is the original note text. This run generates a continuation from the prefix;
+it does not feed the original continuation back into the model.</footer>
+</body></html>

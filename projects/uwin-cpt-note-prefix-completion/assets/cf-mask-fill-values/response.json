@@ -1,0 +1,29 @@
+{
+  "id": "cmpl-a23c7a457198593f",
+  "object": "text_completion",
+  "created": 1792025368,
+  "prompt_routed_experts": null,
+  "model": "uwin-cpt-9b",
+  "choices": [
+    {
+      "index": 0,
+      "text": "**Test coverage:**\n- `xarray/tests/test_coding.py::test_CFMaskCoder_decode` (lines 40–50) verifies the warning is raised when multiple fill values are present.\n- `xarray/tests/test_coding.py::test_CFMaskCoder_decode_dask` (lines 52–62) verifies the same behavior for dask-backed arrays.\n\n**Verified probe results:**\n- With `name=None`: Warning message is `variable None has multiple fill values {2, -1}, decoding all values to NaN.`\n- With `name='temperature'`: Warning message is `variable 'temperature' has multiple fill values {2, -1}, decoding all values to NaN.`\n- With single fill value: No warning is raised.\n- With no fill values: No warning is raised.\n- With only `missing_value` attribute: No warning is raised.\n- With only `_FillValue` attribute: No warning is raised.\n- With both attributes containing the same value: No warning is raised (deduplicated by the set).\n- With both attributes containing different values: Warning is raised with the deduplicated set of values.\n",
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.21.0-bedfc6bb",
+  "usage": {
+    "prompt_tokens": 283,
+    "total_tokens": 528,
+    "completion_tokens": 245,
+    "prompt_tokens_details": null
+  },
+  "kv_transfer_params": null
+}

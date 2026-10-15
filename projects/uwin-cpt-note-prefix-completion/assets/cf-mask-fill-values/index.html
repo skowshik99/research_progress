@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CPT note-prefix completion comparison</title>
+<style>
+:root{color-scheme:dark;--bg:#0c1220;--panel:#151e30;--ink:#e5edf8;--muted:#a6b5ca}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,sans-serif}
+header{padding:26px 28px 16px;max-width:1800px;margin:auto}
+h1{font-size:25px;margin:0 0 10px}p{line-height:1.55;margin:8px 0;color:var(--muted)}
+.meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.badge{background:#1c2a40;border:1px solid #334563;padding:7px 10px;border-radius:7px;font-size:13px}
+.toolbar{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:16px}
+a{color:#a4d1ff}label{color:var(--muted);font-size:14px}
+.comparison{display:grid;grid-template-columns:minmax(320px,.85fr) minmax(380px,1.1fr) minmax(380px,1.1fr);
+gap:16px;padding:0 28px 28px;max-width:1800px;margin:auto;overflow:auto}
+.panel{background:var(--panel);border:1px solid #30405b;border-radius:10px;overflow:hidden}
+.panel h2{font-size:17px;margin:0;padding:16px;border-bottom:1px solid #30405b}
+.panel .subtitle{font-size:12px;color:var(--muted);padding:10px 16px;border-bottom:1px solid #30405b}
+pre{margin:0;padding:18px;font:13px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;
+white-space:pre-wrap;overflow-wrap:anywhere;height:68vh;min-height:400px;overflow:auto;tab-size:4}
+mark{color:inherit;border-radius:2px}
+.generated-difference{background:#553740}
+.reference-difference{background:#234f43}
+body:has(#highlight:not(:checked)) mark{background:transparent}
+footer{padding:0 28px 24px;max-width:1800px;margin:auto;font-size:13px;color:var(--muted)}
+@media(max-width:800px){header{padding:20px}.comparison{padding:0 20px 20px;grid-template-columns:320px 380px 380px}}
+</style></head><body><header>
+<h1>CPT note-prefix completion</h1>
+<p><strong>xarray/coding/variables.py · CFMaskCoder.decode</strong><br>
+One training note, continued from its exact text prefix through the raw completions endpoint.</p>
+<div class="meta">
+<span class="badge">Model: uwin-cpt-9b</span><span class="badge">Temperature: 0</span>
+<span class="badge">Prefix: 1082 characters</span>
+<span class="badge">Unique among 3531 training notes</span>
+<span class="badge">Generated: 985 characters</span>
+<span class="badge">Finish: stop</span>
+<span class="badge">Word sequence similarity: 30.4%</span>
+</div>
+<p>The prefix is the only model input. The original continuation is displayed for comparison.
+Highlights indicate differences in wording; the similarity value measures wording, not factual correctness.
+All three columns contain the complete text.</p>
+<div class="toolbar">
+<a href="../../index.html">Project page</a>
+<label><input type="checkbox" id="highlight" checked> Highlight differences</label>
+<a href="original_note.md">Complete training note</a>
+<a href="generated_continuation.md">Generated text</a>
+<a href="reference_continuation.md">Original continuation</a>
+<a href="request.json">Exact request</a><a href="response.json">Raw response</a>
+<a href="metrics.json">Metrics</a>
+</div></header>
+<main class="comparison">
+<section class="panel"><h2>Input prefix</h2><div class="subtitle">First 1082 characters · exact and unmodified</div>
+<pre>Verified repository information and learnings
+
+### CFMaskCoder.decode() Multiple Fill Values Warning
+
+**File:** `xarray/coding/variables.py`
+
+**Condition that triggers the warning:**
+The warning is triggered when `len(encoded_fill_values) &gt; 1`, where `encoded_fill_values` is a deduplicated set of non-null fill values extracted from both `missing_value` and `_FillValue` attributes.
+
+**Source location:** Lines 181–213 (CFMaskCoder.decode method)
+
+**Warning message format:**
+```python
+&quot;variable {!r} has multiple fill values {}, decoding all values to NaN.&quot;
+```
+- `{!r}`: the variable name in repr format. If `name` is `None`, the message shows `variable None`. If a name is provided, it shows the name with quotes, e.g., `variable &#x27;temperature&#x27;`.
+- `{}`: the set of fill values, e.g., `{2, -1}`.
+
+**Warning metadata:**
+- Category: `SerializationWarning` (a custom `RuntimeWarning` subclass defined at line 16)
+- Stack level: `stacklevel=3`
+
+**Behavior when triggered:**
+All matching values in the data are decoded to `NaN` via the `_apply_mask` helper function (lines 135–142).
+
+</pre></section>
+<section class="panel"><h2>Model-generated continuation</h2><div class="subtitle">Greedy generation · temperature 0 · 2.9 seconds</div>
+<pre><mark class="generated-difference">**Test</mark> <mark class="generated-difference">coverage:**</mark>
+- <mark class="generated-difference">`xarray/tests/test_coding.py::test_CFMaskCoder_decode`</mark> <mark class="generated-difference">(lines</mark> <mark class="generated-difference">40–50)</mark> <mark class="generated-difference">verifies</mark> <mark class="generated-difference">the</mark> warning <mark class="generated-difference">is</mark> <mark class="generated-difference">raised</mark> <mark class="generated-difference">when</mark> <mark class="generated-difference">multiple</mark> <mark class="generated-difference">fill</mark> values are <mark class="generated-difference">present.</mark>
+- <mark class="generated-difference">`xarray/tests/test_coding.py::test_CFMaskCoder_decode_dask`</mark> <mark class="generated-difference">(lines</mark> <mark class="generated-difference">52–62)</mark> <mark class="generated-difference">verifies</mark> <mark class="generated-difference">the</mark> <mark class="generated-difference">same</mark> <mark class="generated-difference">behavior</mark> <mark class="generated-difference">for</mark> <mark class="generated-difference">dask-backed</mark> <mark class="generated-difference">arrays.
+
+**Verified</mark> <mark class="generated-difference">probe</mark> <mark class="generated-difference">results:**</mark>
+- <mark class="generated-difference">With</mark> <mark class="generated-difference">`name=None`:</mark> <mark class="generated-difference">Warning message is</mark> `variable None has multiple fill values {2, -1}, decoding all values to NaN.`
+- With <mark class="generated-difference">`name=&#x27;temperature&#x27;`: Warning message is</mark> `variable &#x27;temperature&#x27; has multiple fill values {2, -1}, decoding all values to NaN.`
+- <mark class="generated-difference">With single</mark> fill <mark class="generated-difference">value:</mark> <mark class="generated-difference">No</mark> warning is <mark class="generated-difference">raised.
+-</mark> <mark class="generated-difference">With</mark> <mark class="generated-difference">no</mark> <mark class="generated-difference">fill</mark> <mark class="generated-difference">values:</mark> <mark class="generated-difference">No</mark> <mark class="generated-difference">warning</mark> <mark class="generated-difference">is</mark> <mark class="generated-difference">raised.
+-</mark> <mark class="generated-difference">With only `missing_value` attribute: No warning is raised.
+- With only `_FillValue` attribute: No warning is raised.
+- With both attributes containing</mark> the <mark class="generated-difference">same value: No </mark>warning <mark class="generated-difference">is</mark> <mark class="generated-difference">raised</mark> <mark class="generated-difference">(deduplicated by the set).</mark>
+<mark class="generated-difference">- With both attributes containing different values: Warning is raised with the deduplicated set of values.
+</mark></pre></section>
+<section class="panel"><h2>Ground-truth note continuation</h2><div class="subtitle">Remaining 1111 characters of the original training text</div>
+<pre><mark class="reference-difference">**Edge</mark> <mark class="reference-difference">cases verified:**</mark>
+- <mark class="reference-difference">Single</mark> <mark class="reference-difference">fill</mark> <mark class="reference-difference">value:</mark> <mark class="reference-difference">no</mark> <mark class="reference-difference">warning
+- Fill value(s) that are `NaN`: no</mark> warning <mark class="reference-difference">(filtered</mark> <mark class="reference-difference">by</mark> <mark class="reference-difference">`pd.isnull`)
+-</mark> <mark class="reference-difference">Only</mark> <mark class="reference-difference">`missing_value` with a single value: no warning
+- Both `missing_value` and `_FillValue` with overlapping values: deduplicated by the set, so only distinct</mark> values are <mark class="reference-difference">counted; no warning if deduplicated to one value</mark>
+- <mark class="reference-difference">Multiple</mark> <mark class="reference-difference">fill</mark> <mark class="reference-difference">values</mark> <mark class="reference-difference">from</mark> <mark class="reference-difference">both</mark> <mark class="reference-difference">attributes:</mark> <mark class="reference-difference">warning</mark> <mark class="reference-difference">raised</mark> <mark class="reference-difference">with</mark> <mark class="reference-difference">all</mark> <mark class="reference-difference">distinct</mark> <mark class="reference-difference">values
+
+**Example warning messages:**</mark>
+- <mark class="reference-difference">No</mark> <mark class="reference-difference">name</mark> <mark class="reference-difference">provided:</mark> `variable None has multiple fill values {2, -1}, decoding all values to NaN.`
+- With <mark class="reference-difference">name:</mark> `variable &#x27;temperature&#x27; has multiple fill values {2, -1}, decoding all values to NaN.`
+- <mark class="reference-difference">Multiple</mark> fill <mark class="reference-difference">values</mark> <mark class="reference-difference">from both attributes: `variable &#x27;temp&#x27; has multiple fill values {2, 3, -1}, decoding all values to NaN.`
+
+**Variable class note:**
+The `Variable` class (`xarray/core/variable.py`, line 273) does not store a `name` attribute (its `__slots__` are `&quot;_dims&quot;, &quot;_data&quot;, &quot;_attrs&quot;, &quot;_encoding&quot;`). The `name` used in the</mark> warning is <mark class="reference-difference">the</mark> <mark class="reference-difference">optional</mark> <mark class="reference-difference">`name`</mark> <mark class="reference-difference">argument</mark> <mark class="reference-difference">passed</mark> <mark class="reference-difference">to</mark> <mark class="reference-difference">`decode()`.</mark> <mark class="reference-difference">If</mark> <mark class="reference-difference">not</mark> <mark class="reference-difference">provided,</mark> the warning <mark class="reference-difference">shows</mark> <mark class="reference-difference">`variable</mark> <mark class="reference-difference">None`.</mark>
+</pre></section>
+</main>
+<footer>Frozen CPT snapshot: 20261014T095820Z · zero-based dataset row 1108 ·
+unit_001113 · source SHA-256: be1bfe0c968b6e4ab555e7b2a52b94bb16d5bec6c84a6f93af1d8481608d735f<br>
+The ground truth here is the original note text. This run generates a continuation from the prefix;
+it does not feed the original continuation back into the model.</footer>
+</body></html>

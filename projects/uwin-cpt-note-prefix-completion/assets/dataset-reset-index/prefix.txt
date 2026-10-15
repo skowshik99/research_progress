@@ -1,0 +1,67 @@
+## Verified repository information and learnings
+
+### reset_index Method Location and Signature
+
+The `reset_index` method is defined at **line 4108** in `xarray/core/dataset.py`:
+
+```python
+def reset_index(
+    self: T_Dataset,
+    dims_or_levels: Hashable | Sequence[Hashable],
+    drop: bool = False,
+) -> T_Dataset:
+```
+
+### How reset_index Works
+
+The method operates through the following sequence:
+
+1. **Input Validation**: Converts single names to a list, then validates that all specified names exist in `self._indexes`:
+   ```python
+   invalid_coords = set(dims_or_levels) - set(self._indexes)
+   if invalid_coords:
+       raise ValueError(f"{tuple(invalid_coords)} are not coordinates with an index")
+   ```
+
+2. **Processing Each Name**:
+   - Gets the index: `index = self._indexes[name]`
+   - Collects all associated coordinates: `drop_indexes += list(self.xindexes.get_all_coords(name))`
+   - For `PandasMultiIndex` where the name is not in dimensions (i.e., it's a level name):
+     - Uses `keep_levels` to drop specified levels
+     - Creates new indexes and variables for kept levels
+
+3. **Building New Dataset**:
+   ```python
+   indexes = {k: v for k, v in self._indexes.items() if k not in drop_indexes}
+   indexes.update(new_indexes)
+   
+   variables = {k: v for k, v in self._variables.items() if k not in drop_variables}
+   variables.update(new_variables)
+   
+   coord_names = set(new_variables) | self._coord_names
+   
+   return self._replace(variables, coord_names=coord_names, indexes=indexes)
+   ```
+
+### Index Removal Behavior
+
+The method removes indexes from `_indexes` by name. The key insight is that `drop_indexes` contains coordinate names from `get_all_coords()`, but the filtering logic checks if index names are in that list. This works because the index name matches the first coordinate name in a regular dimension.
+
+**Evidence from probe:**
+```
+Original dataset:
+Dimensions:  (idx: 4)
+Coordinates:
+  * idx      (idx) object MultiIndex
+  * num      (idx) int64 1 1 2 2
+  * letter   (idx) object 'a' 'b' 'a' 'b'
+
+Indexes: ['idx', 'num', 'letter']
+
+After reset_index("idx"):
+Indexes: []
+Coordinates: ['idx', 'num', 'letter']
+```
+
+The MultiIndex 'idx' is removed from `_indexes`, but the level coordinates ('num', 'letter') are kept as regular variables.
+

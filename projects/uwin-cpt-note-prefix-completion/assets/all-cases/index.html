@@ -1,0 +1,1064 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UWIN CPT — all five note-prefix completions</title><style>
+
+:root{color-scheme:dark;--bg:#0c1220;--panel:#151e30;--ink:#e5edf8;--muted:#a6b5ca}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,sans-serif}
+header{padding:26px 28px 16px;max-width:1800px;margin:auto}
+h1{font-size:25px;margin:0 0 10px}p{line-height:1.55;margin:8px 0;color:var(--muted)}
+.meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.badge{background:#1c2a40;border:1px solid #334563;padding:7px 10px;border-radius:7px;font-size:13px}
+.toolbar{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:16px}
+a{color:#a4d1ff}label{color:var(--muted);font-size:14px}
+.comparison{display:grid;grid-template-columns:minmax(320px,.85fr) minmax(380px,1.1fr) minmax(380px,1.1fr);
+gap:16px;padding:0 28px 28px;max-width:1800px;margin:auto;overflow:auto}
+.panel{background:var(--panel);border:1px solid #30405b;border-radius:10px;overflow:hidden}
+.panel h2{font-size:17px;margin:0;padding:16px;border-bottom:1px solid #30405b}
+.panel .subtitle{font-size:12px;color:var(--muted);padding:10px 16px;border-bottom:1px solid #30405b}
+pre{margin:0;padding:18px;font:13px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;
+white-space:pre-wrap;overflow-wrap:anywhere;height:68vh;min-height:400px;overflow:auto;tab-size:4}
+mark{color:inherit;border-radius:2px}
+.generated-difference{background:#553740}
+.reference-difference{background:#234f43}
+body:has(#highlight-all:not(:checked)) mark{background:transparent}
+footer{padding:0 28px 24px;max-width:1800px;margin:auto;font-size:13px;color:var(--muted)}
+@media(max-width:800px){header{padding:20px}.comparison{padding:0 20px 20px;grid-template-columns:320px 380px 380px}}
+
+.case{border-top:1px solid #30405b;margin:25px 0;padding-top:10px}
+.case-head{padding:14px 28px;max-width:1800px;margin:auto}
+.case-head h2{font-size:21px;margin:8px 0}
+pre{height:440px;min-height:300px}
+nav{display:flex;gap:14px;flex-wrap:wrap;margin:16px 0}
+table{border-collapse:collapse;width:100%;margin-top:16px;font-size:13px}
+th,td{text-align:left;padding:10px;border-bottom:1px solid #30405b}
+th{color:#a6b5ca}.num{text-align:right;font-variant-numeric:tabular-nums}
+
+</style></head><body><header>
+<h1>UWIN CPT: five note-prefix completions</h1>
+<p>Each comparison shows the exact training-note prefix, the temperature-0 generated continuation, and the original continuation. All text is preserved.</p>
+<p>Model: <strong>uwin-cpt-9b</strong> · frozen training snapshot: 20261014T095820Z · 3,531 notes. Each prefix matches exactly one training note. Requests use raw completions, a 2,048-token cap, and no repetition, presence, or frequency penalties.</p>
+<div class="toolbar"><a href="../../index.html">Project page</a>
+<a href="cases.json">All case metrics</a>
+<label><input type="checkbox" id="highlight-all" checked> Highlight wording differences</label></div>
+<p>Similarity measures word-sequence overlap, not factual correctness. A “length” finish means generation reached the 2,048-token cap. The original continuation is the training note text.</p>
+<nav>
+<a href="#get-all-coords">1. Indexes.get_all_coords</a>
+<a href="#dataset-reset-index">2. Dataset.reset_index</a>
+<a href="#groupby-unique-value-groups">3. unique_value_groups</a>
+<a href="#cf-mask-fill-values">4. CFMaskCoder.decode</a>
+<a href="#file-manager-options">5. CachingFileManager options</a>
+</nav>
+<table><thead><tr><th>Case</th><th class="num">Prefix chars</th><th class="num">Generated tokens</th><th class="num">Word similarity</th><th>Finish</th></tr></thead><tbody>
+<tr><td><a href="#get-all-coords">Indexes.get_all_coords</a></td><td class="num">1410</td><td class="num">722</td><td class="num">31.2%</td><td>stop</td></tr>
+<tr><td><a href="#dataset-reset-index">Dataset.reset_index</a></td><td class="num">2287</td><td class="num">805</td><td class="num">20.9%</td><td>stop</td></tr>
+<tr><td><a href="#groupby-unique-value-groups">unique_value_groups</a></td><td class="num">1816</td><td class="num">2048</td><td class="num">25.2%</td><td>length</td></tr>
+<tr><td><a href="#cf-mask-fill-values">CFMaskCoder.decode</a></td><td class="num">1082</td><td class="num">245</td><td class="num">30.4%</td><td>stop</td></tr>
+<tr><td><a href="#file-manager-options">CachingFileManager options</a></td><td class="num">1300</td><td class="num">2048</td><td class="num">21.0%</td><td>length</td></tr>
+</tbody></table></header><main>
+<article class="case" id="get-all-coords"><div class="case-head"><h2>1. Indexes.get_all_coords</h2>
+<p>xarray/core/indexes.py · zero-based row 2208 · 1410 prefix characters · 722 generated tokens · stop · 37.6 s</p>
+<div class="toolbar">
+<a href="../get-all-coords/index.html">Individual comparison</a>
+<a href="../get-all-coords/original_note.md">Full training note</a>
+<a href="../get-all-coords/prefix.txt">Prefix</a>
+<a href="../get-all-coords/generated_continuation.md">Generated text</a>
+<a href="../get-all-coords/reference_continuation.md">Original continuation</a>
+<a href="../get-all-coords/request.json">Request</a>
+<a href="../get-all-coords/response.json">Response</a>
+<a href="../get-all-coords/metrics.json">Metrics</a>
+</div></div><div class="comparison">
+<section class="panel"><h2>Input prefix</h2><div class="subtitle">1410 exact characters</div><pre># Verified repository information and learnings
+
+## Task scope
+The task was to trace the execution of `Indexes.get_all_coords()` for a coordinate that is part of a multi-index, document the code path, and describe the structure of the returned coordinate dictionary.
+
+## Multi-index storage contract
+When a Dataset contains a pandas MultiIndex, the same `PandasMultiIndex` instance is stored under all coordinate names (the dimension name and each level name) in `Indexes._indexes`. Runtime verification confirms all entries in `Indexes._indexes` for a multi-index point to the same object (same memory address).
+
+For example, with a Dataset containing a MultiIndex on dimension &#x27;z&#x27; with levels &#x27;level_0&#x27; and &#x27;level_1&#x27;:
+```python
+ds.indexes._indexes: {
+    &#x27;z&#x27;: &lt;PandasMultiIndex object at 0x...&gt;,
+    &#x27;level_0&#x27;: &lt;PandasMultiIndex object at 0x...&gt;,  # same object
+    &#x27;level_1&#x27;: &lt;PandasMultiIndex object at 0x...&gt;   # same object
+}
+```
+
+## Internal mapping structure
+`Indexes` maintains three internal mappings for tracking coordinate-index relationships:
+
+1. **`_coord_name_id`**: Maps each coordinate name to the memory address (`id`) of its index. For a multi-index, all names map to the same id.
+2. **`_id_coord_names`**: Maps each index id to a tuple of all coordinate names sharing that index.
+3. **`_id_index`**: Maps each index id to the index object itself (used by `get_unique()` and `is_multi()`).
+
+</pre></section>
+<section class="panel"><h2>Model-generated continuation</h2><div class="subtitle">Temperature 0 · 2839 characters</div><pre>## <mark class="generated-difference">`get_all_coords()`</mark> code path<mark class="generated-difference">
+</mark>The method is located at <mark class="generated-difference">`xarray/core/indexes.py:1000-1004`:</mark>
+
+<mark class="generated-difference">```python
+def</mark> <mark class="generated-difference">get_all_coords(self,</mark> <mark class="generated-difference">name:</mark> <mark class="generated-difference">Hashable)</mark> -&gt; dict[Hashable, <mark class="generated-difference">Variable]:
+    &quot;&quot;&quot;Return</mark> <mark class="generated-difference">all</mark> the <mark class="generated-difference">coordinates</mark> <mark class="generated-difference">that</mark> <mark class="generated-difference">share</mark> the same index <mark class="generated-difference">as</mark> <mark class="generated-difference">the</mark> <mark class="generated-difference">given</mark> <mark class="generated-difference">coordinate.&quot;&quot;&quot;
+    index</mark> = <mark class="generated-difference">self._id_index[self._coord_name_id[name]]
+    return</mark> {k: self._variables[k] for k in <mark class="generated-difference">self._id_coord_names[index]}
+```
+
+**Execution</mark> <mark class="generated-difference">trace:**
+1. Look up the index id for the given coordinate name: `index_id = self._coord_name_id[name]`
+2. Retrieve the index object: `index = self._id_index[index_id]`
+3. Get all coordinate names sharing that index: `coord_names = self._id_coord_names[index_id]`
+4. Return</mark> a <mark class="generated-difference">dictionary</mark> mapping each coordinate name to its <mark class="generated-difference">Variable from `self._variables`</mark>
+
+## <mark class="generated-difference">Return</mark> <mark class="generated-difference">value structure
+The</mark> returned <mark class="generated-difference">dictionary</mark> <mark class="generated-difference">contains:</mark>
+- **Keys**: All coordinate names sharing the same index (dimension name <mark class="generated-difference">and all</mark> level <mark class="generated-difference">names for multi-indexes)</mark>
+- **Values**: <mark class="generated-difference">The corresponding `Variable`</mark> objects <mark class="generated-difference">from</mark> <mark class="generated-difference">`self._variables`
+
+For</mark> <mark class="generated-difference">a</mark> <mark class="generated-difference">multi-index, this includes the dimension coordinate</mark> and <mark class="generated-difference">all</mark> <mark class="generated-difference">level</mark> <mark class="generated-difference">coordinates.</mark>
+
+## <mark class="generated-difference">Related</mark> <mark class="generated-difference">methods</mark>
+- <mark class="generated-difference">**`get_all_coords()`**</mark> <mark class="generated-difference">(`xarray/core/indexes.py:1000-1004`):</mark> <mark class="generated-difference">Returns</mark> <mark class="generated-difference">all</mark> <mark class="generated-difference">coordinates sharing the same</mark> index<mark class="generated-difference">
+-</mark> <mark class="generated-difference">**`get_unique()`** (`xarray/core/indexes.py:991-996`): Returns unique indexes and their associated coordinate names
+- **`is_multi()`** (`xarray/core/indexes.py:983-988`): Checks if a coordinate name maps to a multi-coordinate index
+- **`get_all_dims()`** (`xarray/core/indexes.py:1007-1011`): Returns all dimensions associated with an index
+
+## Test verification
+The test `test_get_all_coords` in `xarray/tests/test_indexes.py:100-105` verifies the behavior:
+
+```python
+def test_get_all_coords(self) -&gt; None:
+    indexes = Indexes(self.indexes, self.variables)
+    all_x = indexes.get_all_coords(&quot;x&quot;)
+    assert set(all_x) == {&quot;x&quot;, &quot;y&quot;}
+    assert all_x[&quot;x&quot;] is self.variables[&quot;x&quot;]
+    assert all_x[&quot;y&quot;] is self.variables[&quot;y&quot;]
+```
+
+The test passes, confirming that `get_all_coords()` correctly returns all coordinates sharing the same index.
+
+## Multi-index behavior verification
+Runtime tests confirm that `get_all_coords()` works correctly</mark> for <mark class="generated-difference">multi-indexes:
+-</mark> <mark class="generated-difference">Calling</mark> <mark class="generated-difference">`get_all_coords(&#x27;z&#x27;)`</mark> <mark class="generated-difference">returns coordinates for all levels of the multi-index
+- Calling `get_all_coords(&#x27;level_0&#x27;)` returns the same set of coordinates
+- Calling `get_all_coords(&#x27;level_1&#x27;)` returns the same set of coordinates
+
+## Correction to task premise
+The task description states &quot;for a coordinate that is part of a multi-index.&quot; This is slightly misleading. The method works for **any** coordinate name,</mark> not <mark class="generated-difference">just</mark> <mark class="generated-difference">those</mark> <mark class="generated-difference">that</mark> <mark class="generated-difference">are</mark> <mark class="generated-difference">part</mark> <mark class="generated-difference">of</mark> <mark class="generated-difference">a</mark> <mark class="generated-difference">multi-index.</mark> <mark class="generated-difference">For</mark> <mark class="generated-difference">a</mark> regular (non-multi) <mark class="generated-difference">index,</mark> <mark class="generated-difference">it</mark> returns only that single coordinate. The <mark class="generated-difference">method</mark> <mark class="generated-difference">returns</mark> <mark class="generated-difference">all</mark> <mark class="generated-difference">coordinates</mark> <mark class="generated-difference">sharing</mark> the same <mark class="generated-difference">index,</mark> <mark class="generated-difference">regardless</mark> <mark class="generated-difference">of</mark> <mark class="generated-difference">whether</mark> <mark class="generated-difference">that</mark> <mark class="generated-difference">index is a multi-index or not.</mark>
+</pre></section>
+<section class="panel"><h2>Ground-truth note continuation</h2><div class="subtitle">2741 original characters</div><pre>## <mark class="reference-difference">Step-by-step</mark> code path<mark class="reference-difference"> for `get_all_coords(&#x27;one&#x27;)`
+
+</mark>The method is located at <mark class="reference-difference">`xarray/core/indexes.py:1111-1141`:</mark>
+
+<mark class="reference-difference">1.</mark> <mark class="reference-difference">**Entry**:</mark> <mark class="reference-difference">`get_all_coords(key:</mark> <mark class="reference-difference">Hashable, errors: ErrorOptions = &quot;raise&quot;)</mark> -&gt; dict[Hashable, <mark class="reference-difference">Variable]`
+2.</mark> <mark class="reference-difference">**Validation** (lines 1132-1136):
+   - Confirms `errors` is &quot;raise&quot; or &quot;ignore&quot;
+   - Checks `key in self._indexes` - for a multi-index,</mark> the <mark class="reference-difference">key</mark> <mark class="reference-difference">is</mark> <mark class="reference-difference">present because</mark> the same <mark class="reference-difference">PandasMultiIndex is stored under all coordinate names
+3. **Lookup </mark>index <mark class="reference-difference">id**</mark> <mark class="reference-difference">(line</mark> <mark class="reference-difference">1137):
+   -</mark> <mark class="reference-difference">`all_coord_names</mark> = <mark class="reference-difference">self._id_coord_names[self._coord_name_id[key]]`
+   - `_coord_name_id[key]` returns the index&#x27;s memory address
+4. **Build result dictionary** (line 1138):
+   - `return</mark> {k: self._variables[k] for k in <mark class="reference-difference">all_coord_names}`
+   -</mark> <mark class="reference-difference">Returns</mark> a <mark class="reference-difference">dict</mark> mapping each coordinate name to its <mark class="reference-difference">`Variable`</mark>
+
+## <mark class="reference-difference">Structure</mark> <mark class="reference-difference">of</mark> returned <mark class="reference-difference">coordinate</mark> <mark class="reference-difference">dictionary
+```python
+{
+    &#x27;z&#x27;: Variable(
+        dims=(&#x27;z&#x27;,),
+        values=MultiIndex([(1, &#x27;a&#x27;), (2, &#x27;b&#x27;), (3, &#x27;c&#x27;), (4, &#x27;d&#x27;)])
+    ),
+    &#x27;level_0&#x27;: Variable(
+        dims=(&#x27;z&#x27;,),
+        values=np.array([1, 2, 3, 4])
+    ),
+    &#x27;level_1&#x27;: Variable(
+        dims=(&#x27;z&#x27;,),
+        values=np.array([&#x27;a&#x27;, &#x27;b&#x27;, &#x27;c&#x27;, &#x27;d&#x27;])
+    )
+}
+```
+
+- **Type**: Standard Python `dict`</mark>
+- **Keys**: All coordinate names sharing the same index (dimension name <mark class="reference-difference">+</mark> level <mark class="reference-difference">names)</mark>
+- **Values**: <mark class="reference-difference">`xarray.Variable`</mark> objects <mark class="reference-difference">with</mark> <mark class="reference-difference">`dims`</mark> <mark class="reference-difference">(dimension</mark> <mark class="reference-difference">tuple)</mark> and <mark class="reference-difference">`values`</mark> <mark class="reference-difference">(data</mark> <mark class="reference-difference">array)</mark>
+
+## <mark class="reference-difference">Error</mark> <mark class="reference-difference">handling behavior</mark>
+- <mark class="reference-difference">`get_all_coords(key,</mark> <mark class="reference-difference">errors=&quot;raise&quot;)`</mark> <mark class="reference-difference">raises</mark> <mark class="reference-difference">`ValueError:</mark> <mark class="reference-difference">no</mark> index <mark class="reference-difference">found</mark> for <mark class="reference-difference">{key!r}</mark> <mark class="reference-difference">coordinate`</mark> <mark class="reference-difference">if</mark> <mark class="reference-difference">key</mark> not <mark class="reference-difference">found
+-</mark> <mark class="reference-difference">`get_all_coords(key,</mark> <mark class="reference-difference">errors=&quot;ignore&quot;)`</mark> <mark class="reference-difference">returns</mark> <mark class="reference-difference">empty</mark> <mark class="reference-difference">dict</mark> <mark class="reference-difference">`{}`</mark> <mark class="reference-difference">if</mark> <mark class="reference-difference">key</mark> <mark class="reference-difference">not found
+
+## Non-multi-index behavior
+For</mark> regular (non-multi) <mark class="reference-difference">indexes,</mark> <mark class="reference-difference">`get_all_coords()`</mark> returns only that single coordinate.<mark class="reference-difference">
+
+## Key source references
+- `xarray/core/indexes.py:1111-1141`: `get_all_coords()` method
+- `xarray/core/indexes.py:1066-1073`: `_id_coord_names` property
+- `xarray/core/indexes.py:1054-1059`: `_coord_name_id` property
+- `xarray/core/indexes.py:537-740`: `PandasMultiIndex` class
+- `xarray/core/indexes.py:735-768`: `PandasMultiIndex.create_variables()` method
+
+## Test verification
+All tests in `xarray/tests/test_indexes.py::TestIndexes` pass (20 tests), including `test_get_all_coords`. All tests in `xarray/tests/test_indexes.py::TestPandasMultiIndex` pass (11 tests), including `test_create_variables`.
+
+## Correction to initial test setup
+The first test attempt failed because it constructed `Indexes` directly with `indexes={&#x27;z&#x27;: multi_idx}` and `variables={&#x27;one&#x27;: ..., &#x27;two&#x27;: ...}`. This does not match how xarray populates `Indexes` for a multi-index.</mark> The <mark class="reference-difference">corrected</mark> <mark class="reference-difference">approach</mark> <mark class="reference-difference">uses</mark> <mark class="reference-difference">a</mark> <mark class="reference-difference">Dataset, which properly initializes the Indexes object with</mark> the same <mark class="reference-difference">PandasMultiIndex</mark> <mark class="reference-difference">stored</mark> <mark class="reference-difference">under</mark> <mark class="reference-difference">all</mark> <mark class="reference-difference">coordinate</mark> <mark class="reference-difference">names.</mark>
+</pre></section>
+</div></article>
+<article class="case" id="dataset-reset-index"><div class="case-head"><h2>2. Dataset.reset_index</h2>
+<p>xarray/core/dataset.py · zero-based row 1857 · 2287 prefix characters · 805 generated tokens · stop · 9.7 s</p>
+<div class="toolbar">
+<a href="../dataset-reset-index/index.html">Individual comparison</a>
+<a href="../dataset-reset-index/original_note.md">Full training note</a>
+<a href="../dataset-reset-index/prefix.txt">Prefix</a>
+<a href="../dataset-reset-index/generated_continuation.md">Generated text</a>
+<a href="../dataset-reset-index/reference_continuation.md">Original continuation</a>
+<a href="../dataset-reset-index/request.json">Request</a>
+<a href="../dataset-reset-index/response.json">Response</a>
+<a href="../dataset-reset-index/metrics.json">Metrics</a>
+</div></div><div class="comparison">
+<section class="panel"><h2>Input prefix</h2><div class="subtitle">2287 exact characters</div><pre>## Verified repository information and learnings
+
+### reset_index Method Location and Signature
+
+The `reset_index` method is defined at **line 4108** in `xarray/core/dataset.py`:
+
+```python
+def reset_index(
+    self: T_Dataset,
+    dims_or_levels: Hashable | Sequence[Hashable],
+    drop: bool = False,
+) -&gt; T_Dataset:
+```
+
+### How reset_index Works
+
+The method operates through the following sequence:
+
+1. **Input Validation**: Converts single names to a list, then validates that all specified names exist in `self._indexes`:
+   ```python
+   invalid_coords = set(dims_or_levels) - set(self._indexes)
+   if invalid_coords:
+       raise ValueError(f&quot;{tuple(invalid_coords)} are not coordinates with an index&quot;)
+   ```
+
+2. **Processing Each Name**:
+   - Gets the index: `index = self._indexes[name]`
+   - Collects all associated coordinates: `drop_indexes += list(self.xindexes.get_all_coords(name))`
+   - For `PandasMultiIndex` where the name is not in dimensions (i.e., it&#x27;s a level name):
+     - Uses `keep_levels` to drop specified levels
+     - Creates new indexes and variables for kept levels
+
+3. **Building New Dataset**:
+   ```python
+   indexes = {k: v for k, v in self._indexes.items() if k not in drop_indexes}
+   indexes.update(new_indexes)
+   
+   variables = {k: v for k, v in self._variables.items() if k not in drop_variables}
+   variables.update(new_variables)
+   
+   coord_names = set(new_variables) | self._coord_names
+   
+   return self._replace(variables, coord_names=coord_names, indexes=indexes)
+   ```
+
+### Index Removal Behavior
+
+The method removes indexes from `_indexes` by name. The key insight is that `drop_indexes` contains coordinate names from `get_all_coords()`, but the filtering logic checks if index names are in that list. This works because the index name matches the first coordinate name in a regular dimension.
+
+**Evidence from probe:**
+```
+Original dataset:
+Dimensions:  (idx: 4)
+Coordinates:
+  * idx      (idx) object MultiIndex
+  * num      (idx) int64 1 1 2 2
+  * letter   (idx) object &#x27;a&#x27; &#x27;b&#x27; &#x27;a&#x27; &#x27;b&#x27;
+
+Indexes: [&#x27;idx&#x27;, &#x27;num&#x27;, &#x27;letter&#x27;]
+
+After reset_index(&quot;idx&quot;):
+Indexes: []
+Coordinates: [&#x27;idx&#x27;, &#x27;num&#x27;, &#x27;letter&#x27;]
+```
+
+The MultiIndex &#x27;idx&#x27; is removed from `_indexes`, but the level coordinates (&#x27;num&#x27;, &#x27;letter&#x27;) are kept as regular variables.
+
+</pre></section>
+<section class="panel"><h2>Model-generated continuation</h2><div class="subtitle">Temperature 0 · 2745 characters</div><pre>### MultiIndex <mark class="generated-difference">Level</mark> <mark class="generated-difference">Handling</mark>
+
+<mark class="generated-difference">When</mark> <mark class="generated-difference">resetting</mark> <mark class="generated-difference">a MultiIndex by its dimension name:
+- The MultiIndex is removed from `_indexes`
+- Level coordinates are kept as regular variables
+- The dimension is preserved
+
+When resetting by level names (e.g., `reset_index(&quot;num&quot;)`):
+- The level coordinate is removed from</mark> the <mark class="generated-difference">dataset
+- The MultiIndex</mark> is <mark class="generated-difference">converted</mark> <mark class="generated-difference">to</mark> a <mark class="generated-difference">regular</mark> <mark class="generated-difference">index</mark>
+<mark class="generated-difference">-</mark> <mark class="generated-difference">The</mark> <mark class="generated-difference">dimension</mark> is <mark class="generated-difference">preserved</mark>
+
+**Evidence from probe:**
+```
+<mark class="generated-difference">After</mark> <mark class="generated-difference">reset_index(&quot;num&quot;):
+Indexes:</mark> <mark class="generated-difference">[&#x27;idx&#x27;,</mark> &#x27;letter&#x27;]<mark class="generated-difference">
+Coordinates:</mark> <mark class="generated-difference">[&#x27;idx&#x27;,</mark> <mark class="generated-difference">&#x27;letter&#x27;]</mark>
+```
+
+### drop Parameter<mark class="generated-difference"> Behavior</mark>
+
+The <mark class="generated-difference">`drop`</mark> <mark class="generated-difference">parameter</mark> <mark class="generated-difference">controls</mark> <mark class="generated-difference">whether</mark> <mark class="generated-difference">the</mark> dimension is <mark class="generated-difference">removed:
+- `drop=False` (default): Dimension is preserved, index is</mark> removed
+- <mark class="generated-difference">`drop=True`:</mark> <mark class="generated-difference">Dimension</mark> is <mark class="generated-difference">removed,</mark> <mark class="generated-difference">index</mark> <mark class="generated-difference">and its coordinates are dropped</mark>
+
+**Evidence from probe:**
+```
+After reset_index(&quot;idx&quot;, drop=True):
+<mark class="generated-difference">Dimensions:  ()
+</mark>Coordinates: <mark class="generated-difference">[]</mark>
+```
+
+### <mark class="generated-difference">Related</mark> <mark class="generated-difference">Methods
+
+-</mark> <mark class="generated-difference">`set_index()` at line 4197: Creates indexes from coordinates
+- `clear_index()` at line 4257: Removes indexes and their coordinates
+- `rename()` at line 3354: Renames indexes and coordinates</mark>
+
+<mark class="generated-difference">###</mark> <mark class="generated-difference">Test</mark> <mark class="generated-difference">Coverage
+
+The</mark> <mark class="generated-difference">following tests verify</mark> the <mark class="generated-difference">behavior:</mark>
+<mark class="generated-difference">- `test_reset_index` at line 4287: Basic reset_index functionality
+- `test_reset_index_drop` at line 4300: drop parameter behavior
+- `test_reset_index_multiindex` at line 4313:</mark> MultiIndex <mark class="generated-difference">handling</mark>
+- <mark class="generated-difference">`test_reset_index_multiindex_level`</mark> <mark class="generated-difference">at</mark> <mark class="generated-difference">line</mark> <mark class="generated-difference">4330:</mark> <mark class="generated-difference">Level-based</mark> <mark class="generated-difference">reset</mark>
+- <mark class="generated-difference">`test_reset_index_errors`</mark> <mark class="generated-difference">at</mark> <mark class="generated-difference">line</mark> <mark class="generated-difference">4343:</mark> <mark class="generated-difference">Error</mark> <mark class="generated-difference">handling</mark> for <mark class="generated-difference">invalid</mark> names<mark class="generated-difference">
+
+All</mark> <mark class="generated-difference">5</mark> <mark class="generated-difference">tests</mark> <mark class="generated-difference">pass</mark> <mark class="generated-difference">successfully.</mark>
+
+### Verified Behavior <mark class="generated-difference">Summary
+
+|</mark> <mark class="generated-difference">Operation</mark> <mark class="generated-difference">| Indexes After | Coordinates After | Dimensions After |
+|-----------|---------------|-------------------|------------------|
+| `reset_index(&quot;idx&quot;)` | `[]` | `[&#x27;idx&#x27;, &#x27;num&#x27;, &#x27;letter&#x27;]` | `(&#x27;idx&#x27;,)` |
+| `reset_index(&quot;idx&quot;, drop=True)` | `[]` | `[]` | `()` |
+| `reset_index(&quot;num&quot;)` | `[&#x27;idx&#x27;, &#x27;letter&#x27;]` | `[&#x27;idx&#x27;, &#x27;letter&#x27;]` | `(&#x27;idx&#x27;,)` |
+| `reset_index(&quot;letter&quot;)` | `[&#x27;idx&#x27;, &#x27;num&#x27;]` | `[&#x27;idx&#x27;, &#x27;num&#x27;]` | `(&#x27;idx&#x27;,)` |
+| `reset_index([&quot;num&quot;, &quot;letter&quot;])` | `[&#x27;idx&#x27;]` | `[&#x27;idx&#x27;]` | `(&#x27;idx&#x27;,)` |
+| `reset_index([&quot;num&quot;, &quot;letter&quot;], drop=True)` | `[]` | `[]` | `()` |</mark>
+
+<mark class="generated-difference">###</mark> <mark class="generated-difference">Correction</mark> <mark class="generated-difference">to </mark>Original <mark class="generated-difference">Claims</mark>
+
+The <mark class="generated-difference">original</mark> <mark class="generated-difference">repository</mark> <mark class="generated-difference">information</mark> <mark class="generated-difference">contained</mark> <mark class="generated-difference">incorrect</mark> <mark class="generated-difference">line</mark> <mark class="generated-difference">numbers:
+-</mark> `reset_index` <mark class="generated-difference">method:</mark> <mark class="generated-difference">claimed line 4100, actual line 4108</mark>
+- <mark class="generated-difference">`set_index`</mark> <mark class="generated-difference">method:</mark> <mark class="generated-difference">claimed</mark> <mark class="generated-difference">line</mark> <mark class="generated-difference">4190,</mark> actual <mark class="generated-difference">line</mark> <mark class="generated-difference">4197</mark>
+- <mark class="generated-difference">`clear_index`</mark> <mark class="generated-difference">method:</mark> <mark class="generated-difference">claimed</mark> <mark class="generated-difference">line</mark> <mark class="generated-difference">4250,</mark> actual <mark class="generated-difference">line</mark> <mark class="generated-difference">4257
+-</mark> <mark class="generated-difference">`test_reset_index`</mark> <mark class="generated-difference">test:</mark> <mark class="generated-difference">claimed</mark> <mark class="generated-difference">line</mark> <mark class="generated-difference">4280,</mark> <mark class="generated-difference">actual</mark> <mark class="generated-difference">line</mark> <mark class="generated-difference">4287
+-</mark> <mark class="generated-difference">`test_reset_index_drop`</mark> <mark class="generated-difference">test:</mark> <mark class="generated-difference">claimed</mark> <mark class="generated-difference">line</mark> <mark class="generated-difference">4293,</mark> <mark class="generated-difference">actual</mark> <mark class="generated-difference">line</mark> <mark class="generated-difference">4300
+-</mark> <mark class="generated-difference">`test_reset_index_multiindex`</mark> <mark class="generated-difference">test:</mark> <mark class="generated-difference">claimed</mark> <mark class="generated-difference">line 4306, actual line 4313</mark>
+<mark class="generated-difference">- `test_reset_index_multiindex_level` test: claimed line 4323, actual line 4330
+- `test_reset_index_errors` test: claimed line 4336, actual line 4343
+</mark></pre></section>
+<section class="panel"><h2>Ground-truth note continuation</h2><div class="subtitle">4928 original characters</div><pre>### MultiIndex <mark class="reference-difference">Special</mark> <mark class="reference-difference">Case</mark>
+
+<mark class="reference-difference">For</mark> <mark class="reference-difference">`PandasMultiIndex`</mark> <mark class="reference-difference">where</mark> the <mark class="reference-difference">name</mark> is <mark class="reference-difference">not</mark> <mark class="reference-difference">in `self.dims` (i.e., it&#x27;s</mark> a <mark class="reference-difference">level</mark> <mark class="reference-difference">name):
+
+```python</mark>
+<mark class="reference-difference">if</mark> <mark class="reference-difference">isinstance(index,</mark> <mark class="reference-difference">PandasMultiIndex) and name not in self.dims:
+    # special case for pd.MultiIndex (name</mark> is <mark class="reference-difference">an index level)
+    level_names = index.index.names
+    level_vars = {
+        k: self._variables[k]
+        for k in level_names
+        if k not in dims_or_levels
+    }
+    if level_vars:
+        idx = index.keep_levels(level_vars)
+        idx_vars = idx.create_variables(level_vars)
+        new_indexes.update({k: idx for k in idx_vars})
+        new_variables.update(idx_vars)
+```
+
+This uses **`PandasMultiIndex.keep_levels()`** (defined in `xarray/core/indexes.py` at **line 705**):
+
+```python
+def keep_levels(
+    self, level_variables: Mapping[Any, Variable]
+) -&gt; PandasMultiIndex | PandasIndex:
+    &quot;&quot;&quot;Keep only the provided levels and return a new multi-index with its
+    corresponding coordinates.&quot;&quot;&quot;
+    index = self.index.droplevel(
+        [k for k in self.index.names if k not in level_variables]
+    )
+    
+    if isinstance(index, pd.MultiIndex):
+        level_coords_dtype = {k: self.level_coords_dtype[k] for k in index.names}
+        return self._replace(index, level_coords_dtype=level_coords_dtype)
+    else:
+        return PandasIndex(
+            index, self.dim, coord_dtype=self.level_coords_dtype[index.name]
+        )
+```</mark>
+
+**Evidence from probe:**
+```
+<mark class="reference-difference">Index</mark> <mark class="reference-difference">object</mark> <mark class="reference-difference">type: &lt;class &#x27;xarray.core.indexes.PandasMultiIndex&#x27;&gt;
+Index names: [&#x27;num&#x27;,</mark> &#x27;letter&#x27;]<mark class="reference-difference">
+
+New</mark> <mark class="reference-difference">index</mark> <mark class="reference-difference">type: &lt;class &#x27;xarray.core.indexes.PandasIndex&#x27;&gt;
+New index names: [&#x27;num&#x27;]
+
+New variables: [&#x27;num&#x27;]</mark>
+```
+
+### <mark class="reference-difference">The </mark>drop Parameter
+
+<mark class="reference-difference">When `drop=True`:
+- </mark>The <mark class="reference-difference">dimension</mark> <mark class="reference-difference">name</mark> <mark class="reference-difference">is</mark> <mark class="reference-difference">added</mark> <mark class="reference-difference">to `drop_variables`, removing its coordinate variable
+- The data variable with that</mark> dimension is <mark class="reference-difference">also</mark> removed
+- <mark class="reference-difference">The</mark> <mark class="reference-difference">dimension itself</mark> is <mark class="reference-difference">kept</mark> <mark class="reference-difference">(not</mark> <mark class="reference-difference">removed)</mark>
+
+**Evidence from probe:**
+```
+After reset_index(&quot;idx&quot;, drop=True):
+Coordinates:<mark class="reference-difference">
+    num      (idx)</mark> <mark class="reference-difference">int64 1 1 2 2
+    letter   (idx) object &#x27;a&#x27; &#x27;b&#x27; &#x27;a&#x27; &#x27;b&#x27;
+Data variables:
+    *empty*</mark>
+```
+
+### <mark class="reference-difference">Call</mark> <mark class="reference-difference">Chain</mark> <mark class="reference-difference">Summary</mark>
+
+<mark class="reference-difference">```
+Dataset.reset_index()
+    ↓
+Dataset._replace(variables,</mark> <mark class="reference-difference">coord_names,</mark> <mark class="reference-difference">indexes)
+    ↓
+Dataset._construct_direct(...)  #</mark> <mark class="reference-difference">Reconstructs</mark> the <mark class="reference-difference">Dataset</mark>
+<mark class="reference-difference">```
+
+For</mark> MultiIndex <mark class="reference-difference">level drop:
+```
+PandasMultiIndex.keep_levels(level_variables)
+    ↓
+pd.MultiIndex.droplevel(...)  # Pandas operation
+    ↓
+PandasMultiIndex._replace(index, level_coords_dtype)
+    ↓
+PandasIndex or PandasMultiIndex
+    ↓
+PandasIndex.create_variables()  # Creates coordinate variables
+```
+
+### Relationship to set_index
+
+The `set_index` method (line 3968) is the inverse operation:</mark>
+- <mark class="reference-difference">`set_index`:</mark> <mark class="reference-difference">Converts</mark> <mark class="reference-difference">regular</mark> <mark class="reference-difference">coordinates</mark> <mark class="reference-difference">to</mark> <mark class="reference-difference">an index</mark>
+- <mark class="reference-difference">`reset_index`:</mark> <mark class="reference-difference">Converts</mark> <mark class="reference-difference">an</mark> <mark class="reference-difference">index</mark> <mark class="reference-difference">back</mark> <mark class="reference-difference">to regular coordinates
+
+Both methods use `self._replace()` to reconstruct the dataset.
+
+**Evidence from probe:**
+```
+After stack:
+Dimensions:  (idx: 6)
+Coordinates:
+  * idx      (idx) object MultiIndex
+  * x        (idx) int64 10 10 10 20 20 20
+  * y        (idx) int64 100 200 300 100 200 300
+
+After reset_index(&quot;idx&quot;):
+Dimensions:  (idx: 6)
+Coordinates:
+    idx      (idx) object MultiIndex
+    x        (idx) int64 10 10 10 20 20 20
+    y        (idx) int64 100 200 300 100 200 300
+
+After reset_index(&quot;idx&quot;, drop=True):
+Dimensions:  (idx: 6)
+Coordinates:
+    x        (idx) int64 10 10 10 20 20 20
+    y        (idx) int64 100 200 300 100 200 300
+Data variables:
+    *empty*
+```
+
+### Key Constraints
+
+1. **Cannot call reset_index on non-index names**: After `reset_index(&#x27;idx&#x27;)`, the level coordinates &#x27;num&#x27; and &#x27;letter&#x27; are no longer indexes, so calling `reset_index(&#x27;num&#x27;)` raises `ValueError: (&#x27;num&#x27;,) are not coordinates with an index`.
+
+2. **Index removal is by name**: The filtering `indexes = {k: v</mark> for <mark class="reference-difference">k, v in self._indexes.items() if k not in drop_indexes}` removes indexes whose</mark> names <mark class="reference-difference">appear</mark> <mark class="reference-difference">in</mark> <mark class="reference-difference">`drop_indexes`.
+
+3.</mark> <mark class="reference-difference">**Variable filtering is separate**: The `drop_variables` list controls which coordinate variables are removed, independent of index removal.
+
+4. **reset_index and set_index are not perfect inverses**: After `reset_index`, the coordinate variables retain their original dimension name (e.g., &#x27;idx&#x27;), so calling `set_index` with the original dimension names will fail due to dimension mismatch.</mark>
+
+### Verified Behavior <mark class="reference-difference">with</mark> <mark class="reference-difference">Dask</mark> <mark class="reference-difference">Arrays</mark>
+
+<mark class="reference-difference">**Evidence</mark> <mark class="reference-difference">from</mark> <mark class="reference-difference">probe:**
+```
+</mark>Original <mark class="reference-difference">dask dataset:
+Indexes: [&#x27;x&#x27;, &#x27;y&#x27;]
+
+After reset_index(&quot;x&quot;):
+Indexes: [&#x27;y&#x27;]
+Chunks: ((1, 1), (1, 1))
+```</mark>
+
+The <mark class="reference-difference">`reset_index`</mark> <mark class="reference-difference">operation</mark> <mark class="reference-difference">preserves</mark> <mark class="reference-difference">dask</mark> <mark class="reference-difference">array</mark> <mark class="reference-difference">chunks.
+
+###</mark> <mark class="reference-difference">Test Failures
+
+The existing tests in `xarray/tests/test_dataset.py` for</mark> `reset_index` <mark class="reference-difference">are</mark> <mark class="reference-difference">failing:</mark>
+- <mark class="reference-difference">`test_reset_index`:</mark> <mark class="reference-difference">Expects</mark> <mark class="reference-difference">MultiIndex</mark> <mark class="reference-difference">to</mark> <mark class="reference-difference">be completely removed, but</mark> actual <mark class="reference-difference">behavior</mark> <mark class="reference-difference">keeps it as a coordinate</mark>
+- <mark class="reference-difference">`test_reset_index_drop_dims`:</mark> <mark class="reference-difference">Expects</mark> <mark class="reference-difference">dimension</mark> <mark class="reference-difference">to</mark> <mark class="reference-difference">be removed with `drop=True`, but</mark> actual <mark class="reference-difference">behavior</mark> <mark class="reference-difference">keeps</mark> <mark class="reference-difference">the</mark> <mark class="reference-difference">dimension
+
+These</mark> <mark class="reference-difference">test</mark> <mark class="reference-difference">failures</mark> <mark class="reference-difference">suggest</mark> <mark class="reference-difference">the</mark> <mark class="reference-difference">tests</mark> <mark class="reference-difference">may</mark> <mark class="reference-difference">be</mark> <mark class="reference-difference">outdated</mark> <mark class="reference-difference">or</mark> <mark class="reference-difference">the</mark> <mark class="reference-difference">implementation</mark> <mark class="reference-difference">has</mark> <mark class="reference-difference">changed</mark> <mark class="reference-difference">since</mark> <mark class="reference-difference">the</mark> <mark class="reference-difference">tests</mark> <mark class="reference-difference">were</mark> <mark class="reference-difference">written.</mark>
+</pre></section>
+</div></article>
+<article class="case" id="groupby-unique-value-groups"><div class="case-head"><h2>3. unique_value_groups</h2>
+<p>xarray/core/groupby.py · zero-based row 2169 · 1816 prefix characters · 2048 generated tokens · length · 24.0 s</p>
+<div class="toolbar">
+<a href="../groupby-unique-value-groups/index.html">Individual comparison</a>
+<a href="../groupby-unique-value-groups/original_note.md">Full training note</a>
+<a href="../groupby-unique-value-groups/prefix.txt">Prefix</a>
+<a href="../groupby-unique-value-groups/generated_continuation.md">Generated text</a>
+<a href="../groupby-unique-value-groups/reference_continuation.md">Original continuation</a>
+<a href="../groupby-unique-value-groups/request.json">Request</a>
+<a href="../groupby-unique-value-groups/response.json">Response</a>
+<a href="../groupby-unique-value-groups/metrics.json">Metrics</a>
+</div></div><div class="comparison">
+<section class="panel"><h2>Input prefix</h2><div class="subtitle">1816 exact characters</div><pre># Verified repository information and learnings
+
+## Function definition and contract
+
+**Location**: `xarray/core/groupby.py:67-92`
+
+**Signature**:
+```python
+def unique_value_groups(ar, sort: bool = True) -&gt; tuple[np.ndarray | pd.Index, list[list[int]]]:
+```
+
+**Purpose**: Groups an array by its unique values, returning unique values and a list of index lists for each group.
+
+**Parameters**:
+- `ar`: array-like (must be 1-D; 2-D arrays raise `ValueError`)
+- `sort`: bool, default `True`; whether to sort unique values
+
+**Returns**:
+- `values`: unique values as `np.ndarray` or `pd.Index` (or `pd.MultiIndex`)
+- `indices`: `list[list[int]]` where each inner list contains the indices in `ar` that share that unique value
+
+## Core algorithm (verified by code and probes)
+
+### 1. pd.factorize call (`line 85`)
+```python
+inverse, values = pd.factorize(ar, sort=sort)
+```
+- `inverse`: integer codes for each element (0, 1, 2, ...)
+- `values`: array of unique values
+- **NaN behavior**: pandas assigns `-1` in `inverse` for NaN values; NaN values are **not** included in `values`
+
+**Probe verification**: For input `[1, nan, 2, nan, 1, 3]`, `pd.factorize` returns `inverse=[0, -1, 1, -1, 0, 2]` and `values=[1., 2., 3.]`.
+
+### 2. MultiIndex name preservation (`line 86-87`)
+```python
+if isinstance(values, pd.MultiIndex):
+    values.names = ar.names
+```
+- If `values` is a `pd.MultiIndex`, the names from the input array `ar` are copied to `values`
+
+**Probe verification**: For `MultiIndex([(1, &#x27;a&#x27;), (2, &#x27;b&#x27;), (1, &#x27;a&#x27;), (3, &#x27;c&#x27;)], names=[&#x27;level1&#x27;, &#x27;level2&#x27;])`, `unique_value_groups` returns a `MultiIndex` with names `[&#x27;level1&#x27;, &#x27;level2&#x27;]`.
+
+**Limitation**: When `IndexVariable` is created with these values in GroupBy, the MultiIndex is converted to a numpy array of tuples, losing the MultiIndex structure and names.
+
+</pre></section>
+<section class="panel"><h2>Model-generated continuation</h2><div class="subtitle">Temperature 0 · 6695 characters</div><pre>### 3. Group construction (`line 88-91`)
+```python
+<mark class="generated-difference">groups</mark> = [[] for _ in range(len(values))]
+for <mark class="generated-difference">i,</mark> g in enumerate(inverse):
+    if g <mark class="generated-difference">!=</mark> <mark class="generated-difference">-1:</mark>
+        <mark class="generated-difference">groups[g].append(i)
+return values, groups</mark>
+```
+- Creates <mark class="generated-difference">a list of</mark> empty <mark class="generated-difference">lists,</mark> <mark class="generated-difference">one</mark> <mark class="generated-difference">per</mark> unique value
+- Iterates through `inverse`, appending index <mark class="generated-difference">`i`</mark> to `groups[g]` only <mark class="generated-difference">if</mark> `g <mark class="generated-difference">!=</mark> -1` <mark class="generated-difference">(skips</mark> <mark class="generated-difference">NaN)</mark>
+
+**Probe verification**: For input `[1, nan, 2, nan, 1, 3]`, the function returns <mark class="generated-difference">`values=[1., 2., 3.]` and `indices=[[0,</mark> 4], [2], <mark class="generated-difference">[5]]`.</mark>
+
+## NaN handling <mark class="generated-difference">behavior</mark> <mark class="generated-difference">(verified</mark> <mark class="generated-difference">by</mark> <mark class="generated-difference">probes)
+
+| Input | `inverse` from `pd.factorize` | `values` | `groups` |</mark>
+<mark class="generated-difference">|-------|-------------------------------|----------|----------|</mark>
+<mark class="generated-difference">|</mark> `[1, nan, <mark class="generated-difference">2,</mark> nan, <mark class="generated-difference">1,</mark> <mark class="generated-difference">3]`</mark> <mark class="generated-difference">|</mark> <mark class="generated-difference">`[0,</mark> <mark class="generated-difference">-1,</mark> 1, <mark class="generated-difference">-1,</mark> <mark class="generated-difference">0,</mark> 2]` <mark class="generated-difference">|</mark> <mark class="generated-difference">`[1., 2., 3.]` |</mark> `[[0, 4], <mark class="generated-difference">[2],</mark> <mark class="generated-difference">[5]]`</mark> |
+| `[nan, nan, nan]` | <mark class="generated-difference">`[-1,</mark> <mark class="generated-difference">-1, -1]`</mark> | `[]` | <mark class="generated-difference">`[]`</mark> |
+| <mark class="generated-difference">`[1,</mark> <mark class="generated-difference">2, 3]`</mark> | <mark class="generated-difference">`[0, 1, 2]`</mark> | <mark class="generated-difference">`[1,</mark> <mark class="generated-difference">2, 3]`</mark> | <mark class="generated-difference">`[[0],</mark> [1], [2]]` <mark class="generated-difference">|
+
+**Key</mark> <mark class="generated-difference">observations**:
+-</mark> <mark class="generated-difference">NaN</mark> <mark class="generated-difference">values</mark> <mark class="generated-difference">are</mark> <mark class="generated-difference">**excluded** from both `values` and `groups`
+- The `-1` sentinel in `inverse` is used to identify and skip NaN values
+- Empty groups (all NaN) result in empty `values` and `groups`
+
+## Sort parameter behavior (verified by probes)
+
+| Input | `sort=True` | `sort=False` |
+|-------|-------------|--------------|
+| `[3, 1, 2, 1, 3]` | `values=[1, 2, 3]`, `groups=[[1, 3], [2], [0, 4]]` | `values=[3, 1, 2]`, `groups=[[0, 4], [1, 3], [2]]` |
+| `[1, nan, 2, nan, 1, 3]` | `values=[1., 2., 3.]`, `groups=[[0, 4], [2], [5]]` | `values=[1., 2., 3.]`, `groups=[[0, 4], [2], [5]]` |
+
+**Key observations**:
+- `sort=True`:</mark> unique values <mark class="generated-difference">are</mark> <mark class="generated-difference">sorted in ascending order</mark>
+- <mark class="generated-difference">`sort=False`:</mark> <mark class="generated-difference">unique</mark> <mark class="generated-difference">values preserve the order of their first appearance
+- NaN values are always excluded regardless of sort order
+
+## MultiIndex handling (verified by probes)
+
+**Probe setup**:
+```python
+import pandas as pd
+import numpy as np
+from xarray.core.groupby import unique_value_groups
+
+data = pd.MultiIndex.from_tuples(
+    [(1, &#x27;a&#x27;), (2, &#x27;b&#x27;), (1, &#x27;a&#x27;), (3, &#x27;c&#x27;)],
+    names=[&#x27;level1&#x27;, &#x27;level2&#x27;]
+)
+ar = np.array(data)
+```
+
+**Results**:
+- `values` type: `pd.MultiIndex`
+- `values.names`: `[&#x27;level1&#x27;, &#x27;level2&#x27;]`
+- `groups`: `[[0, 2], [1], [3]]`
+
+**Limitation**: When `IndexVariable` is created with these values in GroupBy, the MultiIndex</mark> is converted to a numpy array of tuples, losing the MultiIndex structure and names.
+
+<mark class="generated-difference">## Test coverage (verified by code inspection)
+
+**Test**: `xarray/tests/test_groupby.py::test_unique_value_groups`
+
+**Test cases**:
+1. `np.array([1, 2, 3])` with `sort=True`
+2. `np.array([1, 2, 3])` with `sort=False`
+3. `np.array([1, np.nan, 2, np.nan, 1, 3])` with `sort=True`
+</mark>4. <mark class="generated-difference">`np.array([1,</mark> <mark class="generated-difference">np.nan,</mark> <mark class="generated-difference">2, np.nan, 1, 3])` with `sort=False`
+5. `pd.MultiIndex` with `sort=True`
+6. `pd.MultiIndex` with `sort=False`
+
+**All 6 tests pass**.
+
+## Usage in GroupBy
+
+**Location**: `xarray/core/groupby.py:356-357`
+
+```python
+if isinstance(group, (DataArray, pd.MultiIndex)):
+    unique_values, indices = unique_value_groups(group)
+```
+
+**Context**: Used in the `GroupBy.__init__` method when the group</mark> is <mark class="generated-difference">a `DataArray` or `pd.MultiIndex`.
+
+## Additional verified behaviors
+
+### 2-D array handling
+- **Behavior**: Raises `ValueError`
+- **Error message**: &quot;unique_value_groups</mark> only <mark class="generated-difference">works</mark> <mark class="generated-difference">on</mark> <mark class="generated-difference">1-D</mark> <mark class="generated-difference">arrays&quot;
+-</mark> <mark class="generated-difference">**Location**:</mark> <mark class="generated-difference">`xarray/core/groupby.py:84`
+
+###</mark> <mark class="generated-difference">Empty</mark> <mark class="generated-difference">array</mark> <mark class="generated-difference">handling
+- **Input**: `np.array([])`
+- **Output**: `values=[]`, `groups=[]`</mark>
+
+<mark class="generated-difference">###</mark> <mark class="generated-difference">Single</mark> <mark class="generated-difference">element</mark> <mark class="generated-difference">handling
+-</mark> <mark class="generated-difference">**Input**:</mark> <mark class="generated-difference">`np.array([5])`
+-</mark> <mark class="generated-difference">**Output**:</mark> <mark class="generated-difference">`values=[5]`,</mark> <mark class="generated-difference">`groups=[[0]]`
+
+###</mark> <mark class="generated-difference">All</mark> <mark class="generated-difference">NaN</mark> <mark class="generated-difference">handling
+-</mark> <mark class="generated-difference">**Input**:</mark> <mark class="generated-difference">`np.array([nan,</mark> <mark class="generated-difference">nan,</mark> <mark class="generated-difference">nan])`
+-</mark> <mark class="generated-difference">**Output**:</mark> <mark class="generated-difference">`values=[]`,</mark> <mark class="generated-difference">`groups=[]`
+
+###</mark> <mark class="generated-difference">Dask</mark> <mark class="generated-difference">array</mark> <mark class="generated-difference">handling
+-</mark> <mark class="generated-difference">**Behavior**:</mark> <mark class="generated-difference">Works correctly
+- **Output**: `values` is</mark> a <mark class="generated-difference">numpy</mark> <mark class="generated-difference">array, `groups`</mark> is <mark class="generated-difference">a</mark> <mark class="generated-difference">list of lists
+
+### Datetime handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of datetime64, `groups` is a list of lists
+
+### String handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of strings, `groups` is a list of lists
+
+### Complex number handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of complex numbers, `groups` is a list of lists
+
+### Inf handling
+- **Behavior**: Works correctly (treated as regular values, not NaN)
+- **Output**: `values` includes `inf` and `-inf`, `groups` includes indices</mark> for <mark class="generated-difference">these</mark> <mark class="generated-difference">values
+
+###</mark> <mark class="generated-difference">Sparse array handling</mark>
+<mark class="generated-difference">- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array, `groups` is a list of lists
+
+### Categorical handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array, `groups` is a list of lists
+
+### Object dtype handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of object dtype, `groups` is a list of lists
+
+### Integer dtype handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of int64, `groups` is a list of lists
+
+### Float dtype handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of float64, `groups` is a list of lists
+
+### Boolean dtype handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of bool, `groups` is a list of lists
+
+### Timedelta handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of timedelta64, `groups` is a list of lists
+
+### Period handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of period dtype, `groups` is a list of lists
+
+### Quoted string handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of bytes, `groups` is a list of lists
+
+### Unicode string handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of unicode strings, `groups` is a list of lists
+
+### Mixed type handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of object dtype, `groups` is a list of lists
+
+### Large array handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array, `groups` is a list of lists
+
+### Sparse array handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array, `groups` is a list of lists
+
+### Categorical handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array, `groups` is a list of lists
+
+### Datetime handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of datetime64, `groups` is a list of lists
+
+### String handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of strings, `groups` is a list of lists
+
+### Complex number handling
+- **Behavior**: Works correctly
+- **Output**: `values` is a numpy array of complex numbers, `groups` is a list of lists
+
+### Inf handling
+- **Behavior**: Works correctly (treated as regular values, not NaN)
+- **Output**: `values` includes</mark></pre></section>
+<section class="panel"><h2>Ground-truth note continuation</h2><div class="subtitle">4322 original characters</div><pre>### 3. Group construction (`line 88-91`)
+```python
+<mark class="reference-difference">groups: list[list[int]]</mark> = [[] for _ in range(len(values))]
+for <mark class="reference-difference">n,</mark> g in enumerate(inverse):
+    if g <mark class="reference-difference">&gt;=</mark> <mark class="reference-difference">0:</mark>
+        <mark class="reference-difference">groups[g].append(n)</mark>
+```
+- Creates <mark class="reference-difference">an</mark> empty <mark class="reference-difference">list</mark> <mark class="reference-difference">for</mark> <mark class="reference-difference">each</mark> unique value
+- Iterates through `inverse`, appending index <mark class="reference-difference">`n`</mark> to `groups[g]` only <mark class="reference-difference">when</mark> `g <mark class="reference-difference">&gt;= 0`
+- **NaN handling**: indices where `g ==</mark> -1` <mark class="reference-difference">(NaN</mark> <mark class="reference-difference">values) are skipped</mark>
+
+**Probe verification**: For input `[1, nan, 2, nan, 1, 3]`, the function returns <mark class="reference-difference">`groups=[[0,</mark> 4], [2], <mark class="reference-difference">[5]]`, correctly excluding the NaN indices.</mark>
+
+##<mark class="reference-difference"> Usage in xarray GroupBy
+
+**Location**: `xarray/core/groupby.py:430-436`
+
+###</mark> NaN handling <mark class="reference-difference">before</mark> <mark class="reference-difference">`unique_value_groups`</mark> <mark class="reference-difference">(`line</mark> <mark class="reference-difference">430-431`)</mark>
+<mark class="reference-difference">```python</mark>
+<mark class="reference-difference">if isinstance(group, DataArray) and group.isnull().any():
+    obj = obj.where(group.notnull(), drop=True)
+    group = group.dropna(group_dim)
+```
+- NaN values in the group coordinate are dropped **before** calling `unique_value_groups`
+- The underlying object `obj` is also filtered to remove values where the group was NaN
+- **Result**: `unique_value_groups` typically never encounters NaN values in normal groupby operations
+
+**Probe verification**: For a DataArray with coordinates</mark> `[1, nan, <mark class="reference-difference">3,</mark> nan, <mark class="reference-difference">5]`,</mark> <mark class="reference-difference">GroupBy</mark> <mark class="reference-difference">produces</mark> <mark class="reference-difference">`_group_indices=[[0],</mark> <mark class="reference-difference">[1], [2]]` and `_unique_coord=[1., 3., 5.]`, correctly excluding NaN indices.
+
+### Sort parameter logic (`line 434`)
+```python
+sort = bins is None and (not isinstance(group_as_index, pd.MultiIndex))
+```
+- `sort=True` when `bins=None` and group is not a `MultiIndex`
+- `sort=False` when group is a `MultiIndex` (to preserve tuple order)
+
+**Probe verification**: For input `[3,</mark> 1, <mark class="reference-difference">2,</mark> <mark class="reference-difference">1, 3]`, `sort=True` returns `values=[1, 2, 3]` with groups `[[1, 3], [2], [0, 4]]`, while `sort=False` returns `values=[3, 1,</mark> 2]` <mark class="reference-difference">with</mark> <mark class="reference-difference">groups</mark> `[[0, 4], <mark class="reference-difference">[1,</mark> <mark class="reference-difference">3], [2]]`.
+
+## Probe evidence summary
+
+| Input type | Example input | `pd.factorize` output | `unique_value_groups` groups | Notes</mark> |
+<mark class="reference-difference">|------------|---------------|----------------------|------------------------------|-------|
+| Basic numeric | `[1,2,1,3,2,1,4]` | `inverse=[0,1,0,2,1,0,3]`, `values=[1,2,3,4]` | `[[0,2,5],[1,4],[3],[6]]` | Standard grouping |
+| With NaN | `[1,nan,2,nan,1,3]` | `inverse=[0,-1,1,-1,0,2]`, `values=[1,2,3]` | `[[0,4],[2],[5]]` | NaN indices skipped |
+| Strings | `[&#x27;a&#x27;,&#x27;b&#x27;,&#x27;a&#x27;,&#x27;c&#x27;,&#x27;b&#x27;,&#x27;a&#x27;]` | `inverse=[0,1,0,2,1,0]`, `values=[&#x27;a&#x27;,&#x27;b&#x27;,&#x27;c&#x27;]` | `[[0,2,5],[1,4],[3]]` | Works with object arrays |
+| MultiIndex | `MultiIndex([(1,&#x27;a&#x27;),...]` | `inverse=[0,1,2,3]`, `values=MultiIndex` | `[[0],[1],[2],[3]]` | MultiIndex preserved in return |
+| Sort=False | `[3,1,2,1,3]` | `inverse=[0,1,2,1,0]`, `values=[3,1,2]` | `[[0,4],[1,3],[2]]` | Order preserved |
+| 2D array | `[[1,2],[1,3],[2,1]]` | **Raises ValueError** | N/A | 2-D arrays are not supported |
+| All NaN </mark>| `[nan, nan, nan]` | <mark class="reference-difference">`inverse=[-1,-1,-1]`,</mark> <mark class="reference-difference">`values=[]`</mark> | `[]` | <mark class="reference-difference">Returns empty groups</mark> |
+| <mark class="reference-difference">Empty</mark> <mark class="reference-difference">array</mark> | <mark class="reference-difference">`[]`</mark> | <mark class="reference-difference">`inverse=[]`,</mark> <mark class="reference-difference">`values=[]`</mark> | <mark class="reference-difference">`[]` | Returns empty groups |
+
+## GroupBy internal state (probe verification)
+
+- **With NaN in group coordinate**: `_group_indices=[[0],</mark> [1], [2]]` <mark class="reference-difference">(NaN</mark> <mark class="reference-difference">indices</mark> <mark class="reference-difference">excluded),</mark> <mark class="reference-difference">`_unique_coord`</mark> <mark class="reference-difference">contains</mark> <mark class="reference-difference">3</mark> unique values <mark class="reference-difference">(NaN</mark> <mark class="reference-difference">dropped)</mark>
+- <mark class="reference-difference">**With</mark> <mark class="reference-difference">MultiIndex**:</mark> <mark class="reference-difference">`_unique_coord`</mark> is converted<mark class="reference-difference"> to numpy array of tuples, `_group_indices=[0, 1, 2, 3]` (one index per unique tuple)
+
+## Corrections and verified limitations
+
+1. **Type annotation bug**: The return type annotation `tuple[np.ndarray | pd.Index, list[list[int]]]` does not include `pd.MultiIndex`, which is a valid return type when the input is a `pd.MultiIndex`.
+
+2. **Documentation bug**: The docstring states &quot;This will be flattened if it is not already 1-D&quot;, but there is no flattening code in the implementation. 2-D arrays raise a `ValueError` from `pd.factorize`.
+
+3. **MultiIndex preservation limitation**: While `unique_value_groups` preserves MultiIndex structure and names in its return value, `IndexVariable` (used in GroupBy) converts it</mark> to a numpy array of tuples, losing the MultiIndex structure and names.
+
+4. <mark class="reference-difference">**Single</mark> <mark class="reference-difference">usage**:</mark> <mark class="reference-difference">`unique_value_groups`</mark> is <mark class="reference-difference">called</mark> only <mark class="reference-difference">once</mark> <mark class="reference-difference">in</mark> <mark class="reference-difference">`xarray/core/groupby.py`</mark> <mark class="reference-difference">at</mark> <mark class="reference-difference">line</mark> <mark class="reference-difference">436,</mark> <mark class="reference-difference">during</mark> <mark class="reference-difference">GroupBy</mark> <mark class="reference-difference">initialization.</mark>
+
+<mark class="reference-difference">5.</mark> <mark class="reference-difference">**Edge</mark> <mark class="reference-difference">cases**:</mark> <mark class="reference-difference">All-NaN</mark> <mark class="reference-difference">arrays</mark> <mark class="reference-difference">return</mark> <mark class="reference-difference">empty</mark> <mark class="reference-difference">groups;</mark> <mark class="reference-difference">empty</mark> <mark class="reference-difference">arrays</mark> <mark class="reference-difference">return</mark> <mark class="reference-difference">empty</mark> <mark class="reference-difference">groups;</mark> <mark class="reference-difference">GroupBy</mark> <mark class="reference-difference">raises</mark> <mark class="reference-difference">`ValueError:</mark> <mark class="reference-difference">Failed</mark> <mark class="reference-difference">to</mark> <mark class="reference-difference">group</mark> <mark class="reference-difference">data.</mark> <mark class="reference-difference">Are</mark> <mark class="reference-difference">you</mark> <mark class="reference-difference">grouping</mark> <mark class="reference-difference">by</mark> a <mark class="reference-difference">variable</mark> <mark class="reference-difference">that</mark> is <mark class="reference-difference">all</mark> <mark class="reference-difference">NaN?`</mark> for <mark class="reference-difference">all-NaN</mark> <mark class="reference-difference">group</mark> <mark class="reference-difference">coordinates.</mark>
+</pre></section>
+</div></article>
+<article class="case" id="cf-mask-fill-values"><div class="case-head"><h2>4. CFMaskCoder.decode</h2>
+<p>xarray/coding/variables.py · zero-based row 1108 · 1082 prefix characters · 245 generated tokens · stop · 2.9 s</p>
+<div class="toolbar">
+<a href="../cf-mask-fill-values/index.html">Individual comparison</a>
+<a href="../cf-mask-fill-values/original_note.md">Full training note</a>
+<a href="../cf-mask-fill-values/prefix.txt">Prefix</a>
+<a href="../cf-mask-fill-values/generated_continuation.md">Generated text</a>
+<a href="../cf-mask-fill-values/reference_continuation.md">Original continuation</a>
+<a href="../cf-mask-fill-values/request.json">Request</a>
+<a href="../cf-mask-fill-values/response.json">Response</a>
+<a href="../cf-mask-fill-values/metrics.json">Metrics</a>
+</div></div><div class="comparison">
+<section class="panel"><h2>Input prefix</h2><div class="subtitle">1082 exact characters</div><pre>Verified repository information and learnings
+
+### CFMaskCoder.decode() Multiple Fill Values Warning
+
+**File:** `xarray/coding/variables.py`
+
+**Condition that triggers the warning:**
+The warning is triggered when `len(encoded_fill_values) &gt; 1`, where `encoded_fill_values` is a deduplicated set of non-null fill values extracted from both `missing_value` and `_FillValue` attributes.
+
+**Source location:** Lines 181–213 (CFMaskCoder.decode method)
+
+**Warning message format:**
+```python
+&quot;variable {!r} has multiple fill values {}, decoding all values to NaN.&quot;
+```
+- `{!r}`: the variable name in repr format. If `name` is `None`, the message shows `variable None`. If a name is provided, it shows the name with quotes, e.g., `variable &#x27;temperature&#x27;`.
+- `{}`: the set of fill values, e.g., `{2, -1}`.
+
+**Warning metadata:**
+- Category: `SerializationWarning` (a custom `RuntimeWarning` subclass defined at line 16)
+- Stack level: `stacklevel=3`
+
+**Behavior when triggered:**
+All matching values in the data are decoded to `NaN` via the `_apply_mask` helper function (lines 135–142).
+
+</pre></section>
+<section class="panel"><h2>Model-generated continuation</h2><div class="subtitle">Temperature 0 · 985 characters</div><pre><mark class="generated-difference">**Test</mark> <mark class="generated-difference">coverage:**</mark>
+- <mark class="generated-difference">`xarray/tests/test_coding.py::test_CFMaskCoder_decode`</mark> <mark class="generated-difference">(lines</mark> <mark class="generated-difference">40–50)</mark> <mark class="generated-difference">verifies</mark> <mark class="generated-difference">the</mark> warning <mark class="generated-difference">is</mark> <mark class="generated-difference">raised</mark> <mark class="generated-difference">when</mark> <mark class="generated-difference">multiple</mark> <mark class="generated-difference">fill</mark> values are <mark class="generated-difference">present.</mark>
+- <mark class="generated-difference">`xarray/tests/test_coding.py::test_CFMaskCoder_decode_dask`</mark> <mark class="generated-difference">(lines</mark> <mark class="generated-difference">52–62)</mark> <mark class="generated-difference">verifies</mark> <mark class="generated-difference">the</mark> <mark class="generated-difference">same</mark> <mark class="generated-difference">behavior</mark> <mark class="generated-difference">for</mark> <mark class="generated-difference">dask-backed</mark> <mark class="generated-difference">arrays.
+
+**Verified</mark> <mark class="generated-difference">probe</mark> <mark class="generated-difference">results:**</mark>
+- <mark class="generated-difference">With</mark> <mark class="generated-difference">`name=None`:</mark> <mark class="generated-difference">Warning message is</mark> `variable None has multiple fill values {2, -1}, decoding all values to NaN.`
+- With <mark class="generated-difference">`name=&#x27;temperature&#x27;`: Warning message is</mark> `variable &#x27;temperature&#x27; has multiple fill values {2, -1}, decoding all values to NaN.`
+- <mark class="generated-difference">With single</mark> fill <mark class="generated-difference">value:</mark> <mark class="generated-difference">No</mark> warning is <mark class="generated-difference">raised.
+-</mark> <mark class="generated-difference">With</mark> <mark class="generated-difference">no</mark> <mark class="generated-difference">fill</mark> <mark class="generated-difference">values:</mark> <mark class="generated-difference">No</mark> <mark class="generated-difference">warning</mark> <mark class="generated-difference">is</mark> <mark class="generated-difference">raised.
+-</mark> <mark class="generated-difference">With only `missing_value` attribute: No warning is raised.
+- With only `_FillValue` attribute: No warning is raised.
+- With both attributes containing</mark> the <mark class="generated-difference">same value: No </mark>warning <mark class="generated-difference">is</mark> <mark class="generated-difference">raised</mark> <mark class="generated-difference">(deduplicated by the set).</mark>
+<mark class="generated-difference">- With both attributes containing different values: Warning is raised with the deduplicated set of values.
+</mark></pre></section>
+<section class="panel"><h2>Ground-truth note continuation</h2><div class="subtitle">1111 original characters</div><pre><mark class="reference-difference">**Edge</mark> <mark class="reference-difference">cases verified:**</mark>
+- <mark class="reference-difference">Single</mark> <mark class="reference-difference">fill</mark> <mark class="reference-difference">value:</mark> <mark class="reference-difference">no</mark> <mark class="reference-difference">warning
+- Fill value(s) that are `NaN`: no</mark> warning <mark class="reference-difference">(filtered</mark> <mark class="reference-difference">by</mark> <mark class="reference-difference">`pd.isnull`)
+-</mark> <mark class="reference-difference">Only</mark> <mark class="reference-difference">`missing_value` with a single value: no warning
+- Both `missing_value` and `_FillValue` with overlapping values: deduplicated by the set, so only distinct</mark> values are <mark class="reference-difference">counted; no warning if deduplicated to one value</mark>
+- <mark class="reference-difference">Multiple</mark> <mark class="reference-difference">fill</mark> <mark class="reference-difference">values</mark> <mark class="reference-difference">from</mark> <mark class="reference-difference">both</mark> <mark class="reference-difference">attributes:</mark> <mark class="reference-difference">warning</mark> <mark class="reference-difference">raised</mark> <mark class="reference-difference">with</mark> <mark class="reference-difference">all</mark> <mark class="reference-difference">distinct</mark> <mark class="reference-difference">values
+
+**Example warning messages:**</mark>
+- <mark class="reference-difference">No</mark> <mark class="reference-difference">name</mark> <mark class="reference-difference">provided:</mark> `variable None has multiple fill values {2, -1}, decoding all values to NaN.`
+- With <mark class="reference-difference">name:</mark> `variable &#x27;temperature&#x27; has multiple fill values {2, -1}, decoding all values to NaN.`
+- <mark class="reference-difference">Multiple</mark> fill <mark class="reference-difference">values</mark> <mark class="reference-difference">from both attributes: `variable &#x27;temp&#x27; has multiple fill values {2, 3, -1}, decoding all values to NaN.`
+
+**Variable class note:**
+The `Variable` class (`xarray/core/variable.py`, line 273) does not store a `name` attribute (its `__slots__` are `&quot;_dims&quot;, &quot;_data&quot;, &quot;_attrs&quot;, &quot;_encoding&quot;`). The `name` used in the</mark> warning is <mark class="reference-difference">the</mark> <mark class="reference-difference">optional</mark> <mark class="reference-difference">`name`</mark> <mark class="reference-difference">argument</mark> <mark class="reference-difference">passed</mark> <mark class="reference-difference">to</mark> <mark class="reference-difference">`decode()`.</mark> <mark class="reference-difference">If</mark> <mark class="reference-difference">not</mark> <mark class="reference-difference">provided,</mark> the warning <mark class="reference-difference">shows</mark> <mark class="reference-difference">`variable</mark> <mark class="reference-difference">None`.</mark>
+</pre></section>
+</div></article>
+<article class="case" id="file-manager-options"><div class="case-head"><h2>5. CachingFileManager options</h2>
+<p>xarray/backends/file_manager.py · zero-based row 118 · 1300 prefix characters · 2048 generated tokens · length · 24.0 s</p>
+<div class="toolbar">
+<a href="../file-manager-options/index.html">Individual comparison</a>
+<a href="../file-manager-options/original_note.md">Full training note</a>
+<a href="../file-manager-options/prefix.txt">Prefix</a>
+<a href="../file-manager-options/generated_continuation.md">Generated text</a>
+<a href="../file-manager-options/reference_continuation.md">Original continuation</a>
+<a href="../file-manager-options/request.json">Request</a>
+<a href="../file-manager-options/response.json">Response</a>
+<a href="../file-manager-options/metrics.json">Metrics</a>
+</div></div><div class="comparison">
+<section class="panel"><h2>Input prefix</h2><div class="subtitle">1300 exact characters</div><pre># Verified repository information and learnings
+
+## OPTIONS accessed in file_manager.py
+
+Two global configuration options are accessed in `xarray/backends/file_manager.py`:
+
+### `file_cache_maxsize`
+- **Location**: Line 16 in `xarray/backends/file_manager.py`: `FILE_CACHE = LRUCache(maxsize=OPTIONS[&quot;file_cache_maxsize&quot;], on_evict=lambda k, v: v.close())`
+- **Effect**: Sets the maximum number of open files held in xarray&#x27;s global LRU cache. When the cache evicts a file, the `on_evict` lambda automatically closes it.
+- **Default value**: 128 (defined in `xarray/core/options.py` line 65)
+- **Validation**: Must be a positive integer via `_positive_integer` validator. Setting to 0 raises `ValueError`.
+- **Usage**:
+  - At module load time, `FILE_CACHE` is initialized with this value
+  - The setter `xarray.set_options(file_cache_maxsize=&lt;int&gt;)` calls `_set_file_cache_maxsize(value)` which directly assigns `FILE_CACHE.maxsize = value`
+  - At module load time, an assertion ensures `FILE_CACHE.maxsize &gt;= 1` (line 18)
+- **Test evidence**: `xarray/tests/test_options.py::test_file_cache_maxsize` confirms:
+  - Setting `file_cache_maxsize=0` raises `ValueError`
+  - Setting `file_cache_maxsize=123` updates `FILE_CACHE.maxsize` to 123
+  - The setting is reverted when exiting the context manager
+
+</pre></section>
+<section class="panel"><h2>Model-generated continuation</h2><div class="subtitle">Temperature 0 · 9355 characters</div><pre>### `warn_for_unclosed_files`
+- **Location**: Line <mark class="generated-difference">238</mark> in `xarray/backends/file_manager.py` inside <mark class="generated-difference">`CachingFileManager.__del__`:
+  ```python
+  if OPTIONS[&quot;warn_for_unclosed_files&quot;]:
+      warnings.warn(...)
+  ```</mark>
+- **Effect**: Controls whether a `RuntimeWarning` is emitted when a `CachingFileManager` is <mark class="generated-difference">garbage</mark> <mark class="generated-difference">collected</mark> <mark class="generated-difference">with an associated</mark> file <mark class="generated-difference">that</mark> <mark class="generated-difference">was</mark> <mark class="generated-difference">never</mark> <mark class="generated-difference">explicitly</mark> <mark class="generated-difference">closed.</mark>
+- **Default value**: `False` (defined in `xarray/core/options.py` line <mark class="generated-difference">66)</mark>
+- **Validation**: <mark class="generated-difference">Boolean-only</mark> <mark class="generated-difference">via</mark> <mark class="generated-difference">`_boolean`</mark> <mark class="generated-difference">validator.</mark> <mark class="generated-difference">Non-boolean</mark> <mark class="generated-difference">values</mark> <mark class="generated-difference">raise `ValueError`.</mark>
+- **Usage**:
+  - <mark class="generated-difference">Checked</mark> <mark class="generated-difference">in</mark> <mark class="generated-difference">`CachingFileManager.__del__`</mark> <mark class="generated-difference">when</mark> <mark class="generated-difference">`ref_count`</mark> <mark class="generated-difference">reaches</mark> <mark class="generated-difference">zero</mark> and the file is still in the <mark class="generated-difference">cache</mark>
+  - If <mark class="generated-difference">true,</mark> <mark class="generated-difference">emits</mark> <mark class="generated-difference">`RuntimeWarning`</mark> <mark class="generated-difference">with</mark> <mark class="generated-difference">message:</mark> <mark class="generated-difference">&quot;deallocating</mark> {}, but file is not already closed. This may indicate a <mark class="generated-difference">bug.&quot;
+  - The warning is only emitted if the file is still in the cache (i.e., not already closed)</mark>
+- **Test evidence**: `xarray/tests/test_backends_file_manager.py::test_file_manager_autoclose` <mark class="generated-difference">confirms:
+  -</mark> <mark class="generated-difference">With</mark> <mark class="generated-difference">`warn_for_unclosed_files=True`,</mark> <mark class="generated-difference">a</mark> <mark class="generated-difference">`RuntimeWarning`</mark> <mark class="generated-difference">is</mark> <mark class="generated-difference">emitted when</mark> the<mark class="generated-difference"> manager is deallocated without explicit close
+  - With `warn_for_unclosed_files=False`, no</mark> warning is emitted<mark class="generated-difference">
+  -</mark> <mark class="generated-difference">The setting is reverted</mark> when <mark class="generated-difference">exiting</mark> <mark class="generated-difference">the</mark> <mark class="generated-difference">context</mark> <mark class="generated-difference">manager</mark>
+
+## <mark class="generated-difference">Options</mark> <mark class="generated-difference">system</mark> <mark class="generated-difference">infrastructure
+
+-</mark> <mark class="generated-difference">**Definition**:</mark> <mark class="generated-difference">`xarray/core/options.py`</mark> <mark class="generated-difference">defines</mark> <mark class="generated-difference">`OPTIONS`</mark> <mark class="generated-difference">as</mark> <mark class="generated-difference">a</mark> <mark class="generated-difference">`FrozenDict`</mark> <mark class="generated-difference">with</mark> <mark class="generated-difference">16</mark> <mark class="generated-difference">options,</mark> <mark class="generated-difference">including</mark> `file_cache_maxsize` and `warn_for_unclosed_files`
+- <mark class="generated-difference">**Validation**:</mark> <mark class="generated-difference">`_VALIDATORS`</mark> dictionary <mark class="generated-difference">contains</mark> `_positive_integer` for `file_cache_maxsize` <mark class="generated-difference">and</mark> <mark class="generated-difference">`_boolean`</mark> for `warn_for_unclosed_files`
+<mark class="generated-difference">- **Modification**: `set_options` context manager updates `OPTIONS` and calls `_SETTERS` callbacks when applicable
+- **Callback registration**: `_SETTERS` in `xarray/core/options.py` line 100 maps `&quot;file_cache_maxsize&quot;` to `_set_file_cache_maxsize`
+
+## Test coverage
+
+- `xarray/tests/test_options.py::test_file_cache_maxsize`: Validates `file_cache_maxsize` setter behavior and default
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_autoclose`: Validates `warn_for_unclosed_files` warning behavior with both True and False values
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_autoclose_while_locked`: Tests interaction with locks during autoclose
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_refcounts`: Tests reference counting behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent`: Tests concurrent write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_pickle`: Tests pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read`: Tests read behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read_pickle`: Tests read pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_acquire_context`: Tests acquire context behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_replace_object`: Tests object replacement behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_repr`: Tests repr behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_consecutive`: Tests consecutive write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent_write`: Tests concurrent write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_pickle`: Tests pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read`: Tests read behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read_pickle`: Tests read pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_acquire_context`: Tests acquire context behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_replace_object`: Tests object replacement behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_repr`: Tests repr behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_consecutive`: Tests consecutive write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent_write`: Tests concurrent write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_pickle`: Tests pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read`: Tests read behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read_pickle`: Tests read pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_acquire_context`: Tests acquire context behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_replace_object`: Tests object replacement behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_repr`: Tests repr behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_consecutive`: Tests consecutive write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent_write`: Tests concurrent write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_pickle`: Tests pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read`: Tests read behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read_pickle`: Tests read pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_acquire_context`: Tests acquire context behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_replace_object`: Tests object replacement behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_repr`: Tests repr behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_consecutive`: Tests consecutive write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent_write`: Tests concurrent write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_pickle`: Tests pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read`: Tests read behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read_pickle`: Tests read pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_acquire_context`: Tests acquire context behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_replace_object`: Tests object replacement behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_repr`: Tests repr behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_consecutive`: Tests consecutive write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent_write`: Tests concurrent write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_pickle`: Tests pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read`: Tests read behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read_pickle`: Tests read pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_acquire_context`: Tests acquire context behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_replace_object`: Tests object replacement behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_repr`: Tests repr behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_consecutive`: Tests consecutive write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent_write`: Tests concurrent write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_pickle`: Tests pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read`: Tests read behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read_pickle`: Tests read pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_acquire_context`: Tests acquire context behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_replace_object`: Tests object replacement behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_repr`: Tests repr behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_consecutive`: Tests consecutive write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent_write`: Tests concurrent write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_pickle`: Tests pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read`: Tests read behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read_pickle`: Tests read pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_acquire_context`: Tests acquire context behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_replace_object`: Tests object replacement behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_repr`: Tests repr behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_consecutive`: Tests consecutive write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent_write</mark></pre></section>
+<section class="panel"><h2>Ground-truth note continuation</h2><div class="subtitle">2403 original characters</div><pre>### `warn_for_unclosed_files`
+- **Location**: Line <mark class="reference-difference">250</mark> in `xarray/backends/file_manager.py` inside <mark class="reference-difference">`CachingFileManager.__del__`</mark>
+- **Effect**: Controls whether a `RuntimeWarning` is emitted when a `CachingFileManager` is <mark class="reference-difference">deallocated</mark> <mark class="reference-difference">but</mark> <mark class="reference-difference">its</mark> file <mark class="reference-difference">is</mark> <mark class="reference-difference">still</mark> <mark class="reference-difference">open.</mark> <mark class="reference-difference">Useful</mark> <mark class="reference-difference">for debugging file handle leaks.</mark>
+- **Default value**: `False` (defined in `xarray/core/options.py` line <mark class="reference-difference">68)</mark>
+- **Validation**: <mark class="reference-difference">Must</mark> <mark class="reference-difference">be</mark> <mark class="reference-difference">a</mark> <mark class="reference-difference">boolean</mark> <mark class="reference-difference">(`True`</mark> <mark class="reference-difference">or</mark> <mark class="reference-difference">`False`)</mark>
+- **Usage**:
+  - <mark class="reference-difference">In</mark> <mark class="reference-difference">`CachingFileManager.__del__`,</mark> <mark class="reference-difference">after</mark> <mark class="reference-difference">decrementing</mark> <mark class="reference-difference">the</mark> <mark class="reference-difference">reference</mark> <mark class="reference-difference">count, if `ref_count == 0`</mark> and the file is still in the <mark class="reference-difference">cache, the manager closes the file</mark>
+  - If <mark class="reference-difference">`OPTIONS[&quot;warn_for_unclosed_files&quot;]`</mark> <mark class="reference-difference">is</mark> <mark class="reference-difference">`True`,</mark> <mark class="reference-difference">a</mark> <mark class="reference-difference">warning</mark> <mark class="reference-difference">is issued: `&quot;deallocating</mark> {}, but file is not already closed. This may indicate a <mark class="reference-difference">bug.&quot;`</mark>
+- **Test evidence**: `xarray/tests/test_backends_file_manager.py::test_file_manager_autoclose` <mark class="reference-difference">parameterizes</mark> <mark class="reference-difference">on</mark> <mark class="reference-difference">`[True,</mark> <mark class="reference-difference">False]`</mark> <mark class="reference-difference">and</mark> <mark class="reference-difference">verifies</mark> <mark class="reference-difference">that</mark> the warning is emitted <mark class="reference-difference">only</mark> when <mark class="reference-difference">enabled.</mark> <mark class="reference-difference">Additionally,</mark> <mark class="reference-difference">`xarray/tests/__init__.py`</mark> <mark class="reference-difference">enables this option globally for test runs via `set_options(warn_for_unclosed_files=True)` on line 94.</mark>
+
+## <mark class="reference-difference">Configuration-driven</mark> <mark class="reference-difference">file</mark> <mark class="reference-difference">management</mark> <mark class="reference-difference">summary
+
+The</mark> <mark class="reference-difference">file</mark> <mark class="reference-difference">management</mark> <mark class="reference-difference">subsystem</mark> <mark class="reference-difference">in</mark> <mark class="reference-difference">xarray</mark> <mark class="reference-difference">is</mark> <mark class="reference-difference">driven</mark> <mark class="reference-difference">by</mark> <mark class="reference-difference">two</mark> <mark class="reference-difference">configuration options:
+1. **Resource management**:</mark> `file_cache_maxsize` <mark class="reference-difference">limits the global file cache size, controlling memory </mark>and<mark class="reference-difference"> file descriptor usage.
+2. **Debugging**: `warn_for_unclosed_files` enables warnings for unclosed files during deallocation, aiding in detecting leaks.
+
+## Source references
+
+- `xarray/backends/file_manager.py:16` – `FILE_CACHE` initialization using `file_cache_maxsize`
+- `xarray/backends/file_manager.py:250` – `__del__` check using</mark> `warn_for_unclosed_files`
+- <mark class="reference-difference">`xarray/backends/file_manager.py:18`</mark> <mark class="reference-difference">– Assertion ensuring `FILE_CACHE.maxsize &gt;= 1` at module load time
+- `xarray/backends/file_manager.py:10` – Import of `OPTIONS` from `xarray.core.options`
+- `xarray/core/options.py:53-70` – `OPTIONS`</mark> dictionary <mark class="reference-difference">with default values and validators
+- `xarray/core/options.py:114-117` – `_SETTERS` mapping `file_cache_maxsize` to `_set_file_cache_maxsize`
+- `xarray/core/options.py:77-78` –</mark> `_positive_integer`<mark class="reference-difference"> validator function
+- `xarray/core/options.py:100-103` – `_set_file_cache_maxsize` function implementation
+- `xarray/tests/test_options.py:41-47` – Tests</mark> for `file_cache_maxsize`<mark class="reference-difference">
+-</mark> <mark class="reference-difference">`xarray/tests/test_backends_file_manager.py:42-60`</mark> <mark class="reference-difference">– Tests</mark> for `warn_for_unclosed_files`
+</pre></section>
+</div></article>
+</main><footer>Five independent raw-prefix generation requests. Only the prefix was supplied to the model in each request.</footer></body></html>

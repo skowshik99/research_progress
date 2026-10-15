@@ -1,0 +1,132 @@
+[
+  {
+    "slug": "get-all-coords",
+    "label": "Indexes.get_all_coords",
+    "source_file": "xarray/core/indexes.py",
+    "row_index": 2208,
+    "source_note_sha256": "e7629c0eb1455392c5c611507f8f42727dde11f78ee34325ecc36df62f5e1492",
+    "metrics": {
+      "model": "uwin-cpt-9b",
+      "temperature": 0,
+      "prefix_characters": 1410,
+      "reference_characters": 2741,
+      "generated_characters": 2839,
+      "exact_continuation_match": false,
+      "exact_matching_start_characters": 3,
+      "word_sequence_similarity": 0.3115646258503401,
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 347,
+        "total_tokens": 1069,
+        "completion_tokens": 722,
+        "prompt_tokens_details": null
+      },
+      "elapsed_seconds": 37.575,
+      "unique_prefix_matches": 1
+    }
+  },
+  {
+    "slug": "dataset-reset-index",
+    "label": "Dataset.reset_index",
+    "source_file": "xarray/core/dataset.py",
+    "row_index": 1857,
+    "source_note_sha256": "5bba01cffb75c145bcdb7ff2c4ebed5547ed64a75d3976cf9293f789709aa311",
+    "metrics": {
+      "model": "uwin-cpt-9b",
+      "temperature": 0,
+      "prefix_characters": 2287,
+      "reference_characters": 4928,
+      "generated_characters": 2745,
+      "exact_continuation_match": false,
+      "exact_matching_start_characters": 15,
+      "word_sequence_similarity": 0.20856995353639649,
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 598,
+        "total_tokens": 1403,
+        "completion_tokens": 805,
+        "prompt_tokens_details": null
+      },
+      "elapsed_seconds": 9.668,
+      "unique_prefix_matches": 1
+    }
+  },
+  {
+    "slug": "groupby-unique-value-groups",
+    "label": "unique_value_groups",
+    "source_file": "xarray/core/groupby.py",
+    "row_index": 2169,
+    "source_note_sha256": "c9e45ff9aa68ef28ee483c51b335171394659b71077e91edf332a8c2b04482a8",
+    "metrics": {
+      "model": "uwin-cpt-9b",
+      "temperature": 0,
+      "prefix_characters": 1816,
+      "reference_characters": 4322,
+      "generated_characters": 6695,
+      "exact_continuation_match": false,
+      "exact_matching_start_characters": 57,
+      "word_sequence_similarity": 0.25239203516938197,
+      "finish_reason": "length",
+      "usage": {
+        "prompt_tokens": 531,
+        "total_tokens": 2579,
+        "completion_tokens": 2048,
+        "prompt_tokens_details": null
+      },
+      "elapsed_seconds": 24.045,
+      "unique_prefix_matches": 1
+    }
+  },
+  {
+    "slug": "cf-mask-fill-values",
+    "label": "CFMaskCoder.decode",
+    "source_file": "xarray/coding/variables.py",
+    "row_index": 1108,
+    "source_note_sha256": "be1bfe0c968b6e4ab555e7b2a52b94bb16d5bec6c84a6f93af1d8481608d735f",
+    "metrics": {
+      "model": "uwin-cpt-9b",
+      "temperature": 0,
+      "prefix_characters": 1082,
+      "reference_characters": 1111,
+      "generated_characters": 985,
+      "exact_continuation_match": false,
+      "exact_matching_start_characters": 2,
+      "word_sequence_similarity": 0.3035019455252918,
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 283,
+        "total_tokens": 528,
+        "completion_tokens": 245,
+        "prompt_tokens_details": null
+      },
+      "elapsed_seconds": 2.881,
+      "unique_prefix_matches": 1
+    }
+  },
+  {
+    "slug": "file-manager-options",
+    "label": "CachingFileManager options",
+    "source_file": "xarray/backends/file_manager.py",
+    "row_index": 118,
+    "source_note_sha256": "f61ccfbd45d5facbbe0196a1a006e65e1eb86fbf7b43183246699b55db8983c6",
+    "metrics": {
+      "model": "uwin-cpt-9b",
+      "temperature": 0,
+      "prefix_characters": 1300,
+      "reference_characters": 2403,
+      "generated_characters": 9355,
+      "exact_continuation_match": false,
+      "exact_matching_start_characters": 52,
+      "word_sequence_similarity": 0.20985979194934418,
+      "finish_reason": "length",
+      "usage": {
+        "prompt_tokens": 344,
+        "total_tokens": 2392,
+        "completion_tokens": 2048,
+        "prompt_tokens_details": null
+      },
+      "elapsed_seconds": 23.976,
+      "unique_prefix_matches": 1
+    }
+  }
+]

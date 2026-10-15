@@ -1,0 +1,29 @@
+{
+  "id": "cmpl-852a2155a43932a4",
+  "object": "text_completion",
+  "created": 1792025334,
+  "prompt_routed_experts": null,
+  "model": "uwin-cpt-9b",
+  "choices": [
+    {
+      "index": 0,
+      "text": "### MultiIndex Level Handling\n\nWhen resetting a MultiIndex by its dimension name:\n- The MultiIndex is removed from `_indexes`\n- Level coordinates are kept as regular variables\n- The dimension is preserved\n\nWhen resetting by level names (e.g., `reset_index(\"num\")`):\n- The level coordinate is removed from the dataset\n- The MultiIndex is converted to a regular index\n- The dimension is preserved\n\n**Evidence from probe:**\n```\nAfter reset_index(\"num\"):\nIndexes: ['idx', 'letter']\nCoordinates: ['idx', 'letter']\n```\n\n### drop Parameter Behavior\n\nThe `drop` parameter controls whether the dimension is removed:\n- `drop=False` (default): Dimension is preserved, index is removed\n- `drop=True`: Dimension is removed, index and its coordinates are dropped\n\n**Evidence from probe:**\n```\nAfter reset_index(\"idx\", drop=True):\nDimensions:  ()\nCoordinates: []\n```\n\n### Related Methods\n\n- `set_index()` at line 4197: Creates indexes from coordinates\n- `clear_index()` at line 4257: Removes indexes and their coordinates\n- `rename()` at line 3354: Renames indexes and coordinates\n\n### Test Coverage\n\nThe following tests verify the behavior:\n- `test_reset_index` at line 4287: Basic reset_index functionality\n- `test_reset_index_drop` at line 4300: drop parameter behavior\n- `test_reset_index_multiindex` at line 4313: MultiIndex handling\n- `test_reset_index_multiindex_level` at line 4330: Level-based reset\n- `test_reset_index_errors` at line 4343: Error handling for invalid names\n\nAll 5 tests pass successfully.\n\n### Verified Behavior Summary\n\n| Operation | Indexes After | Coordinates After | Dimensions After |\n|-----------|---------------|-------------------|------------------|\n| `reset_index(\"idx\")` | `[]` | `['idx', 'num', 'letter']` | `('idx',)` |\n| `reset_index(\"idx\", drop=True)` | `[]` | `[]` | `()` |\n| `reset_index(\"num\")` | `['idx', 'letter']` | `['idx', 'letter']` | `('idx',)` |\n| `reset_index(\"letter\")` | `['idx', 'num']` | `['idx', 'num']` | `('idx',)` |\n| `reset_index([\"num\", \"letter\"])` | `['idx']` | `['idx']` | `('idx',)` |\n| `reset_index([\"num\", \"letter\"], drop=True)` | `[]` | `[]` | `()` |\n\n### Correction to Original Claims\n\nThe original repository information contained incorrect line numbers:\n- `reset_index` method: claimed line 4100, actual line 4108\n- `set_index` method: claimed line 4190, actual line 4197\n- `clear_index` method: claimed line 4250, actual line 4257\n- `test_reset_index` test: claimed line 4280, actual line 4287\n- `test_reset_index_drop` test: claimed line 4293, actual line 4300\n- `test_reset_index_multiindex` test: claimed line 4306, actual line 4313\n- `test_reset_index_multiindex_level` test: claimed line 4323, actual line 4330\n- `test_reset_index_errors` test: claimed line 4336, actual line 4343\n",
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.21.0-bedfc6bb",
+  "usage": {
+    "prompt_tokens": 598,
+    "total_tokens": 1403,
+    "completion_tokens": 805,
+    "prompt_tokens_details": null
+  },
+  "kv_transfer_params": null
+}

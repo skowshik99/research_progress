@@ -1,0 +1,44 @@
+# Verified repository information and learnings
+
+## Function definition and contract
+
+**Location**: `xarray/core/groupby.py:67-92`
+
+**Signature**:
+```python
+def unique_value_groups(ar, sort: bool = True) -> tuple[np.ndarray | pd.Index, list[list[int]]]:
+```
+
+**Purpose**: Groups an array by its unique values, returning unique values and a list of index lists for each group.
+
+**Parameters**:
+- `ar`: array-like (must be 1-D; 2-D arrays raise `ValueError`)
+- `sort`: bool, default `True`; whether to sort unique values
+
+**Returns**:
+- `values`: unique values as `np.ndarray` or `pd.Index` (or `pd.MultiIndex`)
+- `indices`: `list[list[int]]` where each inner list contains the indices in `ar` that share that unique value
+
+## Core algorithm (verified by code and probes)
+
+### 1. pd.factorize call (`line 85`)
+```python
+inverse, values = pd.factorize(ar, sort=sort)
+```
+- `inverse`: integer codes for each element (0, 1, 2, ...)
+- `values`: array of unique values
+- **NaN behavior**: pandas assigns `-1` in `inverse` for NaN values; NaN values are **not** included in `values`
+
+**Probe verification**: For input `[1, nan, 2, nan, 1, 3]`, `pd.factorize` returns `inverse=[0, -1, 1, -1, 0, 2]` and `values=[1., 2., 3.]`.
+
+### 2. MultiIndex name preservation (`line 86-87`)
+```python
+if isinstance(values, pd.MultiIndex):
+    values.names = ar.names
+```
+- If `values` is a `pd.MultiIndex`, the names from the input array `ar` are copied to `values`
+
+**Probe verification**: For `MultiIndex([(1, 'a'), (2, 'b'), (1, 'a'), (3, 'c')], names=['level1', 'level2'])`, `unique_value_groups` returns a `MultiIndex` with names `['level1', 'level2']`.
+
+**Limitation**: When `IndexVariable` is created with these values in GroupBy, the MultiIndex is converted to a numpy array of tuples, losing the MultiIndex structure and names.
+

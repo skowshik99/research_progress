@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CPT note-prefix completion comparison</title>
+<style>
+:root{color-scheme:dark;--bg:#0c1220;--panel:#151e30;--ink:#e5edf8;--muted:#a6b5ca}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,sans-serif}
+header{padding:26px 28px 16px;max-width:1800px;margin:auto}
+h1{font-size:25px;margin:0 0 10px}p{line-height:1.55;margin:8px 0;color:var(--muted)}
+.meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.badge{background:#1c2a40;border:1px solid #334563;padding:7px 10px;border-radius:7px;font-size:13px}
+.toolbar{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:16px}
+a{color:#a4d1ff}label{color:var(--muted);font-size:14px}
+.comparison{display:grid;grid-template-columns:minmax(320px,.85fr) minmax(380px,1.1fr) minmax(380px,1.1fr);
+gap:16px;padding:0 28px 28px;max-width:1800px;margin:auto;overflow:auto}
+.panel{background:var(--panel);border:1px solid #30405b;border-radius:10px;overflow:hidden}
+.panel h2{font-size:17px;margin:0;padding:16px;border-bottom:1px solid #30405b}
+.panel .subtitle{font-size:12px;color:var(--muted);padding:10px 16px;border-bottom:1px solid #30405b}
+pre{margin:0;padding:18px;font:13px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;
+white-space:pre-wrap;overflow-wrap:anywhere;height:68vh;min-height:400px;overflow:auto;tab-size:4}
+mark{color:inherit;border-radius:2px}
+.generated-difference{background:#553740}
+.reference-difference{background:#234f43}
+body:has(#highlight:not(:checked)) mark{background:transparent}
+footer{padding:0 28px 24px;max-width:1800px;margin:auto;font-size:13px;color:var(--muted)}
+@media(max-width:800px){header{padding:20px}.comparison{padding:0 20px 20px;grid-template-columns:320px 380px 380px}}
+</style></head><body><header>
+<h1>CPT note-prefix completion</h1>
+<p><strong>xarray/backends/file_manager.py · CachingFileManager options</strong><br>
+One training note, continued from its exact text prefix through the raw completions endpoint.</p>
+<div class="meta">
+<span class="badge">Model: uwin-cpt-9b</span><span class="badge">Temperature: 0</span>
+<span class="badge">Prefix: 1300 characters</span>
+<span class="badge">Unique among 3531 training notes</span>
+<span class="badge">Generated: 9355 characters</span>
+<span class="badge">Finish: length</span>
+<span class="badge">Word sequence similarity: 21.0%</span>
+</div>
+<p>The prefix is the only model input. The original continuation is displayed for comparison.
+Highlights indicate differences in wording; the similarity value measures wording, not factual correctness.
+All three columns contain the complete text.</p>
+<div class="toolbar">
+<a href="../../index.html">Project page</a>
+<label><input type="checkbox" id="highlight" checked> Highlight differences</label>
+<a href="original_note.md">Complete training note</a>
+<a href="generated_continuation.md">Generated text</a>
+<a href="reference_continuation.md">Original continuation</a>
+<a href="request.json">Exact request</a><a href="response.json">Raw response</a>
+<a href="metrics.json">Metrics</a>
+</div></header>
+<main class="comparison">
+<section class="panel"><h2>Input prefix</h2><div class="subtitle">First 1300 characters · exact and unmodified</div>
+<pre># Verified repository information and learnings
+
+## OPTIONS accessed in file_manager.py
+
+Two global configuration options are accessed in `xarray/backends/file_manager.py`:
+
+### `file_cache_maxsize`
+- **Location**: Line 16 in `xarray/backends/file_manager.py`: `FILE_CACHE = LRUCache(maxsize=OPTIONS[&quot;file_cache_maxsize&quot;], on_evict=lambda k, v: v.close())`
+- **Effect**: Sets the maximum number of open files held in xarray&#x27;s global LRU cache. When the cache evicts a file, the `on_evict` lambda automatically closes it.
+- **Default value**: 128 (defined in `xarray/core/options.py` line 65)
+- **Validation**: Must be a positive integer via `_positive_integer` validator. Setting to 0 raises `ValueError`.
+- **Usage**:
+  - At module load time, `FILE_CACHE` is initialized with this value
+  - The setter `xarray.set_options(file_cache_maxsize=&lt;int&gt;)` calls `_set_file_cache_maxsize(value)` which directly assigns `FILE_CACHE.maxsize = value`
+  - At module load time, an assertion ensures `FILE_CACHE.maxsize &gt;= 1` (line 18)
+- **Test evidence**: `xarray/tests/test_options.py::test_file_cache_maxsize` confirms:
+  - Setting `file_cache_maxsize=0` raises `ValueError`
+  - Setting `file_cache_maxsize=123` updates `FILE_CACHE.maxsize` to 123
+  - The setting is reverted when exiting the context manager
+
+</pre></section>
+<section class="panel"><h2>Model-generated continuation</h2><div class="subtitle">Greedy generation · temperature 0 · 24.0 seconds</div>
+<pre>### `warn_for_unclosed_files`
+- **Location**: Line <mark class="generated-difference">238</mark> in `xarray/backends/file_manager.py` inside <mark class="generated-difference">`CachingFileManager.__del__`:
+  ```python
+  if OPTIONS[&quot;warn_for_unclosed_files&quot;]:
+      warnings.warn(...)
+  ```</mark>
+- **Effect**: Controls whether a `RuntimeWarning` is emitted when a `CachingFileManager` is <mark class="generated-difference">garbage</mark> <mark class="generated-difference">collected</mark> <mark class="generated-difference">with an associated</mark> file <mark class="generated-difference">that</mark> <mark class="generated-difference">was</mark> <mark class="generated-difference">never</mark> <mark class="generated-difference">explicitly</mark> <mark class="generated-difference">closed.</mark>
+- **Default value**: `False` (defined in `xarray/core/options.py` line <mark class="generated-difference">66)</mark>
+- **Validation**: <mark class="generated-difference">Boolean-only</mark> <mark class="generated-difference">via</mark> <mark class="generated-difference">`_boolean`</mark> <mark class="generated-difference">validator.</mark> <mark class="generated-difference">Non-boolean</mark> <mark class="generated-difference">values</mark> <mark class="generated-difference">raise `ValueError`.</mark>
+- **Usage**:
+  - <mark class="generated-difference">Checked</mark> <mark class="generated-difference">in</mark> <mark class="generated-difference">`CachingFileManager.__del__`</mark> <mark class="generated-difference">when</mark> <mark class="generated-difference">`ref_count`</mark> <mark class="generated-difference">reaches</mark> <mark class="generated-difference">zero</mark> and the file is still in the <mark class="generated-difference">cache</mark>
+  - If <mark class="generated-difference">true,</mark> <mark class="generated-difference">emits</mark> <mark class="generated-difference">`RuntimeWarning`</mark> <mark class="generated-difference">with</mark> <mark class="generated-difference">message:</mark> <mark class="generated-difference">&quot;deallocating</mark> {}, but file is not already closed. This may indicate a <mark class="generated-difference">bug.&quot;
+  - The warning is only emitted if the file is still in the cache (i.e., not already closed)</mark>
+- **Test evidence**: `xarray/tests/test_backends_file_manager.py::test_file_manager_autoclose` <mark class="generated-difference">confirms:
+  -</mark> <mark class="generated-difference">With</mark> <mark class="generated-difference">`warn_for_unclosed_files=True`,</mark> <mark class="generated-difference">a</mark> <mark class="generated-difference">`RuntimeWarning`</mark> <mark class="generated-difference">is</mark> <mark class="generated-difference">emitted when</mark> the<mark class="generated-difference"> manager is deallocated without explicit close
+  - With `warn_for_unclosed_files=False`, no</mark> warning is emitted<mark class="generated-difference">
+  -</mark> <mark class="generated-difference">The setting is reverted</mark> when <mark class="generated-difference">exiting</mark> <mark class="generated-difference">the</mark> <mark class="generated-difference">context</mark> <mark class="generated-difference">manager</mark>
+
+## <mark class="generated-difference">Options</mark> <mark class="generated-difference">system</mark> <mark class="generated-difference">infrastructure
+
+-</mark> <mark class="generated-difference">**Definition**:</mark> <mark class="generated-difference">`xarray/core/options.py`</mark> <mark class="generated-difference">defines</mark> <mark class="generated-difference">`OPTIONS`</mark> <mark class="generated-difference">as</mark> <mark class="generated-difference">a</mark> <mark class="generated-difference">`FrozenDict`</mark> <mark class="generated-difference">with</mark> <mark class="generated-difference">16</mark> <mark class="generated-difference">options,</mark> <mark class="generated-difference">including</mark> `file_cache_maxsize` and `warn_for_unclosed_files`
+- <mark class="generated-difference">**Validation**:</mark> <mark class="generated-difference">`_VALIDATORS`</mark> dictionary <mark class="generated-difference">contains</mark> `_positive_integer` for `file_cache_maxsize` <mark class="generated-difference">and</mark> <mark class="generated-difference">`_boolean`</mark> for `warn_for_unclosed_files`
+<mark class="generated-difference">- **Modification**: `set_options` context manager updates `OPTIONS` and calls `_SETTERS` callbacks when applicable
+- **Callback registration**: `_SETTERS` in `xarray/core/options.py` line 100 maps `&quot;file_cache_maxsize&quot;` to `_set_file_cache_maxsize`
+
+## Test coverage
+
+- `xarray/tests/test_options.py::test_file_cache_maxsize`: Validates `file_cache_maxsize` setter behavior and default
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_autoclose`: Validates `warn_for_unclosed_files` warning behavior with both True and False values
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_autoclose_while_locked`: Tests interaction with locks during autoclose
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_refcounts`: Tests reference counting behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent`: Tests concurrent write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_pickle`: Tests pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read`: Tests read behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read_pickle`: Tests read pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_acquire_context`: Tests acquire context behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_replace_object`: Tests object replacement behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_repr`: Tests repr behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_consecutive`: Tests consecutive write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent_write`: Tests concurrent write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_pickle`: Tests pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read`: Tests read behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read_pickle`: Tests read pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_acquire_context`: Tests acquire context behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_replace_object`: Tests object replacement behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_repr`: Tests repr behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_consecutive`: Tests consecutive write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent_write`: Tests concurrent write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_pickle`: Tests pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read`: Tests read behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read_pickle`: Tests read pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_acquire_context`: Tests acquire context behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_replace_object`: Tests object replacement behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_repr`: Tests repr behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_consecutive`: Tests consecutive write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent_write`: Tests concurrent write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_pickle`: Tests pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read`: Tests read behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read_pickle`: Tests read pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_acquire_context`: Tests acquire context behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_replace_object`: Tests object replacement behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_repr`: Tests repr behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_consecutive`: Tests consecutive write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent_write`: Tests concurrent write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_pickle`: Tests pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read`: Tests read behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read_pickle`: Tests read pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_acquire_context`: Tests acquire context behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_replace_object`: Tests object replacement behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_repr`: Tests repr behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_consecutive`: Tests consecutive write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent_write`: Tests concurrent write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_pickle`: Tests pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read`: Tests read behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read_pickle`: Tests read pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_acquire_context`: Tests acquire context behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_replace_object`: Tests object replacement behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_repr`: Tests repr behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_consecutive`: Tests consecutive write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent_write`: Tests concurrent write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_pickle`: Tests pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read`: Tests read behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read_pickle`: Tests read pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_acquire_context`: Tests acquire context behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_replace_object`: Tests object replacement behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_repr`: Tests repr behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_consecutive`: Tests consecutive write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent_write`: Tests concurrent write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_pickle`: Tests pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read`: Tests read behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_read_pickle`: Tests read pickle behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_acquire_context`: Tests acquire context behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_replace_object`: Tests object replacement behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_repr`: Tests repr behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_consecutive`: Tests consecutive write behavior
+- `xarray/tests/test_backends_file_manager.py::test_file_manager_write_concurrent_write</mark></pre></section>
+<section class="panel"><h2>Ground-truth note continuation</h2><div class="subtitle">Remaining 2403 characters of the original training text</div>
+<pre>### `warn_for_unclosed_files`
+- **Location**: Line <mark class="reference-difference">250</mark> in `xarray/backends/file_manager.py` inside <mark class="reference-difference">`CachingFileManager.__del__`</mark>
+- **Effect**: Controls whether a `RuntimeWarning` is emitted when a `CachingFileManager` is <mark class="reference-difference">deallocated</mark> <mark class="reference-difference">but</mark> <mark class="reference-difference">its</mark> file <mark class="reference-difference">is</mark> <mark class="reference-difference">still</mark> <mark class="reference-difference">open.</mark> <mark class="reference-difference">Useful</mark> <mark class="reference-difference">for debugging file handle leaks.</mark>
+- **Default value**: `False` (defined in `xarray/core/options.py` line <mark class="reference-difference">68)</mark>
+- **Validation**: <mark class="reference-difference">Must</mark> <mark class="reference-difference">be</mark> <mark class="reference-difference">a</mark> <mark class="reference-difference">boolean</mark> <mark class="reference-difference">(`True`</mark> <mark class="reference-difference">or</mark> <mark class="reference-difference">`False`)</mark>
+- **Usage**:
+  - <mark class="reference-difference">In</mark> <mark class="reference-difference">`CachingFileManager.__del__`,</mark> <mark class="reference-difference">after</mark> <mark class="reference-difference">decrementing</mark> <mark class="reference-difference">the</mark> <mark class="reference-difference">reference</mark> <mark class="reference-difference">count, if `ref_count == 0`</mark> and the file is still in the <mark class="reference-difference">cache, the manager closes the file</mark>
+  - If <mark class="reference-difference">`OPTIONS[&quot;warn_for_unclosed_files&quot;]`</mark> <mark class="reference-difference">is</mark> <mark class="reference-difference">`True`,</mark> <mark class="reference-difference">a</mark> <mark class="reference-difference">warning</mark> <mark class="reference-difference">is issued: `&quot;deallocating</mark> {}, but file is not already closed. This may indicate a <mark class="reference-difference">bug.&quot;`</mark>
+- **Test evidence**: `xarray/tests/test_backends_file_manager.py::test_file_manager_autoclose` <mark class="reference-difference">parameterizes</mark> <mark class="reference-difference">on</mark> <mark class="reference-difference">`[True,</mark> <mark class="reference-difference">False]`</mark> <mark class="reference-difference">and</mark> <mark class="reference-difference">verifies</mark> <mark class="reference-difference">that</mark> the warning is emitted <mark class="reference-difference">only</mark> when <mark class="reference-difference">enabled.</mark> <mark class="reference-difference">Additionally,</mark> <mark class="reference-difference">`xarray/tests/__init__.py`</mark> <mark class="reference-difference">enables this option globally for test runs via `set_options(warn_for_unclosed_files=True)` on line 94.</mark>
+
+## <mark class="reference-difference">Configuration-driven</mark> <mark class="reference-difference">file</mark> <mark class="reference-difference">management</mark> <mark class="reference-difference">summary
+
+The</mark> <mark class="reference-difference">file</mark> <mark class="reference-difference">management</mark> <mark class="reference-difference">subsystem</mark> <mark class="reference-difference">in</mark> <mark class="reference-difference">xarray</mark> <mark class="reference-difference">is</mark> <mark class="reference-difference">driven</mark> <mark class="reference-difference">by</mark> <mark class="reference-difference">two</mark> <mark class="reference-difference">configuration options:
+1. **Resource management**:</mark> `file_cache_maxsize` <mark class="reference-difference">limits the global file cache size, controlling memory </mark>and<mark class="reference-difference"> file descriptor usage.
+2. **Debugging**: `warn_for_unclosed_files` enables warnings for unclosed files during deallocation, aiding in detecting leaks.
+
+## Source references
+
+- `xarray/backends/file_manager.py:16` – `FILE_CACHE` initialization using `file_cache_maxsize`
+- `xarray/backends/file_manager.py:250` – `__del__` check using</mark> `warn_for_unclosed_files`
+- <mark class="reference-difference">`xarray/backends/file_manager.py:18`</mark> <mark class="reference-difference">– Assertion ensuring `FILE_CACHE.maxsize &gt;= 1` at module load time
+- `xarray/backends/file_manager.py:10` – Import of `OPTIONS` from `xarray.core.options`
+- `xarray/core/options.py:53-70` – `OPTIONS`</mark> dictionary <mark class="reference-difference">with default values and validators
+- `xarray/core/options.py:114-117` – `_SETTERS` mapping `file_cache_maxsize` to `_set_file_cache_maxsize`
+- `xarray/core/options.py:77-78` –</mark> `_positive_integer`<mark class="reference-difference"> validator function
+- `xarray/core/options.py:100-103` – `_set_file_cache_maxsize` function implementation
+- `xarray/tests/test_options.py:41-47` – Tests</mark> for `file_cache_maxsize`<mark class="reference-difference">
+-</mark> <mark class="reference-difference">`xarray/tests/test_backends_file_manager.py:42-60`</mark> <mark class="reference-difference">– Tests</mark> for `warn_for_unclosed_files`
+</pre></section>
+</main>
+<footer>Frozen CPT snapshot: 20261014T095820Z · zero-based dataset row 118 ·
+unit_000119 · source SHA-256: f61ccfbd45d5facbbe0196a1a006e65e1eb86fbf7b43183246699b55db8983c6<br>
+The ground truth here is the original note text. This run generates a continuation from the prefix;
+it does not feed the original continuation back into the model.</footer>
+</body></html>

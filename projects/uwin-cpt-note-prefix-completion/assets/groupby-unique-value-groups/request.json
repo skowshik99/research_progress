@@ -1,0 +1,14 @@
+{
+  "model": "uwin-cpt-9b",
+  "prompt": "# Verified repository information and learnings\n\n## Function definition and contract\n\n**Location**: `xarray/core/groupby.py:67-92`\n\n**Signature**:\n```python\ndef unique_value_groups(ar, sort: bool = True) -> tuple[np.ndarray | pd.Index, list[list[int]]]:\n```\n\n**Purpose**: Groups an array by its unique values, returning unique values and a list of index lists for each group.\n\n**Parameters**:\n- `ar`: array-like (must be 1-D; 2-D arrays raise `ValueError`)\n- `sort`: bool, default `True`; whether to sort unique values\n\n**Returns**:\n- `values`: unique values as `np.ndarray` or `pd.Index` (or `pd.MultiIndex`)\n- `indices`: `list[list[int]]` where each inner list contains the indices in `ar` that share that unique value\n\n## Core algorithm (verified by code and probes)\n\n### 1. pd.factorize call (`line 85`)\n```python\ninverse, values = pd.factorize(ar, sort=sort)\n```\n- `inverse`: integer codes for each element (0, 1, 2, ...)\n- `values`: array of unique values\n- **NaN behavior**: pandas assigns `-1` in `inverse` for NaN values; NaN values are **not** included in `values`\n\n**Probe verification**: For input `[1, nan, 2, nan, 1, 3]`, `pd.factorize` returns `inverse=[0, -1, 1, -1, 0, 2]` and `values=[1., 2., 3.]`.\n\n### 2. MultiIndex name preservation (`line 86-87`)\n```python\nif isinstance(values, pd.MultiIndex):\n    values.names = ar.names\n```\n- If `values` is a `pd.MultiIndex`, the names from the input array `ar` are copied to `values`\n\n**Probe verification**: For `MultiIndex([(1, 'a'), (2, 'b'), (1, 'a'), (3, 'c')], names=['level1', 'level2'])`, `unique_value_groups` returns a `MultiIndex` with names `['level1', 'level2']`.\n\n**Limitation**: When `IndexVariable` is created with these values in GroupBy, the MultiIndex is converted to a numpy array of tuples, losing the MultiIndex structure and names.\n\n",
+  "max_tokens": 2048,
+  "temperature": 0.0,
+  "top_p": 1.0,
+  "top_k": -1,
+  "min_p": 0.0,
+  "presence_penalty": 0.0,
+  "frequency_penalty": 0.0,
+  "repetition_penalty": 1.0,
+  "seed": 0,
+  "stream": false
+}

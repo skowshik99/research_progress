@@ -11,12 +11,55 @@
     <div class="crumb"><a href="../../index.html">&larr; all projects</a></div>
     <div class="hero">
       <h1>UWIN CPT note-prefix completion</h1>
-      <p>Compare a greedy Qwen3.5-9B continuation with the original repository
-         note from its continued-pretraining data.</p>
+      <p>Compare five greedy Qwen3.5-9B continuations with the original
+         repository notes from its continued-pretraining data.</p>
     </div>
 
     <h2>Entries</h2>
     <!-- ENTRIES:START -->
+    <section class="entry">
+      <header>
+        <h2>All five note-prefix completion cases</h2>
+        <span class="badge done">done</span>
+        <span class="date">2026-10-14</span>
+      </header>
+
+      <p>Four additional training notes extend the original
+         <code>Indexes.get_all_coords</code> example. All five cases use the
+         same CPT checkpoint, raw prefix input, temperature 0, a 2,048-token
+         cap, and zero presence/frequency penalties with repetition penalty 1.
+         Every exact prefix uniquely identifies one of the 3,531 training
+         notes. The original continuation is withheld during inference.</p>
+
+      <table class="metrics">
+        <thead><tr><th>Case</th><th class="num">Prefix characters</th><th class="num">Generated tokens</th><th class="num">Word similarity</th><th>Finish</th><th>Comparison</th></tr></thead>
+        <tbody>
+          <tr><td><code>Indexes.get_all_coords</code></td><td class="num">1,410</td><td class="num">722</td><td class="num">31.2%</td><td>stop</td><td><a href="assets/get-all-coords/index.html">open</a></td></tr>
+          <tr><td><code>Dataset.reset_index</code></td><td class="num">2,287</td><td class="num">805</td><td class="num">20.9%</td><td>stop</td><td><a href="assets/dataset-reset-index/index.html">open</a></td></tr>
+          <tr><td><code>unique_value_groups</code></td><td class="num">1,816</td><td class="num">2,048</td><td class="num">25.2%</td><td>length</td><td><a href="assets/groupby-unique-value-groups/index.html">open</a></td></tr>
+          <tr><td><code>CFMaskCoder.decode</code></td><td class="num">1,082</td><td class="num">245</td><td class="num">30.4%</td><td>stop</td><td><a href="assets/cf-mask-fill-values/index.html">open</a></td></tr>
+          <tr><td><code>CachingFileManager</code> options</td><td class="num">1,300</td><td class="num">2,048</td><td class="num">21.0%</td><td>length</td><td><a href="assets/file-manager-options/index.html">open</a></td></tr>
+        </tbody>
+      </table>
+
+      <p>None of the five generated continuations exactly matches the
+         original text. Word-sequence similarity measures wording overlap,
+         not factual accuracy. Two new outputs reach the generation cap; the
+         file-manager continuation repeats a test-name list. Dataset's output
+         contradicts the source note's recorded <code>drop=True</code> behavior.
+         The fill-value output loses the single-value qualification when
+         claiming that an attribute on its own produces no warning.</p>
+
+      <p><a href="assets/all-cases/index.html" target="_blank" rel="noopener"><strong>Open all five complete comparisons on one page &rarr;</strong></a></p>
+      <iframe class="example" sandbox src="assets/all-cases/index.html"
+              title="All five note-prefix completion comparisons"
+              loading="lazy"></iframe>
+      <div class="example-link">
+        <a href="assets/all-cases/index.html" target="_blank" rel="noopener">open the complete five-case page &rarr;</a>
+        &middot; <a href="assets/all-cases/cases.json">all case metrics</a>
+      </div>
+    </section>
+
     <section class="entry">
       <header>
         <h2>Indexes.get_all_coords: one training-note continuation</h2>

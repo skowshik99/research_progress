@@ -1,0 +1,25 @@
+Verified repository information and learnings
+
+### CFMaskCoder.decode() Multiple Fill Values Warning
+
+**File:** `xarray/coding/variables.py`
+
+**Condition that triggers the warning:**
+The warning is triggered when `len(encoded_fill_values) > 1`, where `encoded_fill_values` is a deduplicated set of non-null fill values extracted from both `missing_value` and `_FillValue` attributes.
+
+**Source location:** Lines 181–213 (CFMaskCoder.decode method)
+
+**Warning message format:**
+```python
+"variable {!r} has multiple fill values {}, decoding all values to NaN."
+```
+- `{!r}`: the variable name in repr format. If `name` is `None`, the message shows `variable None`. If a name is provided, it shows the name with quotes, e.g., `variable 'temperature'`.
+- `{}`: the set of fill values, e.g., `{2, -1}`.
+
+**Warning metadata:**
+- Category: `SerializationWarning` (a custom `RuntimeWarning` subclass defined at line 16)
+- Stack level: `stacklevel=3`
+
+**Behavior when triggered:**
+All matching values in the data are decoded to `NaN` via the `_apply_mask` helper function (lines 135–142).
+
