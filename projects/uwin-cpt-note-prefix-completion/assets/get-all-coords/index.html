@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CPT note-prefix completion comparison</title>
+<style>
+:root{color-scheme:dark;--bg:#0c1220;--panel:#151e30;--ink:#e5edf8;--muted:#a6b5ca}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,sans-serif}
+header{padding:26px 28px 16px;max-width:1800px;margin:auto}
+h1{font-size:25px;margin:0 0 10px}p{line-height:1.55;margin:8px 0;color:var(--muted)}
+.meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.badge{background:#1c2a40;border:1px solid #334563;padding:7px 10px;border-radius:7px;font-size:13px}
+.toolbar{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:16px}
+a{color:#a4d1ff}label{color:var(--muted);font-size:14px}
+.comparison{display:grid;grid-template-columns:minmax(320px,.85fr) minmax(380px,1.1fr) minmax(380px,1.1fr);
+gap:16px;padding:0 28px 28px;max-width:1800px;margin:auto;overflow:auto}
+.panel{background:var(--panel);border:1px solid #30405b;border-radius:10px;overflow:hidden}
+.panel h2{font-size:17px;margin:0;padding:16px;border-bottom:1px solid #30405b}
+.panel .subtitle{font-size:12px;color:var(--muted);padding:10px 16px;border-bottom:1px solid #30405b}
+pre{margin:0;padding:18px;font:13px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;
+white-space:pre-wrap;overflow-wrap:anywhere;height:68vh;min-height:400px;overflow:auto;tab-size:4}
+mark{color:inherit;border-radius:2px}
+.generated-difference{background:#553740}
+.reference-difference{background:#234f43}
+body:has(#highlight:not(:checked)) mark{background:transparent}
+footer{padding:0 28px 24px;max-width:1800px;margin:auto;font-size:13px;color:var(--muted)}
+@media(max-width:800px){header{padding:20px}.comparison{padding:0 20px 20px;grid-template-columns:320px 380px 380px}}
+</style></head><body><header>
+<h1>CPT note-prefix completion</h1>
+<p><strong>xarray/core/indexes.py · Indexes.get_all_coords()</strong><br>
+One training note, continued from its exact text prefix through the raw completions endpoint.</p>
+<div class="meta">
+<span class="badge">Model: uwin-cpt-9b</span><span class="badge">Temperature: 0</span>
+<span class="badge">Prefix: 1410 characters</span>
+<span class="badge">Unique among 3531 training notes</span>
+<span class="badge">Generated: 2839 characters</span>
+<span class="badge">Finish: stop</span>
+<span class="badge">Word sequence similarity: 31.2%</span>
+</div>
+<p>The prefix is the only model input. The original continuation is displayed for comparison.
+Highlights indicate differences in wording; the similarity value measures wording, not factual correctness.
+All three columns contain the complete text.</p>
+<div class="toolbar">
+<a href="../../index.html">Project page</a>
+<label><input type="checkbox" id="highlight" checked> Highlight differences</label>
+<a href="original_note.md">Complete training note</a>
+<a href="generated_continuation.md">Generated text</a>
+<a href="reference_continuation.md">Original continuation</a>
+<a href="request.json">Exact request</a><a href="response.json">Raw response</a>
+<a href="metrics.json">Metrics</a>
+</div></header>
+<main class="comparison">
+<section class="panel"><h2>Input prefix</h2><div class="subtitle">First 1410 characters · exact and unmodified</div>
+<pre># Verified repository information and learnings
+
+## Task scope
+The task was to trace the execution of `Indexes.get_all_coords()` for a coordinate that is part of a multi-index, document the code path, and describe the structure of the returned coordinate dictionary.
+
+## Multi-index storage contract
+When a Dataset contains a pandas MultiIndex, the same `PandasMultiIndex` instance is stored under all coordinate names (the dimension name and each level name) in `Indexes._indexes`. Runtime verification confirms all entries in `Indexes._indexes` for a multi-index point to the same object (same memory address).
+
+For example, with a Dataset containing a MultiIndex on dimension &#x27;z&#x27; with levels &#x27;level_0&#x27; and &#x27;level_1&#x27;:
+```python
+ds.indexes._indexes: {
+    &#x27;z&#x27;: &lt;PandasMultiIndex object at 0x...&gt;,
+    &#x27;level_0&#x27;: &lt;PandasMultiIndex object at 0x...&gt;,  # same object
+    &#x27;level_1&#x27;: &lt;PandasMultiIndex object at 0x...&gt;   # same object
+}
+```
+
+## Internal mapping structure
+`Indexes` maintains three internal mappings for tracking coordinate-index relationships:
+
+1. **`_coord_name_id`**: Maps each coordinate name to the memory address (`id`) of its index. For a multi-index, all names map to the same id.
+2. **`_id_coord_names`**: Maps each index id to a tuple of all coordinate names sharing that index.
+3. **`_id_index`**: Maps each index id to the index object itself (used by `get_unique()` and `is_multi()`).
+
+</pre></section>
+<section class="panel"><h2>Model-generated continuation</h2><div class="subtitle">Greedy generation · temperature 0 · 37.6 seconds</div>
+<pre>## <mark class="generated-difference">`get_all_coords()`</mark> code path<mark class="generated-difference">
+</mark>The method is located at <mark class="generated-difference">`xarray/core/indexes.py:1000-1004`:</mark>
+
+<mark class="generated-difference">```python
+def</mark> <mark class="generated-difference">get_all_coords(self,</mark> <mark class="generated-difference">name:</mark> <mark class="generated-difference">Hashable)</mark> -&gt; dict[Hashable, <mark class="generated-difference">Variable]:
+    &quot;&quot;&quot;Return</mark> <mark class="generated-difference">all</mark> the <mark class="generated-difference">coordinates</mark> <mark class="generated-difference">that</mark> <mark class="generated-difference">share</mark> the same index <mark class="generated-difference">as</mark> <mark class="generated-difference">the</mark> <mark class="generated-difference">given</mark> <mark class="generated-difference">coordinate.&quot;&quot;&quot;
+    index</mark> = <mark class="generated-difference">self._id_index[self._coord_name_id[name]]
+    return</mark> {k: self._variables[k] for k in <mark class="generated-difference">self._id_coord_names[index]}
+```
+
+**Execution</mark> <mark class="generated-difference">trace:**
+1. Look up the index id for the given coordinate name: `index_id = self._coord_name_id[name]`
+2. Retrieve the index object: `index = self._id_index[index_id]`
+3. Get all coordinate names sharing that index: `coord_names = self._id_coord_names[index_id]`
+4. Return</mark> a <mark class="generated-difference">dictionary</mark> mapping each coordinate name to its <mark class="generated-difference">Variable from `self._variables`</mark>
+
+## <mark class="generated-difference">Return</mark> <mark class="generated-difference">value structure
+The</mark> returned <mark class="generated-difference">dictionary</mark> <mark class="generated-difference">contains:</mark>
+- **Keys**: All coordinate names sharing the same index (dimension name <mark class="generated-difference">and all</mark> level <mark class="generated-difference">names for multi-indexes)</mark>
+- **Values**: <mark class="generated-difference">The corresponding `Variable`</mark> objects <mark class="generated-difference">from</mark> <mark class="generated-difference">`self._variables`
+
+For</mark> <mark class="generated-difference">a</mark> <mark class="generated-difference">multi-index, this includes the dimension coordinate</mark> and <mark class="generated-difference">all</mark> <mark class="generated-difference">level</mark> <mark class="generated-difference">coordinates.</mark>
+
+## <mark class="generated-difference">Related</mark> <mark class="generated-difference">methods</mark>
+- <mark class="generated-difference">**`get_all_coords()`**</mark> <mark class="generated-difference">(`xarray/core/indexes.py:1000-1004`):</mark> <mark class="generated-difference">Returns</mark> <mark class="generated-difference">all</mark> <mark class="generated-difference">coordinates sharing the same</mark> index<mark class="generated-difference">
+-</mark> <mark class="generated-difference">**`get_unique()`** (`xarray/core/indexes.py:991-996`): Returns unique indexes and their associated coordinate names
+- **`is_multi()`** (`xarray/core/indexes.py:983-988`): Checks if a coordinate name maps to a multi-coordinate index
+- **`get_all_dims()`** (`xarray/core/indexes.py:1007-1011`): Returns all dimensions associated with an index
+
+## Test verification
+The test `test_get_all_coords` in `xarray/tests/test_indexes.py:100-105` verifies the behavior:
+
+```python
+def test_get_all_coords(self) -&gt; None:
+    indexes = Indexes(self.indexes, self.variables)
+    all_x = indexes.get_all_coords(&quot;x&quot;)
+    assert set(all_x) == {&quot;x&quot;, &quot;y&quot;}
+    assert all_x[&quot;x&quot;] is self.variables[&quot;x&quot;]
+    assert all_x[&quot;y&quot;] is self.variables[&quot;y&quot;]
+```
+
+The test passes, confirming that `get_all_coords()` correctly returns all coordinates sharing the same index.
+
+## Multi-index behavior verification
+Runtime tests confirm that `get_all_coords()` works correctly</mark> for <mark class="generated-difference">multi-indexes:
+-</mark> <mark class="generated-difference">Calling</mark> <mark class="generated-difference">`get_all_coords(&#x27;z&#x27;)`</mark> <mark class="generated-difference">returns coordinates for all levels of the multi-index
+- Calling `get_all_coords(&#x27;level_0&#x27;)` returns the same set of coordinates
+- Calling `get_all_coords(&#x27;level_1&#x27;)` returns the same set of coordinates
+
+## Correction to task premise
+The task description states &quot;for a coordinate that is part of a multi-index.&quot; This is slightly misleading. The method works for **any** coordinate name,</mark> not <mark class="generated-difference">just</mark> <mark class="generated-difference">those</mark> <mark class="generated-difference">that</mark> <mark class="generated-difference">are</mark> <mark class="generated-difference">part</mark> <mark class="generated-difference">of</mark> <mark class="generated-difference">a</mark> <mark class="generated-difference">multi-index.</mark> <mark class="generated-difference">For</mark> <mark class="generated-difference">a</mark> regular (non-multi) <mark class="generated-difference">index,</mark> <mark class="generated-difference">it</mark> returns only that single coordinate. The <mark class="generated-difference">method</mark> <mark class="generated-difference">returns</mark> <mark class="generated-difference">all</mark> <mark class="generated-difference">coordinates</mark> <mark class="generated-difference">sharing</mark> the same <mark class="generated-difference">index,</mark> <mark class="generated-difference">regardless</mark> <mark class="generated-difference">of</mark> <mark class="generated-difference">whether</mark> <mark class="generated-difference">that</mark> <mark class="generated-difference">index is a multi-index or not.</mark>
+</pre></section>
+<section class="panel"><h2>Ground-truth note continuation</h2><div class="subtitle">Remaining 2741 characters of the original training text</div>
+<pre>## <mark class="reference-difference">Step-by-step</mark> code path<mark class="reference-difference"> for `get_all_coords(&#x27;one&#x27;)`
+
+</mark>The method is located at <mark class="reference-difference">`xarray/core/indexes.py:1111-1141`:</mark>
+
+<mark class="reference-difference">1.</mark> <mark class="reference-difference">**Entry**:</mark> <mark class="reference-difference">`get_all_coords(key:</mark> <mark class="reference-difference">Hashable, errors: ErrorOptions = &quot;raise&quot;)</mark> -&gt; dict[Hashable, <mark class="reference-difference">Variable]`
+2.</mark> <mark class="reference-difference">**Validation** (lines 1132-1136):
+   - Confirms `errors` is &quot;raise&quot; or &quot;ignore&quot;
+   - Checks `key in self._indexes` - for a multi-index,</mark> the <mark class="reference-difference">key</mark> <mark class="reference-difference">is</mark> <mark class="reference-difference">present because</mark> the same <mark class="reference-difference">PandasMultiIndex is stored under all coordinate names
+3. **Lookup </mark>index <mark class="reference-difference">id**</mark> <mark class="reference-difference">(line</mark> <mark class="reference-difference">1137):
+   -</mark> <mark class="reference-difference">`all_coord_names</mark> = <mark class="reference-difference">self._id_coord_names[self._coord_name_id[key]]`
+   - `_coord_name_id[key]` returns the index&#x27;s memory address
+4. **Build result dictionary** (line 1138):
+   - `return</mark> {k: self._variables[k] for k in <mark class="reference-difference">all_coord_names}`
+   -</mark> <mark class="reference-difference">Returns</mark> a <mark class="reference-difference">dict</mark> mapping each coordinate name to its <mark class="reference-difference">`Variable`</mark>
+
+## <mark class="reference-difference">Structure</mark> <mark class="reference-difference">of</mark> returned <mark class="reference-difference">coordinate</mark> <mark class="reference-difference">dictionary
+```python
+{
+    &#x27;z&#x27;: Variable(
+        dims=(&#x27;z&#x27;,),
+        values=MultiIndex([(1, &#x27;a&#x27;), (2, &#x27;b&#x27;), (3, &#x27;c&#x27;), (4, &#x27;d&#x27;)])
+    ),
+    &#x27;level_0&#x27;: Variable(
+        dims=(&#x27;z&#x27;,),
+        values=np.array([1, 2, 3, 4])
+    ),
+    &#x27;level_1&#x27;: Variable(
+        dims=(&#x27;z&#x27;,),
+        values=np.array([&#x27;a&#x27;, &#x27;b&#x27;, &#x27;c&#x27;, &#x27;d&#x27;])
+    )
+}
+```
+
+- **Type**: Standard Python `dict`</mark>
+- **Keys**: All coordinate names sharing the same index (dimension name <mark class="reference-difference">+</mark> level <mark class="reference-difference">names)</mark>
+- **Values**: <mark class="reference-difference">`xarray.Variable`</mark> objects <mark class="reference-difference">with</mark> <mark class="reference-difference">`dims`</mark> <mark class="reference-difference">(dimension</mark> <mark class="reference-difference">tuple)</mark> and <mark class="reference-difference">`values`</mark> <mark class="reference-difference">(data</mark> <mark class="reference-difference">array)</mark>
+
+## <mark class="reference-difference">Error</mark> <mark class="reference-difference">handling behavior</mark>
+- <mark class="reference-difference">`get_all_coords(key,</mark> <mark class="reference-difference">errors=&quot;raise&quot;)`</mark> <mark class="reference-difference">raises</mark> <mark class="reference-difference">`ValueError:</mark> <mark class="reference-difference">no</mark> index <mark class="reference-difference">found</mark> for <mark class="reference-difference">{key!r}</mark> <mark class="reference-difference">coordinate`</mark> <mark class="reference-difference">if</mark> <mark class="reference-difference">key</mark> not <mark class="reference-difference">found
+-</mark> <mark class="reference-difference">`get_all_coords(key,</mark> <mark class="reference-difference">errors=&quot;ignore&quot;)`</mark> <mark class="reference-difference">returns</mark> <mark class="reference-difference">empty</mark> <mark class="reference-difference">dict</mark> <mark class="reference-difference">`{}`</mark> <mark class="reference-difference">if</mark> <mark class="reference-difference">key</mark> <mark class="reference-difference">not found
+
+## Non-multi-index behavior
+For</mark> regular (non-multi) <mark class="reference-difference">indexes,</mark> <mark class="reference-difference">`get_all_coords()`</mark> returns only that single coordinate.<mark class="reference-difference">
+
+## Key source references
+- `xarray/core/indexes.py:1111-1141`: `get_all_coords()` method
+- `xarray/core/indexes.py:1066-1073`: `_id_coord_names` property
+- `xarray/core/indexes.py:1054-1059`: `_coord_name_id` property
+- `xarray/core/indexes.py:537-740`: `PandasMultiIndex` class
+- `xarray/core/indexes.py:735-768`: `PandasMultiIndex.create_variables()` method
+
+## Test verification
+All tests in `xarray/tests/test_indexes.py::TestIndexes` pass (20 tests), including `test_get_all_coords`. All tests in `xarray/tests/test_indexes.py::TestPandasMultiIndex` pass (11 tests), including `test_create_variables`.
+
+## Correction to initial test setup
+The first test attempt failed because it constructed `Indexes` directly with `indexes={&#x27;z&#x27;: multi_idx}` and `variables={&#x27;one&#x27;: ..., &#x27;two&#x27;: ...}`. This does not match how xarray populates `Indexes` for a multi-index.</mark> The <mark class="reference-difference">corrected</mark> <mark class="reference-difference">approach</mark> <mark class="reference-difference">uses</mark> <mark class="reference-difference">a</mark> <mark class="reference-difference">Dataset, which properly initializes the Indexes object with</mark> the same <mark class="reference-difference">PandasMultiIndex</mark> <mark class="reference-difference">stored</mark> <mark class="reference-difference">under</mark> <mark class="reference-difference">all</mark> <mark class="reference-difference">coordinate</mark> <mark class="reference-difference">names.</mark>
+</pre></section>
+</main>
+<footer>Frozen CPT snapshot: 20261014T095820Z · zero-based dataset row 2208 ·
+unit_002216 · source SHA-256: e7629c0eb1455392c5c611507f8f42727dde11f78ee34325ecc36df62f5e1492<br>
+The ground truth here is the original note text. This run generates a continuation from the prefix;
+it does not feed the original continuation back into the model.</footer>
+</body></html>

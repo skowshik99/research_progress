@@ -1,0 +1,14 @@
+{
+  "model": "uwin-cpt-9b",
+  "prompt": "# Verified repository information and learnings\n\n## Task scope\nThe task was to trace the execution of `Indexes.get_all_coords()` for a coordinate that is part of a multi-index, document the code path, and describe the structure of the returned coordinate dictionary.\n\n## Multi-index storage contract\nWhen a Dataset contains a pandas MultiIndex, the same `PandasMultiIndex` instance is stored under all coordinate names (the dimension name and each level name) in `Indexes._indexes`. Runtime verification confirms all entries in `Indexes._indexes` for a multi-index point to the same object (same memory address).\n\nFor example, with a Dataset containing a MultiIndex on dimension 'z' with levels 'level_0' and 'level_1':\n```python\nds.indexes._indexes: {\n    'z': <PandasMultiIndex object at 0x...>,\n    'level_0': <PandasMultiIndex object at 0x...>,  # same object\n    'level_1': <PandasMultiIndex object at 0x...>   # same object\n}\n```\n\n## Internal mapping structure\n`Indexes` maintains three internal mappings for tracking coordinate-index relationships:\n\n1. **`_coord_name_id`**: Maps each coordinate name to the memory address (`id`) of its index. For a multi-index, all names map to the same id.\n2. **`_id_coord_names`**: Maps each index id to a tuple of all coordinate names sharing that index.\n3. **`_id_index`**: Maps each index id to the index object itself (used by `get_unique()` and `is_multi()`).\n\n",
+  "max_tokens": 2048,
+  "temperature": 0.0,
+  "top_p": 1.0,
+  "top_k": -1,
+  "min_p": 0.0,
+  "presence_penalty": 0.0,
+  "frequency_penalty": 0.0,
+  "repetition_penalty": 1.0,
+  "seed": 0,
+  "stream": false
+}

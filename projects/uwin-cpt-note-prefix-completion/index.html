@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UWIN CPT note-prefix completion — Research Progress</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="crumb"><a href="../../index.html">&larr; all projects</a></div>
+    <div class="hero">
+      <h1>UWIN CPT note-prefix completion</h1>
+      <p>Compare a greedy Qwen3.5-9B continuation with the original repository
+         note from its continued-pretraining data.</p>
+    </div>
+
+    <h2>Entries</h2>
+    <!-- ENTRIES:START -->
+    <section class="entry">
+      <header>
+        <h2>Indexes.get_all_coords: one training-note continuation</h2>
+        <span class="badge done">done</span>
+        <span class="date">2026-10-14</span>
+      </header>
+
+      <p>The full-model Qwen3.5-9B CPT checkpoint was trained for two epochs
+         at learning rate 5e-6 on a frozen export of 3,531 verified repository
+         notes. This sample uses zero-based training row 2208,
+         <code>unit_002216</code>, about <code>xarray/core/indexes.py</code>.</p>
+      <p>The exact 1,410-character prefix includes the MultiIndex storage
+         example and three internal coordinate/index mappings. It matches
+         exactly one note in the training snapshot. The prefix alone was sent
+         to the raw <code>/v1/completions</code> endpoint with temperature 0,
+         no repetition or presence penalty, and a 2,048-token generation cap.</p>
+
+      <table class="metrics">
+        <thead><tr><th>Metric</th><th class="num">Value</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Prefix</td><td class="num">1,410 characters / 347 tokens</td><td>Exact training-text prefix</td></tr>
+          <tr><td>Generated continuation</td><td class="num">2,839 characters / 722 tokens</td><td>Greedy completion</td></tr>
+          <tr><td>Original continuation</td><td class="num">2,741 characters</td><td>Remaining original note text</td></tr>
+          <tr><td>Elapsed time</td><td class="num">37.6 seconds</td><td>One inference request</td></tr>
+          <tr><td>Finish reason</td><td class="num">stop</td><td>Generation cap was not reached</td></tr>
+          <tr><td>Exact continuation match</td><td class="num">No</td><td>First three characters match</td></tr>
+          <tr><td>Word-sequence similarity</td><td class="num">31.2%</td><td>Wording overlap, not factual accuracy</td></tr>
+        </tbody>
+      </table>
+
+      <p>The continuation preserves the general coordinate-lookup topic but
+         invents implementation details. Its code uses an index object as a
+         key to <code>_id_coord_names</code>, although that mapping is keyed by
+         index IDs, and omits the original <code>errors</code> parameter and
+         its raise/ignore behavior. The original continuation is the training
+         note text; this sample measures generated recall rather than
+         teacher-forced token probabilities.</p>
+
+      <iframe class="example" sandbox src="assets/get-all-coords/index.html"
+              title="Prefix, generated continuation, and original continuation"
+              loading="lazy"></iframe>
+      <div class="example-link">
+        <a href="assets/get-all-coords/index.html" target="_blank" rel="noopener">open the full side-by-side comparison &rarr;</a>
+      </div>
+      <p><a href="assets/get-all-coords/request.json">Exact inference request</a>
+         &middot; <a href="assets/get-all-coords/response.json">Raw response</a>
+         &middot; <a href="assets/get-all-coords/metrics.json">Metrics</a></p>
+    </section>
+    <!-- ENTRIES:END -->
+  </div>
+</body>
+</html>
